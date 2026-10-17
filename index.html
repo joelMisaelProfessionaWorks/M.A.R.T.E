@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <!-- Iconografía Aeroespacial y Científica -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Motor Cartográfico Leaflet.js (Etapa 2) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <!-- Hoja de Estilos Principal HUD -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -224,125 +226,25 @@
           <div class="center-crosshair"></div>
         </div>
 
-        <!-- Superficie Simulada Interactiva (Lista para conectar Leaflet.js en Etapa 2) -->
-        <div class="mars-tactical-canvas" id="mars-map-placeholder">
-          <!-- Cuadrícula topográfica SVG y ruta simulada JEZERO-ALPHA -->
-          <svg class="tactical-map-svg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <!-- Gradiente marciano topográfico -->
-              <radialGradient id="craterGlow" cx="55%" cy="48%" r="55%">
-                <stop offset="0%" stop-color="#3d1e12" stop-opacity="0.85" />
-                <stop offset="45%" stop-color="#23120b" stop-opacity="0.9" />
-                <stop offset="100%" stop-color="#0b0d13" stop-opacity="0.98" />
-              </radialGradient>
-              <linearGradient id="iceZoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.28" />
-                <stop offset="100%" stop-color="#0077ff" stop-opacity="0.04" />
-              </linearGradient>
-              <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
-            </defs>
+        <!-- Lienzo Cartográfico Interactivo Leaflet.js (Etapa 2) -->
+        <div class="mars-tactical-canvas">
+          <div id="mars-leaflet-map" class="leaflet-hud-instance" aria-label="Mapa Planetario Interactivo de Marte"></div>
 
-            <!-- Fondo Base Cráter Jezero -->
-            <rect width="1000" height="620" fill="url(#craterGlow)" />
-
-            <!-- Líneas de Cuadrícula Cartográfica -->
-            <g class="map-grid-lines" stroke="rgba(255, 107, 43, 0.12)" stroke-width="1">
-              <line x1="0" y1="124" x2="1000" y2="124" />
-              <line x1="0" y1="248" x2="1000" y2="248" />
-              <line x1="0" y1="372" x2="1000" y2="372" />
-              <line x1="0" y1="496" x2="1000" y2="496" />
-              <line x1="200" y1="0" x2="200" y2="620" />
-              <line x1="400" y1="0" x2="400" y2="620" />
-              <line x1="600" y1="0" x2="600" y2="620" />
-              <line x1="800" y1="0" x2="800" y2="620" />
-            </g>
-
-            <!-- CAPA 1: Topografía MOLA (Curvas de Nivel) -->
-            <g id="svg-layer-topo" class="map-svg-layer">
-              <path d="M 80,520 C 180,410 240,260 390,210 C 540,160 720,120 880,220 C 950,310 920,480 790,540 C 620,590 250,580 80,520 Z"
-                    fill="none" stroke="rgba(255, 136, 77, 0.32)" stroke-width="1.5" stroke-dasharray="8 4" />
-              <path d="M 160,480 C 240,380 310,280 440,240 C 570,200 710,180 820,260 C 880,330 850,450 740,500 C 590,540 310,530 160,480 Z"
-                    fill="none" stroke="rgba(255, 107, 43, 0.45)" stroke-width="1.5" />
-              <path d="M 270,430 C 330,360 390,300 490,280 C 590,260 690,250 760,310 C 800,360 770,430 680,460 C 560,490 380,480 270,430 Z"
-                    fill="rgba(255, 107, 43, 0.05)" stroke="rgba(255, 107, 43, 0.6)" stroke-width="1.2" />
-              <text x="710" y="195" fill="rgba(255,155,100,0.7)" font-family="Share Tech Mono" font-size="12">MOLA ELEV: -2,540m</text>
-              <text x="510" y="272" fill="rgba(255,155,100,0.7)" font-family="Share Tech Mono" font-size="12">BORDE DEL DELTA (-2,410m)</text>
-            </g>
-
-            <!-- CAPA 2: Geología (Regiones litológicas) -->
-            <g id="svg-layer-geol" class="map-svg-layer">
-              <polygon points="310,240 480,190 560,290 420,360" fill="rgba(186, 104, 200, 0.14)" stroke="#ce93d8" stroke-width="1" stroke-dasharray="4 4" />
-              <text x="365" y="255" fill="#e1bee7" font-family="Share Tech Mono" font-size="11">UNIDAD GEOLÓGICA: CARBONATOS &amp; OLIVINO</text>
-            </g>
-
-            <!-- CAPA 3: Recursos (Hielo Subsuperficial) -->
-            <g id="svg-layer-res" class="map-svg-layer">
-              <ellipse cx="615" cy="305" rx="95" ry="52" fill="url(#iceZoneGrad)" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="6 3" />
-              <text x="545" y="308" fill="#00e5ff" font-family="Share Tech Mono" font-size="12" font-weight="bold">DEPÓSITO H₂O (HIELO SUBTERRÁNEO)</text>
-            </g>
-
-            <!-- CAPA 4: Clima y Frente de Tormenta de Polvo -->
-            <g id="svg-layer-weather" class="map-svg-layer">
-              <circle cx="220" cy="180" r="115" fill="rgba(255, 171, 0, 0.12)" stroke="#ffab00" stroke-width="1.5" stroke-dasharray="10 6" />
-              <circle cx="220" cy="180" r="70" fill="rgba(255, 107, 43, 0.16)" />
-              <text x="135" y="175" fill="#ffd740" font-family="Share Tech Mono" font-size="12" font-weight="bold">⚠ FRENTE TORMENTA DE POLVO</text>
-              <text x="155" y="193" fill="#ffab00" font-family="Share Tech Mono" font-size="11">VIENTO: 24.5 KM/H (ENE)</text>
-            </g>
-
-            <!-- TRAZADO DE LA RUTA: JEZERO-ALPHA -->
-            <g class="route-path-group">
-              <!-- Sombra de ruta -->
-              <path d="M 210,470 Q 310,450 410,380 T 615,305 T 790,250"
-                    fill="none" stroke="rgba(255, 107, 43, 0.3)" stroke-width="10" stroke-linecap="round" />
-              <!-- Línea principal discontinua -->
-              <path d="M 210,470 Q 310,450 410,380 T 615,305 T 790,250"
-                    fill="none" stroke="#FF6B2B" stroke-width="3.5" stroke-dasharray="10 7" filter="url(#neonGlow)" />
-            </g>
-
-            <!-- CAPA 5: Sitios de Misión & Puntos de Control -->
-            <g id="svg-layer-sites" class="map-svg-layer">
-              <!-- Waypoint 1: Start -->
-              <g transform="translate(210, 470)">
-                <circle r="14" fill="rgba(255, 107, 43, 0.2)" stroke="#FF6B2B" stroke-width="1.5" />
-                <circle r="6" fill="#FF6B2B" />
-                <rect x="-65" y="20" width="130" height="24" rx="4" fill="rgba(11, 14, 20, 0.9)" stroke="#FF6B2B" stroke-width="1" />
-                <text x="0" y="36" text-anchor="middle" fill="#ffffff" font-family="Rajdhani" font-weight="700" font-size="13">Punto de Inicio</text>
-              </g>
-
-              <!-- Waypoint 2: Parada Científica (Posición actual del Rover) -->
-              <g transform="translate(410, 380)">
-                <circle r="22" fill="rgba(0, 229, 255, 0.15)" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="4 2" />
-                <circle r="8" fill="#00e5ff" filter="url(#neonGlow)" />
-                <rect x="-85" y="-44" width="170" height="26" rx="4" fill="rgba(11, 14, 20, 0.92)" stroke="#00e5ff" stroke-width="1.2" />
-                <text x="0" y="-27" text-anchor="middle" fill="#00e5ff" font-family="Rajdhani" font-weight="700" font-size="13">Parada Científica (Rover)</text>
-              </g>
-
-              <!-- Waypoint 3: Recursos Hielo -->
-              <g transform="translate(615, 305)">
-                <circle r="12" fill="rgba(255, 107, 43, 0.25)" stroke="#FF6B2B" stroke-width="1.5" />
-                <circle r="5" fill="#ffffff" />
-                <rect x="-75" y="18" width="150" height="24" rx="4" fill="rgba(11, 14, 20, 0.9)" stroke="rgba(255,107,43,0.7)" stroke-width="1" />
-                <text x="0" y="34" text-anchor="middle" fill="#f0f4f8" font-family="Rajdhani" font-weight="600" font-size="12">Estación Hielo ISRU</text>
-              </g>
-
-              <!-- Waypoint 4: Base Camp -->
-              <g transform="translate(790, 250)">
-                <circle r="16" fill="rgba(255, 107, 43, 0.3)" stroke="#FF6B2B" stroke-width="2" />
-                <circle r="7" fill="#FF6B2B" filter="url(#neonGlow)" />
-                <rect x="-75" y="-42" width="150" height="26" rx="4" fill="rgba(255, 107, 43, 0.95)" stroke="#ffffff" stroke-width="1" />
-                <text x="0" y="-25" text-anchor="middle" fill="#0b0e14" font-family="Rajdhani" font-weight="700" font-size="13">Campamento Base</text>
-              </g>
-            </g>
-          </svg>
+          <!-- Selector Flotante de Mosaico Base Orbital -->
+          <div class="map-baselayer-Floating">
+            <label for="map-baselayer-select"><i class="fa-solid fa-globe text-orange"></i> MOSAICO BASE:</label>
+            <select id="map-baselayer-select" class="hud-mini-select">
+              <option value="opm" selected>VIKING / OPM COLOR</option>
+              <option value="shaded">CELESTIA 16K RELIEVE</option>
+            </select>
+          </div>
 
           <!-- Controles Flotantes del Mapa -->
           <div class="map-floating-toolbar">
-            <button class="map-tool-btn" type="button" title="Acercar Zoom"><i class="fa-solid fa-plus"></i></button>
-            <button class="map-tool-btn" type="button" title="Alejar Zoom"><i class="fa-solid fa-minus"></i></button>
-            <button class="map-tool-btn" type="button" title="Centrar en Rover"><i class="fa-solid fa-location-crosshairs"></i></button>
+            <button id="btn-map-zoom-in" class="map-tool-btn" type="button" title="Acercar Zoom"><i class="fa-solid fa-plus"></i></button>
+            <button id="btn-map-zoom-out" class="map-tool-btn" type="button" title="Alejar Zoom"><i class="fa-solid fa-minus"></i></button>
+            <button id="btn-map-center-rover" class="map-tool-btn" type="button" title="Centrar en Cráter Jezero / Rover"><i class="fa-solid fa-location-crosshairs"></i></button>
+            <button id="btn-map-global" class="map-tool-btn" type="button" title="Vista Planetaria Global de Marte"><i class="fa-solid fa-earth-americas text-cyan"></i></button>
             <button class="map-tool-btn" type="button" id="btn-quick-360" title="Abrir Vista 360° en Posición del Rover">
               <i class="fa-solid fa-street-view text-orange"></i>
             </button>
@@ -350,11 +252,11 @@
 
           <!-- Leyenda Inferior del Mapa -->
           <div class="map-bottom-badge">
-            <span><i class="fa-solid fa-Satellite text-orange"></i> ORBITADOR MRO HiRISE / USGS ASTROGEOLOGY</span>
+            <span><i class="fa-solid fa-satellite text-orange"></i> NASA MRO / MGS MOLA / OPM TILES</span>
             <span class="divider">|</span>
-            <span>ESCALA: 1 : 25,000</span>
+            <span>PROYECCIÓN: PLANETOCÉNTRICA MARCIANA</span>
             <span class="divider">|</span>
-            <span class="text-cyan">ETAPA 2: MOTOR LEAFLET.JS PREPARADO</span>
+            <span class="text-cyan">HAZ CLIC EN CUALQUIER MARCADOR O CAPA PARA VER TELEMETRÍA</span>
           </div>
         </div>
       </section>
@@ -714,78 +616,8 @@
 
   </div>
 
-  <!-- Script ligero de interfaz para la Etapa 1 (Conmutación de contenedores 2D/360° y Toggles de Capas) -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const viewportStage = document.getElementById('viewport-stage');
-      const mapContainer = document.getElementById('map-container');
-      const streetContainer = document.getElementById('streetview-container');
-      const btnToggleStreet = document.getElementById('btn-toggle-streetview');
-      const btnSplitView = document.getElementById('btn-split-view');
-      const btnCloseStreet = document.getElementById('btn-close-streetview');
-      const btnQuick360 = document.getElementById('btn-quick-360');
-      const streetBtnLabel = document.getElementById('streetview-btn-label');
-
-      function setViewportMode(mode) {
-        viewportStage.setAttribute('data-view-mode', mode);
-
-        if (mode === 'streetview') {
-          mapContainer.classList.add('is-hidden');
-          streetContainer.classList.remove('is-hidden');
-          btnToggleStreet.classList.add('is-active');
-          btnToggleStreet.setAttribute('aria-pressed', 'true');
-          btnSplitView.classList.remove('is-active');
-          streetBtnLabel.textContent = 'VOLVER AL MAPA 2D';
-        } else if (mode === 'split') {
-          mapContainer.classList.remove('is-hidden');
-          streetContainer.classList.remove('is-hidden');
-          btnToggleStreet.classList.add('is-active');
-          btnSplitView.classList.add('is-active');
-          streetBtnLabel.textContent = '360° ACTIVO (DIVIDIDO)';
-        } else {
-          mapContainer.classList.remove('is-hidden');
-          streetContainer.classList.add('is-hidden');
-          btnToggleStreet.classList.remove('is-active');
-          btnToggleStreet.setAttribute('aria-pressed', 'false');
-          btnSplitView.classList.remove('is-active');
-          streetBtnLabel.textContent = 'ACTIVATE 360° STREET VIEW';
-        }
-      }
-
-      btnToggleStreet.addEventListener('click', () => {
-        const currentMode = viewportStage.getAttribute('data-view-mode');
-        setViewportMode(currentMode === 'streetview' ? 'map' : 'streetview');
-      });
-
-      btnSplitView.addEventListener('click', () => {
-        const currentMode = viewportStage.getAttribute('data-view-mode');
-        setViewportMode(currentMode === 'split' ? 'map' : 'split');
-      });
-
-      btnCloseStreet.addEventListener('click', () => setViewportMode('map'));
-      btnQuick360.addEventListener('click', () => setViewportMode('split'));
-
-      // Interactividad de los Toggles de Capas en la Etapa 1
-      const layerCheckboxes = document.querySelectorAll('.layer-toggles-list input[type="checkbox"]');
-      const activeLayersCounter = document.getElementById('active-layers-counter');
-
-      function updateLayerVisibility() {
-        let activeCount = 0;
-        layerCheckboxes.forEach((checkbox) => {
-          const targetId = checkbox.getAttribute('data-target-layer');
-          const svgGroup = document.getElementById(targetId);
-          if (checkbox.checked) {
-            activeCount++;
-            if (svgGroup) svgGroup.style.opacity = '1';
-          } else {
-            if (svgGroup) svgGroup.style.opacity = '0';
-          }
-        });
-        activeLayersCounter.textContent = `${activeCount} ACTIVA${activeCount === 1 ? '' : 'S'}`;
-      }
-
-      layerCheckboxes.forEach((cb) => cb.addEventListener('change', updateLayerVisibility));
-    });
-  </script>
+  <!-- Motor Cartográfico Leaflet.js v1.9.4 + Lógica Orbital Etapa 2 -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="app.js"></script>
 </body>
 </html>
