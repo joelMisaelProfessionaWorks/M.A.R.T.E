@@ -1,0 +1,15 @@
+{
+  "name": "marte-nasa-space-apps-2026",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Guía de Supervivencia Interplanetaria: Mapa Marciano - NASA Space Apps Challenge 2026",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --open",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}

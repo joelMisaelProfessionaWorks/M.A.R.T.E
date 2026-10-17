@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M.A.R.T.E | Guía de Supervivencia Interplanetaria: Mapa Marciano — NASA Space Apps 2026</title>
+  <!-- Tipografías Técnicas Aeroespaciales -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <!-- Iconografía Aeroespacial y Científica -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Hoja de Estilos Principal HUD -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="nasa-hud-theme">
+
+  <!-- Capas de Ambientación Visual Sci-Fi (Scanlines + Viñeta Espacial) -->
+  <div class="hud-scanlines" aria-hidden="true"></div>
+  <div class="hud-ambient-glow" aria-hidden="true"></div>
+
+  <!-- CONTENEDOR MAESTRO DEL DASHBOARD (100dvh Sala de Control) -->
+  <div class="dashboard-shell">
+
+    <!-- ====================================================================
+         1. BARRA SUPERIOR (HEADER)
+         ==================================================================== -->
+    <header class="hud-header glass-panel">
+      <!-- Identidad NASA Space Apps & Título del Proyecto -->
+      <div class="header-brand">
+        <div class="nasa-badge" title="NASA Space Apps Challenge 2026">
+          <div class="badge-ring"></div>
+          <i class="fa-solid fa-user-astronaut"></i>
+        </div>
+        <div class="brand-titles">
+          <div class="challenge-kicker">
+            <span class="status-dot pulse-orange"></span>
+            <span>NASA SPACE APPS CHALLENGE 2026 // DESAFÍO: MAPA MARCIANO</span>
+          </div>
+          <h1 class="project-title">
+            Interplanetary Survival Guide: <span class="text-mars">Martian Map</span>
+          </h1>
+          <p class="project-subtitle">
+            GUÍA DE SUPERVIVENCIA INTERPLANETARIA &bull; DATOS REALES. VIAJES MÁS SEGUROS. GRANDES DESCUBRIMIENTOS.
+          </p>
+        </div>
+      </div>
+
+      <!-- Telemetría de Enlace Orbital Central -->
+      <div class="header-telemetry">
+        <div class="telemetry-pill">
+          <span class="tp-label">COORDENADAS OBJETIVO</span>
+          <span class="tp-value" id="hud-header-coords">18.38°N &bull; 77.58°E</span>
+        </div>
+        <div class="telemetry-pill">
+          <span class="tp-label">ENLACE PROFUNDO (DSN)</span>
+          <span class="tp-value text-cyan"><i class="fa-solid fa-satellite-dish"></i> MADRID-GOLDSTONE</span>
+        </div>
+        <div class="telemetry-pill">
+          <span class="tp-label">TIEMPO DE MISIÓN</span>
+          <span class="tp-value text-orange">SOL 1420 &bull; 14:32 MTC</span>
+        </div>
+      </div>
+
+      <!-- Acciones de Vista: Activar Street View 360° y Pantalla Dividida -->
+      <div class="header-actions">
+        <button id="btn-split-view" class="hud-btn-secondary" type="button" title="Alternar Pantalla Dividida (Mapa 2D + Visor 360°)">
+          <i class="fa-solid fa-table-columns"></i>
+          <span>PANTALLA DIVIDIDA</span>
+        </button>
+
+        <button id="btn-toggle-streetview" class="hud-btn-cta" type="button" aria-pressed="false">
+          <span class="btn-corner top-left"></span>
+          <span class="btn-corner bottom-right"></span>
+          <i class="fa-solid fa-vr-cardboard btn-icon-anim"></i>
+          <span id="streetview-btn-label">ACTIVATE 360° STREET VIEW</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         2. BARRA LATERAL IZQUIERDA (CONTROLES Y RUTAS)
+         ==================================================================== -->
+    <aside class="hud-sidebar-left glass-panel scroller" aria-label="Controles y Rutas de Exploración">
+      <div class="panel-heading">
+        <div class="heading-title">
+          <i class="fa-solid fa-route text-orange"></i>
+          <h2>PLANIFICADOR DE EXPEDICIÓN</h2>
+        </div>
+        <span class="hud-tag">ACTIVO</span>
+      </div>
+
+      <!-- Selector de Ruta -->
+      <section class="hud-card">
+        <label for="route-selector" class="card-section-title">
+          <i class="fa-solid fa-compass"></i> SELECCIONAR RUTA DE EXPLORACIÓN
+        </label>
+        <div class="select-cyber-wrapper">
+          <select id="route-selector" class="cyber-select">
+            <option value="jezero-alpha" selected>RUTA SUGERIDA: JEZERO-ALPHA (DELTA)</option>
+            <option value="jezero-beta">RUTA ALTERNA: JEZERO-BETA (CRÁTER BELVA)</option>
+            <option value="gale-sharp">RUTA HISTÓRICA: GALE - MONTE SHARP</option>
+            <option value="valles-marineris">RUTA EXTREMA: VALLES MARINERIS SUR</option>
+          </select>
+          <i class="fa-solid fa-chevron-down select-arrow"></i>
+        </div>
+
+        <div class="route-quick-stats">
+          <div class="rq-box">
+            <span class="rq-label">DIFICULTAD</span>
+            <span class="rq-val badge-warning">INTERMEDIA</span>
+          </div>
+          <div class="rq-box">
+            <span class="rq-label">PENDIENTE MÁX.</span>
+            <span class="rq-val text-cyan">14.2° (SEGURA)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Información de la Misión Actual -->
+      <section class="hud-card mission-brief-card">
+        <div class="card-section-title">
+          <i class="fa-solid fa-flag"></i> INFORMACIÓN DE LA MISIÓN ACTUAL
+        </div>
+        <div class="mission-banner">
+          <div class="mission-banner-icon">
+            <i class="fa-solid fa-person-rays"></i>
+          </div>
+          <div class="mission-banner-text">
+            <h3>Exploradores Humanos: Destino Jezero Crater</h3>
+            <span>Sector: Abanico Aluvial Occidental &bull; Cuadrángulo Syrtis Major</span>
+          </div>
+        </div>
+        <p class="mission-description">
+          Travesía planificada para astronautas y rover presurizado desde el sitio de descenso hasta el antiguo delta lacustre. Prioridad: extracción de regolito hidratado y establecimiento del Campamento Base.
+        </p>
+
+        <!-- Lista de Waypoints / Puntos de Control de la Ruta -->
+        <div class="card-section-title" style="margin-top: 0.75rem;">
+          <i class="fa-solid fa-location-dot"></i> PUNTOS DE CONTROL (WAYPOINTS)
+        </div>
+
+        <ul class="waypoints-timeline">
+          <li class="waypoint-node status-completed">
+            <div class="wp-marker">01</div>
+            <div class="wp-content">
+              <div class="wp-row">
+                <strong>Punto de Inicio (Start)</strong>
+                <span class="wp-badge done">COMPLETADO</span>
+              </div>
+              <span class="wp-sub">Octavia E. Butler Landing &bull; KM 0.0</span>
+            </div>
+          </li>
+
+          <li class="waypoint-node status-active">
+            <div class="wp-marker">02</div>
+            <div class="wp-content">
+              <div class="wp-row">
+                <strong>Parada Científica: Kodiak</strong>
+                <span class="wp-badge current">POSICIÓN ACTUAL</span>
+              </div>
+              <span class="wp-sub">Análisis estratigráfico &bull; KM 4.8</span>
+            </div>
+          </li>
+
+          <li class="waypoint-node status-pending">
+            <div class="wp-marker">03</div>
+            <div class="wp-content">
+              <div class="wp-row">
+                <strong>Depósito de Hielo Subterráneo</strong>
+                <span class="wp-badge next">SIGUIENTE</span>
+              </div>
+              <span class="wp-sub">Extracción ISRU de H₂O &bull; KM 9.4</span>
+            </div>
+          </li>
+
+          <li class="waypoint-node status-pending">
+            <div class="wp-marker">04</div>
+            <div class="wp-content">
+              <div class="wp-row">
+                <strong>Campamento Base (Base Camp)</strong>
+                <span class="wp-badge target">DESTINO</span>
+              </div>
+              <span class="wp-sub">Hábitat Delta Prime &bull; KM 14.6</span>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Directriz de Supervivencia -->
+      <div class="survival-directive-box">
+        <i class="fa-solid fa-shield-halved text-orange"></i>
+        <div>
+          <strong>DIRECTRIZ DE SUPERVIVENCIA:</strong>
+          <p>Refugio más cercano a 1.8 km. En caso de tormenta solar (SPE), activar blindaje magnético del rover inmediatamente.</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ====================================================================
+         4. ÁREA CENTRAL (EL MAPA 2D Y EL VISOR 360° STREET VIEW)
+         ==================================================================== -->
+    <main class="hud-center-stage" id="viewport-stage" data-view-mode="map">
+
+      <!-- CONTENEDOR 1: MAPA ORBITAL 2D (#map-container) -->
+      <section id="map-container" class="viewport-panel glass-panel" aria-label="Mapa Orbital Interactivo de Marte">
+        <!-- Cabecera superpuesta del Mapa -->
+        <div class="viewport-top-bar">
+          <div class="vtb-left">
+            <span class="live-indicator"></span>
+            <span class="vtb-title">MAPA TÁCTICO ORBITAL 2D // PROYECCIÓN MOLA + CTX</span>
+          </div>
+          <div class="vtb-right">
+            <span class="vtb-coord-readout" id="map-cursor-readout">LAT: 18.4210° N | LON: 77.4201° E | ALT: -2,490m</span>
+          </div>
+        </div>
+
+        <!-- Marco Reticular Cyberpunk / NASA HUD -->
+        <div class="hud-reticle-overlay" aria-hidden="true">
+          <span class="corner-mark tl"></span>
+          <span class="corner-mark tr"></span>
+          <span class="corner-mark bl"></span>
+          <span class="corner-mark br"></span>
+          <div class="center-crosshair"></div>
+        </div>
+
+        <!-- Superficie Simulada Interactiva (Lista para conectar Leaflet.js en Etapa 2) -->
+        <div class="mars-tactical-canvas" id="mars-map-placeholder">
+          <!-- Cuadrícula topográfica SVG y ruta simulada JEZERO-ALPHA -->
+          <svg class="tactical-map-svg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <!-- Gradiente marciano topográfico -->
+              <radialGradient id="craterGlow" cx="55%" cy="48%" r="55%">
+                <stop offset="0%" stop-color="#3d1e12" stop-opacity="0.85" />
+                <stop offset="45%" stop-color="#23120b" stop-opacity="0.9" />
+                <stop offset="100%" stop-color="#0b0d13" stop-opacity="0.98" />
+              </radialGradient>
+              <linearGradient id="iceZoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.28" />
+                <stop offset="100%" stop-color="#0077ff" stop-opacity="0.04" />
+              </linearGradient>
+              <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            <!-- Fondo Base Cráter Jezero -->
+            <rect width="1000" height="620" fill="url(#craterGlow)" />
+
+            <!-- Líneas de Cuadrícula Cartográfica -->
+            <g class="map-grid-lines" stroke="rgba(255, 107, 43, 0.12)" stroke-width="1">
+              <line x1="0" y1="124" x2="1000" y2="124" />
+              <line x1="0" y1="248" x2="1000" y2="248" />
+              <line x1="0" y1="372" x2="1000" y2="372" />
+              <line x1="0" y1="496" x2="1000" y2="496" />
+              <line x1="200" y1="0" x2="200" y2="620" />
+              <line x1="400" y1="0" x2="400" y2="620" />
+              <line x1="600" y1="0" x2="600" y2="620" />
+              <line x1="800" y1="0" x2="800" y2="620" />
+            </g>
+
+            <!-- CAPA 1: Topografía MOLA (Curvas de Nivel) -->
+            <g id="svg-layer-topo" class="map-svg-layer">
+              <path d="M 80,520 C 180,410 240,260 390,210 C 540,160 720,120 880,220 C 950,310 920,480 790,540 C 620,590 250,580 80,520 Z"
+                    fill="none" stroke="rgba(255, 136, 77, 0.32)" stroke-width="1.5" stroke-dasharray="8 4" />
+              <path d="M 160,480 C 240,380 310,280 440,240 C 570,200 710,180 820,260 C 880,330 850,450 740,500 C 590,540 310,530 160,480 Z"
+                    fill="none" stroke="rgba(255, 107, 43, 0.45)" stroke-width="1.5" />
+              <path d="M 270,430 C 330,360 390,300 490,280 C 590,260 690,250 760,310 C 800,360 770,430 680,460 C 560,490 380,480 270,430 Z"
+                    fill="rgba(255, 107, 43, 0.05)" stroke="rgba(255, 107, 43, 0.6)" stroke-width="1.2" />
+              <text x="710" y="195" fill="rgba(255,155,100,0.7)" font-family="Share Tech Mono" font-size="12">MOLA ELEV: -2,540m</text>
+              <text x="510" y="272" fill="rgba(255,155,100,0.7)" font-family="Share Tech Mono" font-size="12">BORDE DEL DELTA (-2,410m)</text>
+            </g>
+
+            <!-- CAPA 2: Geología (Regiones litológicas) -->
+            <g id="svg-layer-geol" class="map-svg-layer">
+              <polygon points="310,240 480,190 560,290 420,360" fill="rgba(186, 104, 200, 0.14)" stroke="#ce93d8" stroke-width="1" stroke-dasharray="4 4" />
+              <text x="365" y="255" fill="#e1bee7" font-family="Share Tech Mono" font-size="11">UNIDAD GEOLÓGICA: CARBONATOS &amp; OLIVINO</text>
+            </g>
+
+            <!-- CAPA 3: Recursos (Hielo Subsuperficial) -->
+            <g id="svg-layer-res" class="map-svg-layer">
+              <ellipse cx="615" cy="305" rx="95" ry="52" fill="url(#iceZoneGrad)" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="6 3" />
+              <text x="545" y="308" fill="#00e5ff" font-family="Share Tech Mono" font-size="12" font-weight="bold">DEPÓSITO H₂O (HIELO SUBTERRÁNEO)</text>
+            </g>
+
+            <!-- CAPA 4: Clima y Frente de Tormenta de Polvo -->
+            <g id="svg-layer-weather" class="map-svg-layer">
+              <circle cx="220" cy="180" r="115" fill="rgba(255, 171, 0, 0.12)" stroke="#ffab00" stroke-width="1.5" stroke-dasharray="10 6" />
+              <circle cx="220" cy="180" r="70" fill="rgba(255, 107, 43, 0.16)" />
+              <text x="135" y="175" fill="#ffd740" font-family="Share Tech Mono" font-size="12" font-weight="bold">⚠ FRENTE TORMENTA DE POLVO</text>
+              <text x="155" y="193" fill="#ffab00" font-family="Share Tech Mono" font-size="11">VIENTO: 24.5 KM/H (ENE)</text>
+            </g>
+
+            <!-- TRAZADO DE LA RUTA: JEZERO-ALPHA -->
+            <g class="route-path-group">
+              <!-- Sombra de ruta -->
+              <path d="M 210,470 Q 310,450 410,380 T 615,305 T 790,250"
+                    fill="none" stroke="rgba(255, 107, 43, 0.3)" stroke-width="10" stroke-linecap="round" />
+              <!-- Línea principal discontinua -->
+              <path d="M 210,470 Q 310,450 410,380 T 615,305 T 790,250"
+                    fill="none" stroke="#FF6B2B" stroke-width="3.5" stroke-dasharray="10 7" filter="url(#neonGlow)" />
+            </g>
+
+            <!-- CAPA 5: Sitios de Misión & Puntos de Control -->
+            <g id="svg-layer-sites" class="map-svg-layer">
+              <!-- Waypoint 1: Start -->
+              <g transform="translate(210, 470)">
+                <circle r="14" fill="rgba(255, 107, 43, 0.2)" stroke="#FF6B2B" stroke-width="1.5" />
+                <circle r="6" fill="#FF6B2B" />
+                <rect x="-65" y="20" width="130" height="24" rx="4" fill="rgba(11, 14, 20, 0.9)" stroke="#FF6B2B" stroke-width="1" />
+                <text x="0" y="36" text-anchor="middle" fill="#ffffff" font-family="Rajdhani" font-weight="700" font-size="13">Punto de Inicio</text>
+              </g>
+
+              <!-- Waypoint 2: Parada Científica (Posición actual del Rover) -->
+              <g transform="translate(410, 380)">
+                <circle r="22" fill="rgba(0, 229, 255, 0.15)" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="4 2" />
+                <circle r="8" fill="#00e5ff" filter="url(#neonGlow)" />
+                <rect x="-85" y="-44" width="170" height="26" rx="4" fill="rgba(11, 14, 20, 0.92)" stroke="#00e5ff" stroke-width="1.2" />
+                <text x="0" y="-27" text-anchor="middle" fill="#00e5ff" font-family="Rajdhani" font-weight="700" font-size="13">Parada Científica (Rover)</text>
+              </g>
+
+              <!-- Waypoint 3: Recursos Hielo -->
+              <g transform="translate(615, 305)">
+                <circle r="12" fill="rgba(255, 107, 43, 0.25)" stroke="#FF6B2B" stroke-width="1.5" />
+                <circle r="5" fill="#ffffff" />
+                <rect x="-75" y="18" width="150" height="24" rx="4" fill="rgba(11, 14, 20, 0.9)" stroke="rgba(255,107,43,0.7)" stroke-width="1" />
+                <text x="0" y="34" text-anchor="middle" fill="#f0f4f8" font-family="Rajdhani" font-weight="600" font-size="12">Estación Hielo ISRU</text>
+              </g>
+
+              <!-- Waypoint 4: Base Camp -->
+              <g transform="translate(790, 250)">
+                <circle r="16" fill="rgba(255, 107, 43, 0.3)" stroke="#FF6B2B" stroke-width="2" />
+                <circle r="7" fill="#FF6B2B" filter="url(#neonGlow)" />
+                <rect x="-75" y="-42" width="150" height="26" rx="4" fill="rgba(255, 107, 43, 0.95)" stroke="#ffffff" stroke-width="1" />
+                <text x="0" y="-25" text-anchor="middle" fill="#0b0e14" font-family="Rajdhani" font-weight="700" font-size="13">Campamento Base</text>
+              </g>
+            </g>
+          </svg>
+
+          <!-- Controles Flotantes del Mapa -->
+          <div class="map-floating-toolbar">
+            <button class="map-tool-btn" type="button" title="Acercar Zoom"><i class="fa-solid fa-plus"></i></button>
+            <button class="map-tool-btn" type="button" title="Alejar Zoom"><i class="fa-solid fa-minus"></i></button>
+            <button class="map-tool-btn" type="button" title="Centrar en Rover"><i class="fa-solid fa-location-crosshairs"></i></button>
+            <button class="map-tool-btn" type="button" id="btn-quick-360" title="Abrir Vista 360° en Posición del Rover">
+              <i class="fa-solid fa-street-view text-orange"></i>
+            </button>
+          </div>
+
+          <!-- Leyenda Inferior del Mapa -->
+          <div class="map-bottom-badge">
+            <span><i class="fa-solid fa-Satellite text-orange"></i> ORBITADOR MRO HiRISE / USGS ASTROGEOLOGY</span>
+            <span class="divider">|</span>
+            <span>ESCALA: 1 : 25,000</span>
+            <span class="divider">|</span>
+            <span class="text-cyan">ETAPA 2: MOTOR LEAFLET.JS PREPARADO</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTENEDOR 2: MARTIAN STREET VIEW 360° (#streetview-container) -->
+      <section id="streetview-container" class="viewport-panel glass-panel is-hidden" aria-label="Visor Panorámico 360° de la Superficie de Marte">
+        <!-- Barra Superior del Visor 360 -->
+        <div class="viewport-top-bar streetview-bar">
+          <div class="vtb-left">
+            <span class="live-indicator cyan"></span>
+            <span class="vtb-title">MARTIAN STREET VIEW 360° // CÁMARA MASTCAM-Z (ROVER PERSEVERANCE)</span>
+          </div>
+          <div class="vtb-right">
+            <button id="btn-close-streetview" class="sv-return-btn" type="button">
+              <i class="fa-solid fa-arrow-left"></i> VOLVER AL MAPA ORBITAL
+            </button>
+          </div>
+        </div>
+
+        <!-- Brújula Holográfica Superior -->
+        <div class="sv-compass-strip" aria-hidden="true">
+          <div class="compass-scale">
+            <span>270° O</span>
+            <span>315° NO</span>
+            <span class="active-heading">0° N (DELTA)</span>
+            <span>45° NE</span>
+            <span>90° E</span>
+          </div>
+        </div>
+
+        <!-- Escena de Previsualización 360° (Lista para Pannellum.js en Etapa 4) -->
+        <div class="streetview-stage-preview">
+          <div class="mars-sky-horizon">
+            <!-- Hotspots holográficos de muestra -->
+            <div class="sv-hotspot" style="top: 38%; left: 26%;">
+              <span class="hotspot-ring"></span>
+              <div class="hotspot-card">
+                <strong>Muestra Rocosa: Kodiak Mesa</strong>
+                <span>Estratigrafía fluvial antigua &bull; Distancia: 18m</span>
+              </div>
+            </div>
+
+            <div class="sv-hotspot cyan" style="top: 32%; left: 64%;">
+              <span class="hotspot-ring"></span>
+              <div class="hotspot-card">
+                <strong>Depósito de Hielo Subsuperficial</strong>
+                <span>Pureza estimada: 82% H₂O &bull; Profundidad: 1.4m</span>
+              </div>
+            </div>
+
+            <!-- Centro informativo de la Etapa 4 -->
+            <div class="sv-center-callout">
+              <div class="sv-icon-circle">
+                <i class="fa-solid fa-vr-cardboard"></i>
+              </div>
+              <h3>VISOR ESFÉRICO 360° DE SUPERFICIE MARCIANA</h3>
+              <p>Contenedor <code>#streetview-container</code> activo y sincronizado. En la <strong>Etapa 4</strong> inyectaremos aquí el motor WebGL <strong>Pannellum.js</strong> con panorámicas reales de la NASA y navegación paso a paso.</p>
+              <div class="sv-telemetry-mini">
+                <span><i class="fa-solid fa-heart-pulse text-orange"></i> Oxígeno: 78%</span>
+                <span><i class="fa-solid fa-battery-three-quarters text-cyan"></i> Batería: 92%</span>
+                <span><i class="fa-solid fa-radiation text-warning"></i> Radiación: 0.24 mSv/h (Segura)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ====================================================================
+         3. BARRA LATERAL DERECHA (SELECTOR DE CAPAS Y CLIMA)
+         ==================================================================== -->
+    <aside class="hud-sidebar-right glass-panel scroller" aria-label="Selector de Capas de la NASA y Telemetría Climática">
+      <!-- Panel de Capas Interactivas -->
+      <div class="panel-heading">
+        <div class="heading-title">
+          <i class="fa-solid fa-layer-group text-orange"></i>
+          <h2>CAPAS DEL MAPA NASA</h2>
+        </div>
+        <span class="hud-tag" id="active-layers-counter">5 ACTIVAS</span>
+      </div>
+
+      <section class="hud-card layers-control-card">
+        <div class="card-section-title">
+          <i class="fa-solid fa-sliders"></i> INTERRUPTORES MULTIESPECTRALES
+        </div>
+
+        <div class="layer-toggles-list">
+          <!-- 1. Topography (MOLA) -->
+          <label class="layer-toggle-item" for="toggle-topo">
+            <div class="lt-left">
+              <span class="lt-icon"><i class="fa-solid fa-mountain"></i></span>
+              <div class="lt-text">
+                <strong>Topography (MOLA)</strong>
+                <span>Altímetro Láser Orbital (Relieve)</span>
+              </div>
+            </div>
+            <div class="cyber-switch">
+              <input type="checkbox" id="toggle-topo" data-target-layer="svg-layer-topo" checked>
+              <span class="switch-track"></span>
+            </div>
+          </label>
+
+          <!-- 2. Geology -->
+          <label class="layer-toggle-item" for="toggle-geol">
+            <div class="lt-left">
+              <span class="lt-icon"><i class="fa-solid fa-gem"></i></span>
+              <div class="lt-text">
+                <strong>Geology</strong>
+                <span>Litología y Minerales (THEMIS IR)</span>
+              </div>
+            </div>
+            <div class="cyber-switch">
+              <input type="checkbox" id="toggle-geol" data-target-layer="svg-layer-geol" checked>
+              <span class="switch-track"></span>
+            </div>
+          </label>
+
+          <!-- 3. Resources (Ice) -->
+          <label class="layer-toggle-item" for="toggle-res">
+            <div class="lt-left">
+              <span class="lt-icon text-cyan"><i class="fa-solid fa-snowflake"></i></span>
+              <div class="lt-text">
+                <strong>Resources (Ice)</strong>
+                <span>Reservas de Hielo H₂O Subterráneo</span>
+              </div>
+            </div>
+            <div class="cyber-switch">
+              <input type="checkbox" id="toggle-res" data-target-layer="svg-layer-res" checked>
+              <span class="switch-track"></span>
+            </div>
+          </label>
+
+          <!-- 4. Weather -->
+          <label class="layer-toggle-item" for="toggle-weather">
+            <div class="lt-left">
+              <span class="lt-icon text-warning"><i class="fa-solid fa-wind"></i></span>
+              <div class="lt-text">
+                <strong>Weather</strong>
+                <span>Frentes de Polvo y Viento Superficial</span>
+              </div>
+            </div>
+            <div class="cyber-switch">
+              <input type="checkbox" id="toggle-weather" data-target-layer="svg-layer-weather" checked>
+              <span class="switch-track"></span>
+            </div>
+          </label>
+
+          <!-- 5. Mission Sites -->
+          <label class="layer-toggle-item" for="toggle-sites">
+            <div class="lt-left">
+              <span class="lt-icon text-orange"><i class="fa-solid fa-location-pin"></i></span>
+              <div class="lt-text">
+                <strong>Mission Sites</strong>
+                <span>Rovers, Sondas y Campamentos</span>
+              </div>
+            </div>
+            <div class="cyber-switch">
+              <input type="checkbox" id="toggle-sites" data-target-layer="svg-layer-sites" checked>
+              <span class="switch-track"></span>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <!-- Panel de Clima: WEATHER AT JEZERO CRATER -->
+      <section class="hud-card weather-station-card">
+        <div class="weather-card-header">
+          <div>
+            <span class="wc-kicker">ESTACIÓN MEDA // REPORTE METEOROLÓGICO</span>
+            <h3 class="wc-title">WEATHER AT JEZERO CRATER</h3>
+          </div>
+          <span class="sol-pill">SOL 1420</span>
+        </div>
+
+        <div class="weather-main-readout">
+          <div class="temp-primary">
+            <i class="fa-solid fa-temperature-low text-cyan"></i>
+            <div>
+              <span class="temp-value">-62°C</span>
+              <span class="temp-caption">TEMPERATURA SUPERFICIAL</span>
+            </div>
+          </div>
+          <div class="temp-extremes">
+            <span>MÁX: <strong>-18°C</strong></span>
+            <span>MÍN: <strong>-84°C</strong></span>
+          </div>
+        </div>
+
+        <div class="weather-metrics-grid">
+          <div class="wm-box">
+            <span class="wm-label"><i class="fa-solid fa-wind"></i> VIENTO ACTUAL</span>
+            <strong class="wm-val">24.5 <small>km/h</small></strong>
+            <span class="wm-sub">Dirección: ENE (68°)</span>
+          </div>
+          <div class="wm-box">
+            <span class="wm-label"><i class="fa-solid fa-gauge-high"></i> PRESIÓN ATM.</span>
+            <strong class="wm-val">718 <small>Pa</small></strong>
+            <span class="wm-sub">95.3% CO₂ Nominal</span>
+          </div>
+          <div class="wm-box">
+            <span class="wm-label"><i class="fa-solid fa-sun"></i> OPACIDAD SOLAR</span>
+            <strong class="wm-val text-warning">&tau; 0.74</strong>
+            <span class="wm-sub">Polvo en suspensión</span>
+          </div>
+          <div class="wm-box">
+            <span class="wm-label"><i class="fa-solid fa-radiation"></i> RADIACIÓN UV</span>
+            <strong class="wm-val text-cyan">0.24 <small>mSv/h</small></strong>
+            <span class="wm-sub">Dentro de umbral EVA</span>
+          </div>
+        </div>
+
+        <!-- Alerta de Tormenta de Polvo -->
+        <div class="dust-storm-alert" role="alert">
+          <div class="alert-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="alert-text">
+            <strong>ALERTA DE TORMENTA DE POLVO</strong>
+            <p>Frente regional detectado a 42 km al SO de Jezero. Reducción de visibilidad y caída de recarga solar (-18%) prevista en 3 horas.</p>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <!-- ====================================================================
+         5. PANEL INFERIOR (HUD DE SUPERVIVENCIA)
+         ==================================================================== -->
+    <footer class="hud-footer glass-panel" aria-label="HUD de Supervivencia y Perfil de Elevación">
+
+      <!-- Gráfico / Perfil de Elevación Topográfico Simulado -->
+      <div class="footer-elevation-module">
+        <div class="elev-header">
+          <span class="elev-title">
+            <i class="fa-solid fa-chart-area text-orange"></i>
+            PERFIL DE ELEVACIÓN TOPOGRÁFICA // RUTA: JEZERO-ALPHA
+          </span>
+          <span class="elev-meta">ALTITUD: -2,540m a -2,380m (&Delta; +160m)</span>
+        </div>
+
+        <div class="elev-graph-box">
+          <svg class="elevation-svg" viewBox="0 0 600 82" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="elevFillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#FF6B2B" stop-opacity="0.55" />
+                <stop offset="100%" stop-color="#FF6B2B" stop-opacity="0.02" />
+              </linearGradient>
+            </defs>
+
+            <!-- Líneas guía horizontales -->
+            <line x1="0" y1="20" x2="600" y2="20" stroke="rgba(255,255,255,0.07)" stroke-dasharray="3 3" />
+            <line x1="0" y1="45" x2="600" y2="45" stroke="rgba(255,255,255,0.07)" stroke-dasharray="3 3" />
+            <line x1="0" y1="70" x2="600" y2="70" stroke="rgba(255,255,255,0.07)" stroke-dasharray="3 3" />
+
+            <!-- Polígono y curva de elevación -->
+            <polygon points="0,78 0,62 75,56 150,48 210,36 290,42 370,26 450,30 530,16 600,12 600,78" fill="url(#elevFillGrad)" />
+            <path d="M 0,62 L 75,56 L 150,48 L 210,36 L 290,42 L 370,26 L 450,30 L 530,16 L 600,12"
+                  fill="none" stroke="#FF6B2B" stroke-width="2.5" />
+
+            <!-- Indicador de Posición Actual del Explorador (KM 4.8) -->
+            <line x1="210" y1="6" x2="210" y2="78" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="2 2" />
+            <circle cx="210" cy="36" r="5" fill="#00e5ff" />
+            <text x="218" y="18" fill="#00e5ff" font-family="Share Tech Mono" font-size="11">ROVER ACTUAL (KM 4.8 | -2,490m)</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Métricas Clave de Supervivencia -->
+      <div class="footer-telemetry-metrics">
+
+        <!-- Métrica 1: Oxígeno Consumido (%) -->
+        <div class="survival-metric-card">
+          <div class="sm-icon text-orange">
+            <i class="fa-solid fa-lungs"></i>
+          </div>
+          <div class="sm-body">
+            <div class="sm-top">
+              <span class="sm-label">OXÍGENO CONSUMIDO</span>
+              <span class="sm-tag">RESERVA: 78%</span>
+            </div>
+            <div class="sm-value-row">
+              <strong class="sm-number" id="metric-oxygen">22</strong>
+              <span class="sm-unit">%</span>
+              <span class="sm-sub">Nominal (0.84 kg/h)</span>
+            </div>
+            <div class="cyber-progress-bar">
+              <div class="progress-fill fill-orange" style="width: 22%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Métrica 2: Batería del Rover (%) -->
+        <div class="survival-metric-card">
+          <div class="sm-icon text-cyan">
+            <i class="fa-solid fa-car-battery"></i>
+          </div>
+          <div class="sm-body">
+            <div class="sm-top">
+              <span class="sm-label">BATERÍA DEL ROVER</span>
+              <span class="sm-tag text-cyan">MMRTG + SOLAR</span>
+            </div>
+            <div class="sm-value-row">
+              <strong class="sm-number text-cyan" id="metric-battery">92</strong>
+              <span class="sm-unit text-cyan">%</span>
+              <span class="sm-sub">Autonomía: 28.4 km</span>
+            </div>
+            <div class="cyber-progress-bar">
+              <div class="progress-fill fill-cyan" style="width: 92%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Métrica 3: Distancia de la Ruta (km) -->
+        <div class="survival-metric-card">
+          <div class="sm-icon text-mars">
+            <i class="fa-solid fa-road"></i>
+          </div>
+          <div class="sm-body">
+            <div class="sm-top">
+              <span class="sm-label">DISTANCIA DE LA RUTA</span>
+              <span class="sm-tag">RECORRIDO: 4.8 KM</span>
+            </div>
+            <div class="sm-value-row">
+              <strong class="sm-number" id="metric-distance">14.6</strong>
+              <span class="sm-unit">km</span>
+              <span class="sm-sub">Restante: 9.8 km</span>
+            </div>
+            <div class="cyber-progress-bar">
+              <div class="progress-fill fill-orange" style="width: 33%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Métrica 4: Tiempo Estimado de Viaje -->
+        <div class="survival-metric-card">
+          <div class="sm-icon text-warning">
+            <i class="fa-solid fa-stopwatch"></i>
+          </div>
+          <div class="sm-body">
+            <div class="sm-top">
+              <span class="sm-label">TIEMPO ESTIMADO DE VIAJE</span>
+              <span class="sm-tag">VEL. MEDIA: 3.1 KM/H</span>
+            </div>
+            <div class="sm-value-row">
+              <strong class="sm-number" id="metric-time">04:45</strong>
+              <span class="sm-unit">hrs</span>
+              <span class="sm-sub">Llegada antes del ocaso</span>
+            </div>
+            <div class="cyber-progress-bar">
+              <div class="progress-fill fill-warning" style="width: 45%;"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Script ligero de interfaz para la Etapa 1 (Conmutación de contenedores 2D/360° y Toggles de Capas) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const viewportStage = document.getElementById('viewport-stage');
+      const mapContainer = document.getElementById('map-container');
+      const streetContainer = document.getElementById('streetview-container');
+      const btnToggleStreet = document.getElementById('btn-toggle-streetview');
+      const btnSplitView = document.getElementById('btn-split-view');
+      const btnCloseStreet = document.getElementById('btn-close-streetview');
+      const btnQuick360 = document.getElementById('btn-quick-360');
+      const streetBtnLabel = document.getElementById('streetview-btn-label');
+
+      function setViewportMode(mode) {
+        viewportStage.setAttribute('data-view-mode', mode);
+
+        if (mode === 'streetview') {
+          mapContainer.classList.add('is-hidden');
+          streetContainer.classList.remove('is-hidden');
+          btnToggleStreet.classList.add('is-active');
+          btnToggleStreet.setAttribute('aria-pressed', 'true');
+          btnSplitView.classList.remove('is-active');
+          streetBtnLabel.textContent = 'VOLVER AL MAPA 2D';
+        } else if (mode === 'split') {
+          mapContainer.classList.remove('is-hidden');
+          streetContainer.classList.remove('is-hidden');
+          btnToggleStreet.classList.add('is-active');
+          btnSplitView.classList.add('is-active');
+          streetBtnLabel.textContent = '360° ACTIVO (DIVIDIDO)';
+        } else {
+          mapContainer.classList.remove('is-hidden');
+          streetContainer.classList.add('is-hidden');
+          btnToggleStreet.classList.remove('is-active');
+          btnToggleStreet.setAttribute('aria-pressed', 'false');
+          btnSplitView.classList.remove('is-active');
+          streetBtnLabel.textContent = 'ACTIVATE 360° STREET VIEW';
+        }
+      }
+
+      btnToggleStreet.addEventListener('click', () => {
+        const currentMode = viewportStage.getAttribute('data-view-mode');
+        setViewportMode(currentMode === 'streetview' ? 'map' : 'streetview');
+      });
+
+      btnSplitView.addEventListener('click', () => {
+        const currentMode = viewportStage.getAttribute('data-view-mode');
+        setViewportMode(currentMode === 'split' ? 'map' : 'split');
+      });
+
+      btnCloseStreet.addEventListener('click', () => setViewportMode('map'));
+      btnQuick360.addEventListener('click', () => setViewportMode('split'));
+
+      // Interactividad de los Toggles de Capas en la Etapa 1
+      const layerCheckboxes = document.querySelectorAll('.layer-toggles-list input[type="checkbox"]');
+      const activeLayersCounter = document.getElementById('active-layers-counter');
+
+      function updateLayerVisibility() {
+        let activeCount = 0;
+        layerCheckboxes.forEach((checkbox) => {
+          const targetId = checkbox.getAttribute('data-target-layer');
+          const svgGroup = document.getElementById(targetId);
+          if (checkbox.checked) {
+            activeCount++;
+            if (svgGroup) svgGroup.style.opacity = '1';
+          } else {
+            if (svgGroup) svgGroup.style.opacity = '0';
+          }
+        });
+        activeLayersCounter.textContent = `${activeCount} ACTIVA${activeCount === 1 ? '' : 'S'}`;
+      }
+
+      layerCheckboxes.forEach((cb) => cb.addEventListener('change', updateLayerVisibility));
+    });
+  </script>
+</body>
+</html>
