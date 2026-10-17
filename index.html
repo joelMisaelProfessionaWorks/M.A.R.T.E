@@ -92,7 +92,7 @@
         <span class="hud-tag">ACTIVO</span>
       </div>
 
-      <!-- Selector de Ruta -->
+      <!-- Selector de Ruta y Planificador Táctico (Etapa 3) -->
       <section class="hud-card">
         <label for="route-selector" class="card-section-title">
           <i class="fa-solid fa-compass"></i> SELECCIONAR RUTA DE EXPLORACIÓN
@@ -103,6 +103,7 @@
             <option value="jezero-beta">RUTA ALTERNA: JEZERO-BETA (CRÁTER BELVA)</option>
             <option value="gale-sharp">RUTA HISTÓRICA: GALE - MONTE SHARP</option>
             <option value="valles-marineris">RUTA EXTREMA: VALLES MARINERIS SUR</option>
+            <option value="custom">MODO LIBRE: RUTA PERSONALIZADA</option>
           </select>
           <i class="fa-solid fa-chevron-down select-arrow"></i>
         </div>
@@ -110,12 +111,44 @@
         <div class="route-quick-stats">
           <div class="rq-box">
             <span class="rq-label">DIFICULTAD</span>
-            <span class="rq-val badge-warning">INTERMEDIA</span>
+            <span class="rq-val badge-warning" id="route-difficulty">INTERMEDIA</span>
           </div>
           <div class="rq-box">
             <span class="rq-label">PENDIENTE MÁX.</span>
-            <span class="rq-val text-cyan">14.2° (SEGURA)</span>
+            <span class="rq-val text-cyan" id="route-max-slope">14.2° (SEGURA)</span>
           </div>
+        </div>
+
+        <!-- Herramientas de Trazado Táctico en el Mapa -->
+        <div class="planner-action-row">
+          <button id="btn-custom-draw" class="planner-btn" type="button" title="Haz clic en el mapa para añadir puntos a la ruta">
+            <i class="fa-solid fa-pen-ruler"></i> <span>+ TRAZAR EN MAPA</span>
+          </button>
+          <button id="btn-reset-route" class="planner-btn secondary" type="button" title="Restaurar ruta original">
+            <i class="fa-solid fa-rotate-left"></i> <span>REINICIAR</span>
+          </button>
+        </div>
+
+        <!-- Control Deslizante de Progreso de Travesía (Telemetría Reactiva) -->
+        <div class="rover-sim-control">
+          <div class="rsc-header">
+            <label for="rover-progress-slider">
+              <i class="fa-solid fa-truck-monster text-cyan"></i> PROGRESO DEL ROVER: <strong id="rover-progress-pct" class="text-cyan">33%</strong>
+            </label>
+            <button id="btn-play-sim" class="sim-play-btn" type="button">
+              <i class="fa-solid fa-play"></i> <span>SIMULAR</span>
+            </button>
+          </div>
+          <input
+            type="range"
+            id="rover-progress-slider"
+            class="hud-range-slider"
+            min="0"
+            max="100"
+            step="1"
+            value="33"
+            aria-valuetext="33 por ciento del recorrido completado"
+          >
         </div>
       </section>
 
@@ -129,20 +162,20 @@
             <i class="fa-solid fa-person-rays"></i>
           </div>
           <div class="mission-banner-text">
-            <h3>Exploradores Humanos: Destino Jezero Crater</h3>
-            <span>Sector: Abanico Aluvial Occidental &bull; Cuadrángulo Syrtis Major</span>
+            <h3 id="mission-title-text">Exploradores Humanos: Destino Jezero Crater</h3>
+            <span id="mission-sector-text">Sector: Abanico Aluvial Occidental &bull; Cuadrángulo Syrtis Major</span>
           </div>
         </div>
-        <p class="mission-description">
+        <p class="mission-description" id="mission-desc-text">
           Travesía planificada para astronautas y rover presurizado desde el sitio de descenso hasta el antiguo delta lacustre. Prioridad: extracción de regolito hidratado y establecimiento del Campamento Base.
         </p>
 
         <!-- Lista de Waypoints / Puntos de Control de la Ruta -->
-        <div class="card-section-title" style="margin-top: 0.75rem;">
+        <div class="card-section-title" style="margin-top: 0.5rem;">
           <i class="fa-solid fa-location-dot"></i> PUNTOS DE CONTROL (WAYPOINTS)
         </div>
 
-        <ul class="waypoints-timeline">
+        <ul class="waypoints-timeline" id="waypoints-list">
           <li class="waypoint-node status-completed">
             <div class="wp-marker">01</div>
             <div class="wp-content">
@@ -190,11 +223,11 @@
       </section>
 
       <!-- Directriz de Supervivencia -->
-      <div class="survival-directive-box">
-        <i class="fa-solid fa-shield-halved text-orange"></i>
+      <div class="survival-directive-box" id="survival-directive-box">
+        <i class="fa-solid fa-shield-halved text-orange" id="survival-directive-icon"></i>
         <div>
-          <strong>DIRECTRIZ DE SUPERVIVENCIA:</strong>
-          <p>Refugio más cercano a 1.8 km. En caso de tormenta solar (SPE), activar blindaje magnético del rover inmediatamente.</p>
+          <strong id="survival-directive-title">DIRECTRIZ DE SUPERVIVENCIA:</strong>
+          <p id="survival-directive-text">Refugio más cercano a 1.8 km. En caso de tormenta solar (SPE), activar blindaje magnético del rover inmediatamente.</p>
         </div>
       </div>
     </aside>
@@ -487,18 +520,18 @@
          ==================================================================== -->
     <footer class="hud-footer glass-panel" aria-label="HUD de Supervivencia y Perfil de Elevación">
 
-      <!-- Gráfico / Perfil de Elevación Topográfico Simulado -->
+      <!-- Gráfico / Perfil de Elevación Topográfico Interactivo -->
       <div class="footer-elevation-module">
         <div class="elev-header">
-          <span class="elev-title">
+          <span class="elev-title" id="elev-title-text">
             <i class="fa-solid fa-chart-area text-orange"></i>
             PERFIL DE ELEVACIÓN TOPOGRÁFICA // RUTA: JEZERO-ALPHA
           </span>
-          <span class="elev-meta">ALTITUD: -2,540m a -2,380m (&Delta; +160m)</span>
+          <span class="elev-meta" id="elev-meta-text">ALTITUD: -2,540m a -2,380m (&Delta; +160m)</span>
         </div>
 
-        <div class="elev-graph-box">
-          <svg class="elevation-svg" viewBox="0 0 600 82" preserveAspectRatio="none">
+        <div class="elev-graph-box" title="Haz clic o arrastra sobre el perfil para desplazar el Rover">
+          <svg id="elevation-svg" class="elevation-svg" viewBox="0 0 600 82" preserveAspectRatio="none">
             <defs>
               <linearGradient id="elevFillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stop-color="#FF6B2B" stop-opacity="0.55" />
@@ -511,15 +544,15 @@
             <line x1="0" y1="45" x2="600" y2="45" stroke="rgba(255,255,255,0.07)" stroke-dasharray="3 3" />
             <line x1="0" y1="70" x2="600" y2="70" stroke="rgba(255,255,255,0.07)" stroke-dasharray="3 3" />
 
-            <!-- Polígono y curva de elevación -->
-            <polygon points="0,78 0,62 75,56 150,48 210,36 290,42 370,26 450,30 530,16 600,12 600,78" fill="url(#elevFillGrad)" />
-            <path d="M 0,62 L 75,56 L 150,48 L 210,36 L 290,42 L 370,26 L 450,30 L 530,16 L 600,12"
+            <!-- Polígono y curva de elevación dinámicos -->
+            <polygon id="elev-polygon" points="0,78 0,62 75,56 150,48 210,36 290,42 370,26 450,30 530,16 600,12 600,78" fill="url(#elevFillGrad)" />
+            <path id="elev-path" d="M 0,62 L 75,56 L 150,48 L 210,36 L 290,42 L 370,26 L 450,30 L 530,16 L 600,12"
                   fill="none" stroke="#FF6B2B" stroke-width="2.5" />
 
-            <!-- Indicador de Posición Actual del Explorador (KM 4.8) -->
-            <line x1="210" y1="6" x2="210" y2="78" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="2 2" />
-            <circle cx="210" cy="36" r="5" fill="#00e5ff" />
-            <text x="218" y="18" fill="#00e5ff" font-family="Share Tech Mono" font-size="11">ROVER ACTUAL (KM 4.8 | -2,490m)</text>
+            <!-- Indicador de Posición Actual del Explorador -->
+            <line id="elev-rover-line" x1="198" y1="6" x2="198" y2="78" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="2 2" />
+            <circle id="elev-rover-dot" cx="198" cy="38" r="5" fill="#00e5ff" />
+            <text id="elev-rover-label" x="206" y="18" fill="#00e5ff" font-family="Share Tech Mono" font-size="11">ROVER ACTUAL (KM 4.8 | -2,490m)</text>
           </svg>
         </div>
       </div>
@@ -528,85 +561,85 @@
       <div class="footer-telemetry-metrics">
 
         <!-- Métrica 1: Oxígeno Consumido (%) -->
-        <div class="survival-metric-card">
+        <div class="survival-metric-card" id="card-oxygen">
           <div class="sm-icon text-orange">
             <i class="fa-solid fa-lungs"></i>
           </div>
           <div class="sm-body">
             <div class="sm-top">
               <span class="sm-label">OXÍGENO CONSUMIDO</span>
-              <span class="sm-tag">RESERVA: 78%</span>
+              <span class="sm-tag" id="metric-oxygen-reserve">RESERVA: 78%</span>
             </div>
             <div class="sm-value-row">
               <strong class="sm-number" id="metric-oxygen">22</strong>
               <span class="sm-unit">%</span>
-              <span class="sm-sub">Nominal (0.84 kg/h)</span>
+              <span class="sm-sub" id="metric-oxygen-rate">Nominal (0.84 kg/h)</span>
             </div>
             <div class="cyber-progress-bar">
-              <div class="progress-fill fill-orange" style="width: 22%;"></div>
+              <div class="progress-fill fill-orange" id="bar-oxygen" style="width: 22%;"></div>
             </div>
           </div>
         </div>
 
         <!-- Métrica 2: Batería del Rover (%) -->
-        <div class="survival-metric-card">
+        <div class="survival-metric-card" id="card-battery">
           <div class="sm-icon text-cyan">
             <i class="fa-solid fa-car-battery"></i>
           </div>
           <div class="sm-body">
             <div class="sm-top">
               <span class="sm-label">BATERÍA DEL ROVER</span>
-              <span class="sm-tag text-cyan">MMRTG + SOLAR</span>
+              <span class="sm-tag text-cyan" id="metric-battery-tag">MMRTG + SOLAR</span>
             </div>
             <div class="sm-value-row">
               <strong class="sm-number text-cyan" id="metric-battery">92</strong>
               <span class="sm-unit text-cyan">%</span>
-              <span class="sm-sub">Autonomía: 28.4 km</span>
+              <span class="sm-sub" id="metric-battery-range">Autonomía: 28.4 km</span>
             </div>
             <div class="cyber-progress-bar">
-              <div class="progress-fill fill-cyan" style="width: 92%;"></div>
+              <div class="progress-fill fill-cyan" id="bar-battery" style="width: 92%;"></div>
             </div>
           </div>
         </div>
 
         <!-- Métrica 3: Distancia de la Ruta (km) -->
-        <div class="survival-metric-card">
+        <div class="survival-metric-card" id="card-distance">
           <div class="sm-icon text-mars">
             <i class="fa-solid fa-road"></i>
           </div>
           <div class="sm-body">
             <div class="sm-top">
               <span class="sm-label">DISTANCIA DE LA RUTA</span>
-              <span class="sm-tag">RECORRIDO: 4.8 KM</span>
+              <span class="sm-tag" id="metric-distance-traveled">RECORRIDO: 4.8 KM</span>
             </div>
             <div class="sm-value-row">
               <strong class="sm-number" id="metric-distance">14.6</strong>
               <span class="sm-unit">km</span>
-              <span class="sm-sub">Restante: 9.8 km</span>
+              <span class="sm-sub" id="metric-distance-remaining">Restante: 9.8 km</span>
             </div>
             <div class="cyber-progress-bar">
-              <div class="progress-fill fill-orange" style="width: 33%;"></div>
+              <div class="progress-fill fill-orange" id="bar-distance" style="width: 33%;"></div>
             </div>
           </div>
         </div>
 
         <!-- Métrica 4: Tiempo Estimado de Viaje -->
-        <div class="survival-metric-card">
+        <div class="survival-metric-card" id="card-time">
           <div class="sm-icon text-warning">
             <i class="fa-solid fa-stopwatch"></i>
           </div>
           <div class="sm-body">
             <div class="sm-top">
               <span class="sm-label">TIEMPO ESTIMADO DE VIAJE</span>
-              <span class="sm-tag">VEL. MEDIA: 3.1 KM/H</span>
+              <span class="sm-tag" id="metric-speed-tag">VEL. MEDIA: 3.1 KM/H</span>
             </div>
             <div class="sm-value-row">
               <strong class="sm-number" id="metric-time">04:45</strong>
               <span class="sm-unit">hrs</span>
-              <span class="sm-sub">Llegada antes del ocaso</span>
+              <span class="sm-sub" id="metric-time-sub">Llegada antes del ocaso</span>
             </div>
             <div class="cyber-progress-bar">
-              <div class="progress-fill fill-warning" style="width: 45%;"></div>
+              <div class="progress-fill fill-warning" id="bar-time" style="width: 45%;"></div>
             </div>
           </div>
         </div>

@@ -1844,3 +1844,208 @@ body {
   color: var(--mars-orange) !important;
 }
 
+/* ==========================================================================
+   ETAPA 3: ESTILOS DEL PLANIFICADOR DE RUTAS Y SIMULADOR DE SUPERVIVENCIA
+   ========================================================================== */
+.planner-action-row {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 0.45rem;
+}
+
+.planner-btn {
+  background: rgba(255, 107, 43, 0.14);
+  color: var(--mars-orange);
+  border: 1px solid rgba(255, 107, 43, 0.5);
+  border-radius: 4px;
+  padding: 0.42rem 0.55rem;
+  font-family: var(--font-display);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+.planner-btn:hover,
+.planner-btn.is-drawing {
+  background: var(--mars-orange);
+  color: #07090e;
+  box-shadow: 0 0 14px rgba(255, 107, 43, 0.5);
+}
+
+.planner-btn.secondary {
+  background: rgba(15, 22, 34, 0.85);
+  color: var(--text-secondary);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.planner-btn.secondary:hover {
+  color: var(--text-primary);
+  border-color: var(--telemetry-cyan);
+  background: rgba(0, 229, 255, 0.12);
+}
+
+/* Contenedor de Simulación del Rover */
+.rover-sim-control {
+  background: rgba(7, 11, 18, 0.82);
+  border: 1px solid rgba(0, 229, 255, 0.24);
+  border-radius: 5px;
+  padding: 0.45rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rsc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.rsc-header label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+.sim-play-btn {
+  background: rgba(0, 229, 255, 0.15);
+  color: var(--telemetry-cyan);
+  border: 1px solid var(--telemetry-cyan);
+  border-radius: 3px;
+  padding: 0.18rem 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.18s ease;
+}
+
+.sim-play-btn:hover,
+.sim-play-btn.is-playing {
+  background: var(--telemetry-cyan);
+  color: #07090e;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+}
+
+/* Slider Nativo con Estándares Modernos (WebKit y Firefox separados) */
+.hud-range-slider {
+  --slider-track-size: 0.38rem;
+  --slider-thumb-size: 1rem;
+  --slider-track-radius: 999px;
+  --slider-thumb-radius: 50%;
+  --slider-track-color: rgba(255, 255, 255, 0.14);
+  --slider-fill-color: var(--telemetry-cyan);
+  --slider-thumb-color: var(--mars-orange);
+  --slider-direction: to right;
+
+  --attr-min: attr(min type(<number>), 0);
+  --attr-max: attr(max type(<number>), 100);
+  --control-value: attr(value type(<number>), 33);
+  --slider-progress: calc(
+    progress(var(--control-value), var(--attr-min), var(--attr-max)) * 100%
+  );
+
+  appearance: none;
+  inline-size: 100%;
+  block-size: 1.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hud-range-slider:dir(rtl) {
+  --slider-direction: to left;
+}
+
+@supports not (opacity: progress(1, 0, 100)) {
+  .hud-range-slider {
+    --slider-progress: calc(
+      (var(--control-value) - var(--attr-min)) /
+      (var(--attr-max) - var(--attr-min)) * 100%
+    );
+  }
+}
+
+.hud-range-slider::-webkit-slider-runnable-track {
+  block-size: var(--slider-track-size);
+  border: 0;
+  border-radius: var(--slider-track-radius);
+  background: linear-gradient(
+    var(--slider-direction),
+    var(--slider-fill-color) var(--slider-progress),
+    var(--slider-track-color) var(--slider-progress)
+  );
+}
+
+.hud-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  inline-size: var(--slider-thumb-size);
+  block-size: var(--slider-thumb-size);
+  margin-block-start: calc(
+    (var(--slider-track-size) - var(--slider-thumb-size)) / 2
+  );
+  border: 2px solid #ffffff;
+  border-radius: var(--slider-thumb-radius);
+  background: var(--slider-thumb-color);
+  box-shadow: 0 0 10px var(--mars-orange);
+}
+
+.hud-range-slider::-moz-range-track {
+  block-size: var(--slider-track-size);
+  border: 0;
+  border-radius: var(--slider-track-radius);
+  background: var(--slider-track-color);
+}
+
+.hud-range-slider::-moz-range-progress {
+  block-size: var(--slider-track-size);
+  border-radius: var(--slider-track-radius);
+  background: var(--slider-fill-color);
+}
+
+.hud-range-slider::-moz-range-thumb {
+  inline-size: var(--slider-thumb-size);
+  block-size: var(--slider-thumb-size);
+  border: 2px solid #ffffff;
+  border-radius: var(--slider-thumb-radius);
+  background: var(--slider-thumb-color);
+  box-shadow: 0 0 10px var(--mars-orange);
+}
+
+.hud-range-slider:focus-visible {
+  outline: 2px solid var(--telemetry-cyan);
+  outline-offset: 3px;
+}
+
+/* Interacción en el gráfico de elevación */
+.elev-graph-box {
+  cursor: ew-resize;
+}
+
+/* Estados de Alerta Crítica en Tarjetas de Supervivencia */
+.survival-metric-card.alert-critical {
+  border-color: #ff3d00;
+  background: rgba(50, 12, 12, 0.78);
+  box-shadow: 0 0 16px rgba(255, 61, 0, 0.35);
+}
+
+.survival-directive-box.alert-mode {
+  background: rgba(255, 61, 0, 0.16);
+  border-color: #ff3d00;
+  color: #fecaca;
+}
+
+
