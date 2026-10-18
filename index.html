@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <!-- Motor Cartográfico Leaflet.js (Etapa 2) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <!-- Motor Esférico WebGL Pannellum.js (Etapa 4: Martian Street View 360°) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" crossorigin="">
   <!-- Hoja de Estilos Principal HUD -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -294,65 +296,76 @@
         </div>
       </section>
 
-      <!-- CONTENEDOR 2: MARTIAN STREET VIEW 360° (#streetview-container) -->
+      <!-- CONTENEDOR 2: MARTIAN STREET VIEW 360° (#streetview-container - Etapa 4) -->
       <section id="streetview-container" class="viewport-panel glass-panel is-hidden" aria-label="Visor Panorámico 360° de la Superficie de Marte">
         <!-- Barra Superior del Visor 360 -->
         <div class="viewport-top-bar streetview-bar">
           <div class="vtb-left">
             <span class="live-indicator cyan"></span>
-            <span class="vtb-title">MARTIAN STREET VIEW 360° // CÁMARA MASTCAM-Z (ROVER PERSEVERANCE)</span>
+            <span class="vtb-title" id="sv-station-title">MARTIAN STREET VIEW 360° // ESTACIÓN 02: MESA KODIAK (SOL 1420)</span>
           </div>
           <div class="vtb-right">
+            <button id="btn-sv-autorotate" class="sv-tool-pill is-active" type="button" title="Alternar rotación orbital automática 360°">
+              <i class="fa-solid fa-rotate"></i> GIRO 360°
+            </button>
             <button id="btn-close-streetview" class="sv-return-btn" type="button">
               <i class="fa-solid fa-arrow-left"></i> VOLVER AL MAPA ORBITAL
             </button>
           </div>
         </div>
 
-        <!-- Brújula Holográfica Superior -->
-        <div class="sv-compass-strip" aria-hidden="true">
-          <div class="compass-scale">
+        <!-- Brújula Holográfica Superior Sincronizada con el Yaw de Pannellum -->
+        <div class="sv-compass-strip">
+          <div class="compass-scale" id="sv-compass-scale">
             <span>270° O</span>
             <span>315° NO</span>
-            <span class="active-heading">0° N (DELTA)</span>
+            <span class="active-heading" id="sv-compass-heading">AZIMUT: 014° N (DELTA)</span>
             <span>45° NE</span>
             <span>90° E</span>
           </div>
+          <div class="sv-camera-telemetry" id="sv-camera-angles">
+            PITCH: -2.0° | FOV: 95° | SENSOR: MASTCAM-Z ESTÉREO
+          </div>
         </div>
 
-        <!-- Escena de Previsualización 360° (Lista para Pannellum.js en Etapa 4) -->
-        <div class="streetview-stage-preview">
-          <div class="mars-sky-horizon">
-            <!-- Hotspots holográficos de muestra -->
-            <div class="sv-hotspot" style="top: 38%; left: 26%;">
-              <span class="hotspot-ring"></span>
-              <div class="hotspot-card">
-                <strong>Muestra Rocosa: Kodiak Mesa</strong>
-                <span>Estratigrafía fluvial antigua &bull; Distancia: 18m</span>
-              </div>
+        <!-- Escenario Principal WebGL de Pannellum.js + HUD Superpuesto -->
+        <div class="streetview-stage-wrapper">
+          <!-- Instancia WebGL de Pannellum -->
+          <div id="pannellum-viewer" class="pannellum-hud-mount"></div>
+
+          <!-- Tarjeta Holográfica de Inspección Científica (Se actualiza al clicar Hotspots 360°) -->
+          <aside class="sv-inspector-card" id="sv-inspector-card" aria-live="polite">
+            <div class="svi-header">
+              <span class="svi-kicker" id="svi-kicker"><i class="fa-solid fa-microscope"></i> ESPECTRÓMETRO PIXL / SUPERCAM</span>
+              <button type="button" id="btn-close-inspector" class="svi-minimize-btn" title="Minimizar/Expandir telemetría">
+                <i class="fa-solid fa-chevron-down"></i>
+              </button>
+            </div>
+            <h4 class="svi-title" id="svi-title">Estratigrafía Fluvial: Mesa Kodiak</h4>
+            <p class="svi-desc" id="svi-desc">
+              Capas sedimentarias inclinadas (foresets) que demuestran el avance de un antiguo delta fluvial sobre el lago del Cráter Jezero hace 3.700 millones de años.
+            </p>
+            <div class="svi-metrics-row">
+              <span id="svi-dist"><i class="fa-solid fa-ruler-horizontal text-orange"></i> DIST: 18.4 m</span>
+              <span id="svi-comp"><i class="fa-solid fa-atom text-cyan"></i> SiO₂ / Filosilicatos</span>
+            </div>
+          </aside>
+
+          <!-- Consola Inferior de Navegación Paso a Paso (Step-by-Step Rover Traverse) -->
+          <div class="sv-step-navigator" id="sv-step-navigator">
+            <button id="btn-sv-prev" class="sv-nav-btn" type="button" title="Retroceder a la estación panorámica anterior">
+              <i class="fa-solid fa-backward-step"></i>
+              <span>PASO ANTERIOR</span>
+            </button>
+
+            <div class="sv-steps-track" id="sv-steps-pills" role="tablist" aria-label="Estaciones del recorrido 360°">
+              <!-- Píldoras generadas dinámicamente por app.js -->
             </div>
 
-            <div class="sv-hotspot cyan" style="top: 32%; left: 64%;">
-              <span class="hotspot-ring"></span>
-              <div class="hotspot-card">
-                <strong>Depósito de Hielo Subsuperficial</strong>
-                <span>Pureza estimada: 82% H₂O &bull; Profundidad: 1.4m</span>
-              </div>
-            </div>
-
-            <!-- Centro informativo de la Etapa 4 -->
-            <div class="sv-center-callout">
-              <div class="sv-icon-circle">
-                <i class="fa-solid fa-vr-cardboard"></i>
-              </div>
-              <h3>VISOR ESFÉRICO 360° DE SUPERFICIE MARCIANA</h3>
-              <p>Contenedor <code>#streetview-container</code> activo y sincronizado. En la <strong>Etapa 4</strong> inyectaremos aquí el motor WebGL <strong>Pannellum.js</strong> con panorámicas reales de la NASA y navegación paso a paso.</p>
-              <div class="sv-telemetry-mini">
-                <span><i class="fa-solid fa-heart-pulse text-orange"></i> Oxígeno: 78%</span>
-                <span><i class="fa-solid fa-battery-three-quarters text-cyan"></i> Batería: 92%</span>
-                <span><i class="fa-solid fa-radiation text-warning"></i> Radiación: 0.24 mSv/h (Segura)</span>
-              </div>
-            </div>
+            <button id="btn-sv-next" class="sv-nav-btn primary" type="button" title="Avanzar a la siguiente estación panorámica">
+              <span>SIGUIENTE PASO</span>
+              <i class="fa-solid fa-forward-step"></i>
+            </button>
           </div>
         </div>
       </section>
@@ -649,8 +662,9 @@
 
   </div>
 
-  <!-- Motor Cartográfico Leaflet.js v1.9.4 + Lógica Orbital Etapa 2 -->
+  <!-- Motores Cartográfico (Leaflet.js) y Esférico WebGL 360° (Pannellum.js) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js" crossorigin=""></script>
   <script src="app.js"></script>
 </body>
 </html>

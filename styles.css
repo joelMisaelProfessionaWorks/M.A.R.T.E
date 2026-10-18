@@ -2048,4 +2048,337 @@ body {
   color: #fecaca;
 }
 
+/* ==========================================================================
+   ETAPA 4: MÓDULO "MARTIAN STREET VIEW 360°" (PANNELLUM.JS) Y NAVEGACIÓN PASO A PASO
+   ========================================================================== */
+.sv-compass-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.compass-scale {
+  flex: 1;
+  min-inline-size: 240px;
+}
+
+.sv-camera-telemetry {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--telemetry-cyan);
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  padding: 0.12rem 0.5rem;
+  border-radius: 3px;
+}
+
+.sv-tool-pill {
+  background: rgba(0, 229, 255, 0.12);
+  color: var(--telemetry-cyan);
+  border: 1px solid rgba(0, 229, 255, 0.45);
+  border-radius: 4px;
+  padding: 0.28rem 0.6rem;
+  font-family: var(--font-display);
+  font-size: 0.64rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-inline-end: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.sv-tool-pill:hover,
+.sv-tool-pill.is-active {
+  background: var(--telemetry-cyan);
+  color: #07090e;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+}
+
+.streetview-stage-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  min-block-size: 0;
+  background: #140b07;
+  overflow: clip;
+}
+
+.pannellum-hud-mount {
+  inline-size: 100%;
+  block-size: 100%;
+  background: radial-gradient(circle at 50% 40%, #3a1c10 0%, #0d0806 100%) !important;
+}
+
+/* Personalización de controles nativos de Pannellum al estilo NASA HUD */
+.pnlm-controls-container {
+  top: 0.75rem !important;
+  left: 0.75rem !important;
+}
+
+.pnlm-zoom-controls,
+.pnlm-fullscreen-toggle-button {
+  background: rgba(9, 13, 22, 0.88) !important;
+  border: 1px solid rgba(255, 107, 43, 0.5) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65) !important;
+}
+
+.pnlm-load-box {
+  background: rgba(8, 12, 20, 0.92) !important;
+  border: 1px solid var(--mars-orange) !important;
+  border-radius: 6px !important;
+  font-family: var(--font-mono) !important;
+}
+
+.pnlm-lbar {
+  border: 1px solid var(--mars-orange) !important;
+}
+
+.pnlm-lbar-fill {
+  background: var(--mars-orange) !important;
+}
+
+/* Hotspots Holográficos 360° dentro de Pannellum */
+.hud-360-hotspot {
+  cursor: pointer;
+  z-index: 15;
+}
+
+.hs360-pin {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s ease;
+}
+
+.hs360-pin:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.hs360-icon {
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 50%;
+  background: rgba(8, 12, 20, 0.92);
+  border: 2px solid var(--mars-orange);
+  color: var(--mars-orange);
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  box-shadow: 0 0 16px rgba(255, 107, 43, 0.75);
+  flex-shrink: 0;
+}
+
+.hs360-label {
+  background: rgba(8, 12, 20, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 107, 43, 0.65);
+  color: var(--text-primary);
+  padding: 0.22rem 0.55rem;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.75);
+}
+
+/* Variante Hotspot: Navegación Paso a Paso (Flecha de avance en superficie) */
+.hs360-pin.type-nav .hs360-icon {
+  inline-size: 38px;
+  block-size: 38px;
+  background: var(--mars-orange);
+  color: #07090e;
+  border-color: #ffffff;
+  box-shadow: 0 0 22px var(--mars-orange);
+  animation: pulseDot 1.8s infinite;
+}
+
+.hs360-pin.type-nav .hs360-label {
+  border-color: #ffffff;
+  background: linear-gradient(90deg, rgba(255, 107, 43, 0.92), rgba(204, 68, 14, 0.92));
+  color: #07090e;
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+}
+
+/* Variante Hotspot: Recurso Hielo / Agua (Cian) */
+.hs360-pin.type-ice .hs360-icon {
+  border-color: var(--telemetry-cyan);
+  color: var(--telemetry-cyan);
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.75);
+}
+
+.hs360-pin.type-ice .hs360-label {
+  border-color: var(--telemetry-cyan);
+  color: var(--telemetry-cyan);
+}
+
+/* Tarjeta Holográfica de Inspección Científica en 360° */
+.sv-inspector-card {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  inline-size: min(310px, calc(100% - 1.5rem));
+  background: rgba(8, 12, 20, 0.9);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(0, 229, 255, 0.45);
+  border-inline-start: 3px solid var(--telemetry-cyan);
+  border-radius: 6px;
+  padding: 0.65rem 0.8rem;
+  z-index: 25;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.75);
+  transition: all 0.25s ease;
+}
+
+.sv-inspector-card.is-minimized .svi-desc,
+.sv-inspector-card.is-minimized .svi-metrics-row {
+  display: none;
+}
+
+.svi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.svi-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--telemetry-cyan);
+  letter-spacing: 0.07em;
+}
+
+.svi-minimize-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.svi-title {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  margin-bottom: 0.3rem;
+}
+
+.svi-desc {
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: var(--text-secondary);
+  margin-bottom: 0.45rem;
+}
+
+.svi-metrics-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--text-primary);
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Consola Inferior de Navegación Paso a Paso (Step-by-Step Dock) */
+.sv-step-navigator {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  z-index: 25;
+  background: rgba(7, 11, 18, 0.92);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 107, 43, 0.45);
+  border-radius: 6px;
+  padding: 0.45rem 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.8);
+}
+
+.sv-nav-btn {
+  background: rgba(18, 25, 40, 0.9);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  padding: 0.42rem 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.sv-nav-btn:hover {
+  border-color: var(--telemetry-cyan);
+  color: var(--telemetry-cyan);
+  background: rgba(0, 229, 255, 0.14);
+}
+
+.sv-nav-btn.primary {
+  background: rgba(255, 107, 43, 0.22);
+  border-color: var(--mars-orange);
+  color: var(--mars-orange);
+}
+
+.sv-nav-btn.primary:hover {
+  background: var(--mars-orange);
+  color: #07090e;
+  box-shadow: 0 0 14px rgba(255, 107, 43, 0.6);
+}
+
+.sv-steps-track {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow-x: auto;
+  padding: 0.1rem 0;
+}
+
+.sv-step-pill {
+  background: rgba(14, 20, 32, 0.85);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 0.3rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.18s ease;
+}
+
+.sv-step-pill:hover {
+  border-color: rgba(255, 107, 43, 0.55);
+  color: var(--text-primary);
+}
+
+.sv-step-pill.is-active {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: var(--telemetry-cyan);
+  color: var(--telemetry-cyan);
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+
 

@@ -1447,9 +1447,793 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================================================
-  // 9. CONMUTACIÓN DE VISTAS (MAPA 2D / STREET VIEW 360° / PANTALLA DIVIDIDA)
+  // 9. ETAPA 4: MÓDULO "MARTIAN STREET VIEW 360°" (PANNELLUM.JS) Y NAVEGACIÓN PASO A PASO
   // ==========================================================================
-  function setViewportMode(mode) {
+  const svStationTitleEl = document.getElementById('sv-station-title');
+  const svCompassHeadingEl = document.getElementById('sv-compass-heading');
+  const svCameraAnglesEl = document.getElementById('sv-camera-angles');
+  const btnSvAutoRotate = document.getElementById('btn-sv-autorotate');
+  const svInspectorCard = document.getElementById('sv-inspector-card');
+  const btnCloseInspector = document.getElementById('btn-close-inspector');
+  const sviKickerEl = document.getElementById('svi-kicker');
+  const sviTitleEl = document.getElementById('svi-title');
+  const sviDescEl = document.getElementById('svi-desc');
+  const sviDistEl = document.getElementById('svi-dist');
+  const sviCompEl = document.getElementById('svi-comp');
+  const svStepsPillsEl = document.getElementById('sv-steps-pills');
+  const btnSvPrev = document.getElementById('btn-sv-prev');
+  const btnSvNext = document.getElementById('btn-sv-next');
+
+  // Definición de las 6 Estaciones Panorámicas 360° Paso a Paso en Marte
+  const STREETVIEW_STATIONS = [
+    {
+      id: 'scene-landing',
+      stepNum: '01',
+      shortLabel: '01 INICIO (LANDING)',
+      title: 'ESTACIÓN 01: SITIO DE AMARTIZAJE OCTAVIA E. BUTLER (KM 0.0)',
+      sensor: 'NAVCAM + MASTCAM-Z (PERSEVERANCE)',
+      routeKey: 'jezero-alpha',
+      progressPct: 0,
+      coords: [18.4447, 77.4508],
+      elev: -2540,
+      initialYaw: 18,
+      initialPitch: -2,
+      palette: {
+        skyZenith: '#182232',
+        skyMid: '#6e422c',
+        skyHorizon: '#d98a56',
+        groundFar: '#7c381c',
+        groundMid: '#5a2410',
+        groundNear: '#331308',
+        ridgeColor: '#4d2212',
+        accentFeature: 'landing'
+      },
+      defaultInspect: {
+        kicker: 'BALIZA DE DESCENSO MARS 2020 // TELEMETRÍA UHF',
+        title: 'Punto de Inicio: Octavia E. Butler Landing',
+        desc: 'Zona de toque inicial en la Unidad Volcánica Máaz. Marcas de erosión por retrocohetes Skycrane visibles en el regolito circundante.',
+        dist: 'DIST: 6.2 m',
+        comp: 'Basalto / Piroxeno'
+      },
+      hotspots: [
+        {
+          pitch: -6,
+          yaw: 22,
+          kind: 'nav',
+          icon: 'fa-circle-arrow-up',
+          label: 'AVANZAR PASO 02: MESA KODIAK (KM 4.8)',
+          targetScene: 'scene-kodiak'
+        },
+        {
+          pitch: -12,
+          yaw: -42,
+          kind: 'science',
+          icon: 'fa-helicopter',
+          label: 'Aeródromo Wright Brothers (Ingenuity)',
+          kicker: 'REGISTRO DE AVIACIÓN PLANETARIA // INGENUITY',
+          desc: 'Pista llana de regolito compactado desde donde despegó el primer helicóptero propulsado en otro planeta (72 vuelos completados).',
+          dist: 'DIST: 48.0 m',
+          comp: 'Regolito Firme (0% Riesgo)'
+        },
+        {
+          pitch: -18,
+          yaw: 78,
+          kind: 'science',
+          icon: 'fa-microscope',
+          label: 'Afloramiento Ígneo "Máaz"',
+          kicker: 'ESPECTRÓMETRO PIXL // RAYOS X',
+          desc: 'Roca basáltica vesicular con recubrimiento de polvo férrico y sales de perclorato. Indica actividad volcánica antigua seguida de alteración acuosa.',
+          dist: 'DIST: 3.4 m',
+          comp: 'FeO / MgO / Olivino'
+        }
+      ]
+    },
+    {
+      id: 'scene-kodiak',
+      stepNum: '02',
+      shortLabel: '02 MESA KODIAK',
+      title: 'ESTACIÓN 02: PARADA CIENTÍFICA MESA KODIAK (KM 4.8)',
+      sensor: 'MASTCAM-Z SUPER-RESOLUCIÓN 110MM',
+      routeKey: 'jezero-alpha',
+      progressPct: 33,
+      coords: [18.4280, 77.4310],
+      elev: -2490,
+      initialYaw: 10,
+      initialPitch: 2,
+      palette: {
+        skyZenith: '#1a202c',
+        skyMid: '#7c482b',
+        skyHorizon: '#e39660',
+        groundFar: '#853d1e',
+        groundMid: '#612811',
+        groundNear: '#381508',
+        ridgeColor: '#592613',
+        accentFeature: 'kodiak'
+      },
+      defaultInspect: {
+        kicker: 'ESPECTRÓMETRO PIXL / SUPERCAM LÁSER',
+        title: 'Estratigrafía Fluvial: Mesa Kodiak',
+        desc: 'Capas sedimentarias inclinadas (foresets) que demuestran el avance de un antiguo delta fluvial sobre el lago del Cráter Jezero hace 3.700 millones de años.',
+        dist: 'DIST: 18.4 m',
+        comp: 'SiO₂ / Filosilicatos'
+      },
+      hotspots: [
+        {
+          pitch: -5,
+          yaw: 35,
+          kind: 'nav',
+          icon: 'fa-circle-arrow-up',
+          label: 'AVANZAR PASO 03: DEPÓSITO HIELO ISRU (KM 9.4)',
+          targetScene: 'scene-ice'
+        },
+        {
+          pitch: -8,
+          yaw: -155,
+          kind: 'nav',
+          icon: 'fa-circle-arrow-left',
+          label: 'RETROCEDER PASO 01: SITIO DE INICIO (KM 0.0)',
+          targetScene: 'scene-landing'
+        },
+        {
+          pitch: 6,
+          yaw: -8,
+          kind: 'science',
+          icon: 'fa-layer-group',
+          label: 'Estratos Deltaicos de Kodiak',
+          kicker: 'ASTROBIOLOGÍA // NIVEL PALEO-LACUSTRE',
+          desc: 'Secuencia de conglomerados y areniscas finas depositadas por corrientes de baja energía. Excelente potencial de preservación de biosignaturas.',
+          dist: 'DIST: 24.5 m',
+          comp: 'Arcillas Esmectitas / Carbonatos'
+        },
+        {
+          pitch: -20,
+          yaw: 65,
+          kind: 'science',
+          icon: 'fa-vial',
+          label: 'Tubo de Muestra de Titanio #14',
+          kicker: 'PROGRAMA MARS SAMPLE RETURN // NASA-ESA',
+          desc: 'Núcleo cilíndrico de roca sedimentaria sellado herméticamente para recolección por la tripulación humana.',
+          dist: 'DIST: 2.1 m',
+          comp: 'Sellado Hermético Nominal'
+        }
+      ]
+    },
+    {
+      id: 'scene-ice',
+      stepNum: '03',
+      shortLabel: '03 HIELO ISRU',
+      title: 'ESTACIÓN 03: DEPÓSITO DE HIELO SUBSUPERFICIAL ISRU (KM 9.4)',
+      sensor: 'MASTCAM-Z + RADAR RIMFAX OVERLAY',
+      routeKey: 'jezero-alpha',
+      progressPct: 65,
+      coords: [18.4590, 77.4150],
+      elev: -2435,
+      initialYaw: 0,
+      initialPitch: -4,
+      palette: {
+        skyZenith: '#111d2e',
+        skyMid: '#593d38',
+        skyHorizon: '#c88c6c',
+        groundFar: '#6b3622',
+        groundMid: '#4c2416',
+        groundNear: '#29120b',
+        ridgeColor: '#422015',
+        accentFeature: 'ice'
+      },
+      defaultInspect: {
+        kicker: 'RADAR SUBSUPERFICIAL RIMFAX // EXTRACCIÓN ISRU',
+        title: 'Veta de Hielo de Agua Subterráneo (ISRU-01)',
+        desc: 'Lente de hielo cristalino expuesta a 1.2m de profundidad en el talud protegido del norte del delta. Recurso crítico para agua potable y combustible LOX/CH₄.',
+        dist: 'DIST: 7.8 m',
+        comp: '84% H₂O + Sílice Hidratada'
+      },
+      hotspots: [
+        {
+          pitch: -4,
+          yaw: 28,
+          kind: 'nav',
+          icon: 'fa-circle-arrow-up',
+          label: 'AVANZAR PASO 04: CAMPAMENTO BASE (KM 14.6)',
+          targetScene: 'scene-base'
+        },
+        {
+          pitch: -8,
+          yaw: -160,
+          kind: 'nav',
+          icon: 'fa-circle-arrow-left',
+          label: 'RETROCEDER PASO 02: MESA KODIAK (KM 4.8)',
+          targetScene: 'scene-kodiak'
+        },
+        {
+          pitch: -14,
+          yaw: -15,
+          kind: 'ice',
+          icon: 'fa-snowflake',
+          label: 'Trinchera de Hielo Cristalino H₂O (84%)',
+          kicker: 'SOPORTE VITAL // RESERVA HÍDRICA CONFIRMADA',
+          desc: 'Capacidad estimada de 42,000 litros tras sublimación térmica y filtrado de percloratos. Permite recargar el 100% de las mochilas PLSS.',
+          dist: 'DIST: 5.4 m',
+          comp: 'H₂O Sólido (-64°C)'
+        },
+        {
+          pitch: -10,
+          yaw: 55,
+          kind: 'ice',
+          icon: 'fa-lungs',
+          label: 'Planta Procesadora MOXIE-XL',
+          kicker: 'ELECTRÓLISIS DE ÓXIDO SÓLIDO // O₂',
+          desc: 'Generador de oxígeno en superficie produciendo 2.4 kg de O₂ respirable por hora a partir del CO₂ atmosférico marciano.',
+          dist: 'DIST: 11.2 m',
+          comp: 'Pureza O₂: 99.6%'
+        }
+      ]
+    },
+    {
+      id: 'scene-base',
+      stepNum: '04',
+      shortLabel: '04 CAMPAMENTO BASE',
+      title: 'ESTACIÓN 04: CAMPAMENTO BASE HÁBITAT DELTA PRIME (KM 14.6)',
+      sensor: 'CÁMARA EXTERIOR DE TORRE METEOROLÓGICA',
+      routeKey: 'jezero-alpha',
+      progressPct: 100,
+      coords: [18.4720, 77.3920],
+      elev: -2380,
+      initialYaw: -10,
+      initialPitch: 0,
+      palette: {
+        skyZenith: '#171f2e',
+        skyMid: '#784126',
+        skyHorizon: '#e0884b',
+        groundFar: '#7d371a',
+        groundMid: '#57230e',
+        groundNear: '#2e1106',
+        ridgeColor: '#4c1e0e',
+        accentFeature: 'base'
+      },
+      defaultInspect: {
+        kicker: 'DESTINO ALCANZADO // REFUGIO PRESURIZADO CLASE IV',
+        title: 'Campamento Base: Hábitat Delta Prime',
+        desc: 'Complejo presurizado con blindaje de regolito sinterizado contra radiación cósmica y solar. Esclusas EVA listas para acoplamiento del rover.',
+        dist: 'DIST: 14.0 m',
+        comp: 'Presión Int: 101.3 kPa (Nominal)'
+      },
+      hotspots: [
+        {
+          pitch: -7,
+          yaw: -145,
+          kind: 'nav',
+          icon: 'fa-circle-arrow-left',
+          label: 'RETROCEDER PASO 03: ESTACIÓN HIELO ISRU',
+          targetScene: 'scene-ice'
+        },
+        {
+          pitch: -2,
+          yaw: 95,
+          kind: 'nav',
+          icon: 'fa-rocket',
+          label: 'SALTO PLANETARIO: CRÁTER GALE (CURIOSITY)',
+          targetScene: 'scene-gale'
+        },
+        {
+          pitch: 2,
+          yaw: -18,
+          kind: 'science',
+          icon: 'fa-campground',
+          label: 'Domo Habitacional Principal "Ares Prime"',
+          kicker: 'INFRAESTRUCTURA HUMANA EN MARTE // NASA ARTEMIS-MARS',
+          desc: 'Capacidad para 6 astronautas durante 500 Soles. Cuenta con invernadero hidropónico presurizado, laboratorio médico y reactor Kilopower.',
+          dist: 'DIST: 16.0 m',
+          comp: 'Blindaje: 0.02 mSv/h'
+        },
+        {
+          pitch: 8,
+          yaw: -85,
+          kind: 'science',
+          icon: 'fa-triangle-exclamation',
+          label: 'Frente de Tormenta de Polvo al Suroeste',
+          kicker: 'RADAR METEOROLÓGICO MEDA // ALERTA ACTIVA',
+          desc: 'Columna de polvo en suspensión elevándose a 12 km de altitud. Los exploradores deben permanecer dentro del hábitat durante el paso del frente.',
+          dist: 'DIST: 42.0 km',
+          comp: 'Opacidad Tau: 1.45'
+        }
+      ]
+    },
+    {
+      id: 'scene-gale',
+      stepNum: '05',
+      shortLabel: '05 CRÁTER GALE',
+      title: 'ESTACIÓN 05: CRÁTER GALE — MONTE SHARP (CURIOSITY MSL)',
+      sensor: 'MASTCAM 100MM // ROVER CURIOSITY',
+      routeKey: 'gale-sharp',
+      progressPct: 65,
+      coords: [-4.6450, 137.4010],
+      elev: -4310,
+      initialYaw: 5,
+      initialPitch: 4,
+      palette: {
+        skyZenith: '#211c19',
+        skyMid: '#8a5232',
+        skyHorizon: '#e5a472',
+        groundFar: '#6e3a1f',
+        groundMid: '#452616',
+        groundNear: '#21140e',
+        ridgeColor: '#542c18',
+        accentFeature: 'gale'
+      },
+      defaultInspect: {
+        kicker: 'MISIÓN MARS SCIENCE LABORATORY // SOL 3840',
+        title: 'Faldas de Aeolis Mons (Monte Sharp)',
+        desc: 'Montaña central de 5.5 km de altura cuyos estratos registran la transición climática de Marte desde una era húmeda de arcillas hacia una era árida de sulfatos.',
+        dist: 'DIST: 32.0 m',
+        comp: 'Hematita / Sulfato de Calcio'
+      },
+      hotspots: [
+        {
+          pitch: -5,
+          yaw: 50,
+          kind: 'nav',
+          icon: 'fa-circle-arrow-up',
+          label: 'SALTO PLANETARIO: VALLES MARINERIS SUR',
+          targetScene: 'scene-valles'
+        },
+        {
+          pitch: -6,
+          yaw: -130,
+          kind: 'nav',
+          icon: 'fa-circle-arrow-left',
+          label: 'VOLVER A CRÁTER JEZERO: CAMPAMENTO BASE',
+          targetScene: 'scene-base'
+        },
+        {
+          pitch: 11,
+          yaw: 4,
+          kind: 'science',
+          icon: 'fa-mountain',
+          label: 'Cumbre Estratificada de Aeolis Mons',
+          kicker: 'GEOLOGÍA PLANETARIA // CURIOSITY CHEM-CAM',
+          desc: 'Afloramientos ricos en hematita en la Cresta Vera Rubin y vetas blancas de yeso formadas por circulación hidrotermal.',
+          dist: 'DIST: 4.2 km',
+          comp: 'Fe₂O₃ / CaSO₄·2H₂O'
+        }
+      ]
+    },
+    {
+      id: 'scene-valles',
+      stepNum: '06',
+      shortLabel: '06 VALLES MARINERIS',
+      title: 'ESTACIÓN 06: CAÑÓN ABISAL COPRATES CHASMA (VALLES MARINERIS)',
+      sensor: 'SONDA ÓPTICA DE RECONOCIMIENTO EXTREMO',
+      routeKey: 'valles-marineris',
+      progressPct: 68,
+      coords: [-13.8900, -59.1800],
+      elev: -3790,
+      initialYaw: 0,
+      initialPitch: 6,
+      palette: {
+        skyZenith: '#121521',
+        skyMid: '#6b3222',
+        skyHorizon: '#d47448',
+        groundFar: '#5e2314',
+        groundMid: '#3d150b',
+        groundNear: '#1f0a05',
+        ridgeColor: '#3b140a',
+        accentFeature: 'valles'
+      },
+      defaultInspect: {
+        kicker: 'SISTEMA DE CAÑONES ECUATORIALES // PROFUNDIDAD 7 KM',
+        title: 'Escarpe Tectónico Coprates Chasma',
+        desc: 'Las paredes expuestas del cañón muestran más de 6 km de corteza marciana primordial y depósitos masivos de sulfatos hidratados.',
+        dist: 'DIST: 120 m',
+        comp: 'Basalto / Kieserita Hidratada'
+      },
+      hotspots: [
+        {
+          pitch: -6,
+          yaw: 0,
+          kind: 'nav',
+          icon: 'fa-circle-arrow-up',
+          label: 'VOLVER AL INICIO: CRÁTER JEZERO (KM 0.0)',
+          targetScene: 'scene-landing'
+        },
+        {
+          pitch: 14,
+          yaw: -32,
+          kind: 'science',
+          icon: 'fa-person-falling-burst',
+          label: 'Muralla Norte de Coprates (Pendiente 27.6°)',
+          kicker: 'ALERTA GEOTÉCNICA // RIESGO DE AVALANCHA DE REGOLITO',
+          desc: 'Abanicos de derrubios recurrentes y líneas de pendiente oscura (RSL). Prohibido acercar el rover a menos de 50 metros de la base del talud.',
+          dist: 'DIST: 85.0 m',
+          comp: 'Pendiente Crítica: 27.6°'
+        }
+      ]
+    }
+  ];
+
+  const panoTextureCache = {};
+  let panoViewer = null;
+  let currentStationId = 'scene-kodiak';
+  let isAutoRotating = true;
+
+  // Generador procedural equirectangular 2:1 (sin costuras en 0°/360°) de alta resolución para cada estación de Marte
+  function getOrGeneratePanoramaTexture(station) {
+    if (panoTextureCache[station.id]) {
+      return panoTextureCache[station.id];
+    }
+
+    const width = 2048;
+    const height = 1024;
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    const pal = station.palette;
+
+    // 1. Cielo marciano atmosférico (Cénit a Horizonte)
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.52);
+    skyGrad.addColorStop(0, pal.skyZenith);
+    skyGrad.addColorStop(0.55, pal.skyMid);
+    skyGrad.addColorStop(1, pal.skyHorizon);
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, width, height * 0.55);
+
+    // 2. Disco solar en el cielo marciano con halo azulado de dispersión de Mie
+    const sunX = width * 0.62;
+    const sunY = height * 0.24;
+    const sunGlow = ctx.createRadialGradient(sunX, sunY, 4, sunX, sunY, 170);
+    sunGlow.addColorStop(0, 'rgba(255, 250, 240, 1)');
+    sunGlow.addColorStop(0.15, 'rgba(190, 225, 255, 0.65)');
+    sunGlow.addColorStop(0.5, 'rgba(255, 165, 110, 0.25)');
+    sunGlow.addColorStop(1, 'rgba(255, 130, 80, 0)');
+    ctx.fillStyle = sunGlow;
+    ctx.fillRect(sunX - 180, sunY - 180, 360, 360);
+
+    // 3. Cordilleras y bordes de cráter 360° continuos (Funciones periódicas en 2*PI para costura cero)
+    const drawPeriodicMountainLayer = (baseY, amp, freqMult, fillStyle, detailBoost = 1) => {
+      ctx.beginPath();
+      ctx.moveTo(0, height);
+      for (let x = 0; x <= width; x += 4) {
+        const theta = (x / width) * Math.PI * 2;
+        let offset =
+          Math.sin(theta * 2 + freqMult) * amp * 0.48 +
+          Math.cos(theta * 5 - freqMult) * amp * 0.28 +
+          Math.sin(theta * 9 + freqMult * 2) * amp * 0.15 * detailBoost +
+          Math.cos(theta * 17) * amp * 0.08 * detailBoost;
+
+        // Si es Kodiak o Gale, añadimos una meseta truncada o pico imponente al frente (theta ~ PI)
+        if (pal.accentFeature === 'kodiak' && Math.abs(theta - Math.PI) < 0.45) {
+          offset = Math.max(offset, amp * 0.85);
+        } else if (pal.accentFeature === 'gale' && Math.abs(theta - Math.PI) < 0.6) {
+          offset += Math.cos((theta - Math.PI) * 2.5) * amp * 1.35;
+        } else if (pal.accentFeature === 'valles') {
+          offset *= 1.65;
+        }
+
+        ctx.lineTo(x, baseY - offset);
+      }
+      ctx.lineTo(width, height);
+      ctx.closePath();
+      ctx.fillStyle = fillStyle;
+      ctx.fill();
+    };
+
+    // Cordillera lejana del borde del cráter
+    drawPeriodicMountainLayer(height * 0.51, 58, 1.1, pal.groundFar, 1.0);
+    // Mesetas intermedias y escarpes deltaicos
+    drawPeriodicMountainLayer(height * 0.54, 38, 2.4, pal.ridgeColor, 1.3);
+
+    // 4. Suelo marciano (Gradiente desde el horizonte hasta el nadir bajo el Rover)
+    const groundGrad = ctx.createLinearGradient(0, height * 0.52, 0, height);
+    groundGrad.addColorStop(0, pal.groundFar);
+    groundGrad.addColorStop(0.32, pal.groundMid);
+    groundGrad.addColorStop(0.78, pal.groundNear);
+    groundGrad.addColorStop(1, '#120804');
+    ctx.fillStyle = groundGrad;
+    ctx.fillRect(0, height * 0.53, width, height * 0.47);
+
+    // 5. Estratos sedimentarios horizontales en el terreno y afloramientos rocosos
+    ctx.strokeStyle = 'rgba(255, 165, 110, 0.14)';
+    ctx.lineWidth = 2;
+    for (let s = 0; s < 14; s++) {
+      const yLine = height * 0.53 + s * s * 2.2;
+      if (yLine > height * 0.92) break;
+      ctx.beginPath();
+      for (let x = 0; x <= width; x += 16) {
+        const theta = (x / width) * Math.PI * 2;
+        const wave = Math.sin(theta * 6 + s) * (3 + s * 0.6);
+        if (x === 0) ctx.moveTo(x, yLine + wave);
+        else ctx.lineTo(x, yLine + wave);
+      }
+      ctx.stroke();
+    }
+
+    // 6. Rasgos visuales distintivos según la estación (Hielo ISRU, Domos de Campamento Base, Rocas)
+    let seed = station.id.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+    const pseudoRand = () => {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      return seed / 4294967296;
+    };
+
+    // Rocas basálticas y sedimentarias distribuidas en el suelo
+    for (let r = 0; r < 160; r++) {
+      const rx = pseudoRand() * width;
+      const ry = height * 0.55 + Math.pow(pseudoRand(), 1.5) * (height * 0.37);
+      const scale = ((ry - height * 0.52) / (height * 0.45)) * 26 + 3;
+      const rw = scale * (0.8 + pseudoRand() * 1.2);
+      const rh = scale * (0.45 + pseudoRand() * 0.55);
+
+      // Sombra de la roca
+      ctx.fillStyle = 'rgba(10, 4, 2, 0.55)';
+      ctx.beginPath();
+      ctx.ellipse(rx + rw * 0.3, ry + rh * 0.35, rw * 0.65, rh * 0.3, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cuerpo de la roca
+      ctx.fillStyle = pseudoRand() > 0.3 ? '#4a1f10' : '#69301a';
+      ctx.beginPath();
+      ctx.moveTo(rx - rw * 0.5, ry + rh * 0.3);
+      ctx.lineTo(rx - rw * 0.3, ry - rh * 0.5);
+      ctx.lineTo(rx + rw * 0.25, ry - rh * 0.4);
+      ctx.lineTo(rx + rw * 0.55, ry + rh * 0.3);
+      ctx.closePath();
+      ctx.fill();
+
+      // Iluminación superior solar
+      ctx.strokeStyle = 'rgba(255, 180, 130, 0.35)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+
+    // Si es la estación de Hielo Subterráneo (scene-ice), dibujamos la trinchera de hielo cristalino H2O
+    if (pal.accentFeature === 'ice') {
+      ctx.save();
+      const iceX = width * 0.46;
+      const iceY = height * 0.67;
+      const iceGlow = ctx.createRadialGradient(iceX, iceY, 10, iceX, iceY, 190);
+      iceGlow.addColorStop(0, 'rgba(180, 250, 255, 0.85)');
+      iceGlow.addColorStop(0.4, 'rgba(0, 229, 255, 0.38)');
+      iceGlow.addColorStop(1, 'rgba(0, 229, 255, 0)');
+      ctx.fillStyle = iceGlow;
+      ctx.beginPath();
+      ctx.ellipse(iceX, iceY, 175, 52, -0.08, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Si es el Campamento Base (scene-base), dibujamos el domo presurizado en el horizonte frontal
+    if (pal.accentFeature === 'base') {
+      ctx.save();
+      const domeX = width * 0.45;
+      const domeY = height * 0.53;
+      ctx.fillStyle = '#dce4ec';
+      ctx.beginPath();
+      ctx.arc(domeX, domeY, 44, Math.PI, 0);
+      ctx.fill();
+      ctx.strokeStyle = '#FF6B2B';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 7. Huellas de las ruedas de titanio del Rover convergiendo hacia el horizonte
+    ctx.strokeStyle = 'rgba(25, 10, 4, 0.65)';
+    ctx.lineWidth = 6;
+    ctx.setLineDash([12, 6]);
+    ctx.beginPath();
+    ctx.moveTo(width * 0.44, height * 0.92);
+    ctx.lineTo(width * 0.54, height * 0.55);
+    ctx.moveTo(width * 0.58, height * 0.92);
+    ctx.lineTo(width * 0.56, height * 0.55);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 8. Cubierta técnica del Rover en el Nadir (parte inferior de la esfera)
+    ctx.fillStyle = '#181d26';
+    ctx.fillRect(0, height * 0.91, width, height * 0.09);
+    ctx.strokeStyle = '#FF6B2B';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, height * 0.91);
+    ctx.lineTo(width, height * 0.91);
+    ctx.stroke();
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    panoTextureCache[station.id] = dataUrl;
+    return dataUrl;
+  }
+
+  // Actualiza la tarjeta holográfica de inspección científica dentro del visor 360°
+  function updateInspectorCard(info) {
+    if (!info) return;
+    if (svInspectorCard) svInspectorCard.classList.remove('is-minimized');
+    if (sviKickerEl && info.kicker) {
+      sviKickerEl.innerHTML = `<i class="fa-solid fa-microscope"></i> ${info.kicker}`;
+    }
+    if (sviTitleEl && info.title) sviTitleEl.textContent = info.title;
+    if (sviDescEl && info.desc) sviDescEl.textContent = info.desc;
+    if (sviDistEl && info.dist) {
+      sviDistEl.innerHTML = `<i class="fa-solid fa-ruler-horizontal text-orange"></i> ${info.dist}`;
+    }
+    if (sviCompEl && info.comp) {
+      sviCompEl.innerHTML = `<i class="fa-solid fa-atom text-cyan"></i> ${info.comp}`;
+    }
+  }
+
+  // Renderiza las píldoras de navegación Paso a Paso en la consola inferior del visor 360°
+  function renderStreetViewStepPills() {
+    if (!svStepsPillsEl) return;
+    svStepsPillsEl.innerHTML = '';
+
+    STREETVIEW_STATIONS.forEach((st) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `sv-step-pill ${st.id === currentStationId ? 'is-active' : ''}`;
+      btn.innerHTML = `<i class="fa-solid fa-location-dot"></i> <span>${st.shortLabel}</span>`;
+      btn.addEventListener('click', () => {
+        loadStreetViewStation(st.id, true);
+      });
+      svStepsPillsEl.appendChild(btn);
+    });
+  }
+
+  // Construye el objeto de configuración de escenas para Pannellum.js
+  function buildPannellumScenesConfig() {
+    const scenesObj = {};
+
+    STREETVIEW_STATIONS.forEach((station) => {
+      const textureUrl = getOrGeneratePanoramaTexture(station);
+
+      const formattedHotspots = station.hotspots.map((hs) => ({
+        pitch: hs.pitch,
+        yaw: hs.yaw,
+        cssClass: 'hud-360-hotspot',
+        createTooltipFunc: (hotSpotDiv) => {
+          const pinTypeClass =
+            hs.kind === 'nav' ? 'type-nav' : hs.kind === 'ice' ? 'type-ice' : 'type-science';
+          hotSpotDiv.innerHTML = `
+            <div class="hs360-pin ${pinTypeClass}">
+              <div class="hs360-icon"><i class="fa-solid ${hs.icon}"></i></div>
+              <span class="hs360-label">${hs.label}</span>
+            </div>
+          `;
+        },
+        clickHandlerFunc: () => {
+          if (hs.kind === 'nav' && hs.targetScene) {
+            loadStreetViewStation(hs.targetScene, true);
+          } else {
+            if (panoViewer) {
+              panoViewer.lookAt(hs.pitch, hs.yaw, 75, 800);
+            }
+            updateInspectorCard({
+              kicker: hs.kicker,
+              title: hs.label,
+              desc: hs.desc,
+              dist: hs.dist,
+              comp: hs.comp
+            });
+          }
+        }
+      }));
+
+      scenesObj[station.id] = {
+        type: 'equirectangular',
+        panorama: textureUrl,
+        yaw: station.initialYaw,
+        pitch: station.initialPitch,
+        hfov: 95,
+        hotSpots: formattedHotspots
+      };
+    });
+
+    return scenesObj;
+  }
+
+  // Inicializa o actualiza la estación activa en el motor WebGL Pannellum.js
+  function loadStreetViewStation(stationId, syncWithMapAndRoute = true) {
+    const station =
+      STREETVIEW_STATIONS.find((s) => s.id === stationId) || STREETVIEW_STATIONS[1];
+    currentStationId = station.id;
+
+    if (svStationTitleEl) {
+      svStationTitleEl.textContent = `MARTIAN STREET VIEW 360° // ${station.title}`;
+    }
+
+    updateInspectorCard(station.defaultInspect);
+    renderStreetViewStepPills();
+
+    if (!panoViewer && typeof pannellum !== 'undefined') {
+      const scenesConfig = buildPannellumScenesConfig();
+      panoViewer = pannellum.viewer('pannellum-viewer', {
+        default: {
+          firstScene: station.id,
+          autoLoad: true,
+          autoRotate: -2.2,
+          compass: false,
+          showZoomCtrl: true,
+          showFullscreenCtrl: true,
+          sceneFadeDuration: 650
+        },
+        scenes: scenesConfig
+      });
+    } else if (panoViewer && panoViewer.getScene() !== station.id) {
+      panoViewer.loadScene(station.id, station.initialPitch, station.initialYaw, 95);
+    }
+
+    // Sincronizar con la ruta activa, posición del Rover en el mapa 2D y telemetría de supervivencia
+    if (syncWithMapAndRoute) {
+      if (station.routeKey && station.routeKey !== currentRouteKey && currentRouteKey !== 'custom') {
+        if (routeSelector) routeSelector.value = station.routeKey;
+        loadRoute(station.routeKey, true);
+      }
+      updateRoverProgress(station.progressPct);
+      marsMap.panTo(station.coords, { animate: true, duration: 0.8 });
+    }
+  }
+
+  // Bucle de telemetría de orientación 360° (Brújula, Pitch y FOV en vivo)
+  setInterval(() => {
+    if (!panoViewer || streetContainer.classList.contains('is-hidden')) return;
+    try {
+      const rawYaw = panoViewer.getYaw() || 0;
+      const normYaw = Math.round(((rawYaw % 360) + 360) % 360);
+      const pitch = (panoViewer.getPitch() || 0).toFixed(1);
+      const fov = Math.round(panoViewer.getHfov() || 95);
+
+      const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+      const dirLabel = dirs[Math.round(normYaw / 45) % 8];
+
+      if (svCompassHeadingEl) {
+        svCompassHeadingEl.textContent = `AZIMUT: ${String(normYaw).padStart(3, '0')}° ${dirLabel}`;
+      }
+      const activeStation = STREETVIEW_STATIONS.find((s) => s.id === currentStationId);
+      if (svCameraAnglesEl && activeStation) {
+        svCameraAnglesEl.textContent = `PITCH: ${pitch}° | FOV: ${fov}° | SENSOR: ${activeStation.sensor}`;
+      }
+    } catch {
+      // Ignorar mientras la escena WebGL está en transición
+    }
+  }, 180);
+
+  // Botones de Navegación Paso a Paso (Anterior / Siguiente)
+  if (btnSvPrev) {
+    btnSvPrev.addEventListener('click', () => {
+      const idx = STREETVIEW_STATIONS.findIndex((s) => s.id === currentStationId);
+      const prevIdx = (idx - 1 + STREETVIEW_STATIONS.length) % STREETVIEW_STATIONS.length;
+      loadStreetViewStation(STREETVIEW_STATIONS[prevIdx].id, true);
+    });
+  }
+
+  if (btnSvNext) {
+    btnSvNext.addEventListener('click', () => {
+      const idx = STREETVIEW_STATIONS.findIndex((s) => s.id === currentStationId);
+      const nextIdx = (idx + 1) % STREETVIEW_STATIONS.length;
+      loadStreetViewStation(STREETVIEW_STATIONS[nextIdx].id, true);
+    });
+  }
+
+  // Botón de giro orbital automático 360°
+  if (btnSvAutoRotate) {
+    btnSvAutoRotate.addEventListener('click', () => {
+      isAutoRotating = !isAutoRotating;
+      btnSvAutoRotate.classList.toggle('is-active', isAutoRotating);
+      if (panoViewer) {
+        if (isAutoRotating) panoViewer.startAutoRotate(-2.2);
+        else panoViewer.stopAutoRotate();
+      }
+    });
+  }
+
+  // Minimizar / expandir tarjeta de inspección científica en 360°
+  if (btnCloseInspector && svInspectorCard) {
+    btnCloseInspector.addEventListener('click', () => {
+      svInspectorCard.classList.toggle('is-minimized');
+    });
+  }
+
+  // ==========================================================================
+  // 10. CONMUTACIÓN DE VISTAS (MAPA 2D / STREET VIEW 360° / PANTALLA DIVIDIDA)
+  // ==========================================================================
+  function setViewportMode(mode, targetStationId = null) {
     viewportStage.setAttribute('data-view-mode', mode);
 
     if (mode === 'streetview') {
@@ -1474,9 +2258,16 @@ document.addEventListener('DOMContentLoaded', () => {
       streetBtnLabel.textContent = 'ACTIVATE 360° STREET VIEW';
     }
 
+    if (mode === 'streetview' || mode === 'split') {
+      loadStreetViewStation(targetStationId || currentStationId, false);
+    }
+
     setTimeout(() => {
       marsMap.invalidateSize();
-    }, 150);
+      if (panoViewer && typeof panoViewer.resize === 'function') {
+        panoViewer.resize();
+      }
+    }, 180);
   }
 
   if (btnToggleStreet) {
@@ -1496,13 +2287,24 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnCloseStreet) btnCloseStreet.addEventListener('click', () => setViewportMode('map'));
   if (btnQuick360) btnQuick360.addEventListener('click', () => setViewportMode('split'));
 
+  // Abrir la estación 360° correspondiente cuando el usuario pulsa "EXPLORAR EN 360°" en un popup del mapa
   document.body.addEventListener('click', (e) => {
     const btn360 = e.target.closest('[data-open-360]');
-    if (btn360) {
-      setViewportMode('split');
-    }
+    if (!btn360) return;
+
+    const targetCode = btn360.getAttribute('data-open-360');
+    const wpToStationMap = {
+      'wp-0': 'scene-landing',
+      'wp-1': 'scene-kodiak',
+      'wp-2': 'scene-ice',
+      'wp-3': 'scene-base',
+      'rover-live': currentStationId
+    };
+    const chosenScene = wpToStationMap[targetCode] || currentStationId;
+    setViewportMode('split', chosenScene);
   });
 
-  // Inicializar la ruta por defecto (JEZERO-ALPHA) y su telemetría al arrancar
+  // Inicializar la ruta por defecto (JEZERO-ALPHA) y las píldoras del Street View al arrancar
+  renderStreetViewStepPills();
   loadRoute('jezero-alpha', false);
 });
