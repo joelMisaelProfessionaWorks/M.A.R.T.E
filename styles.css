@@ -2380,5 +2380,381 @@ body {
   box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
 }
 
+/* ==========================================================================
+   ETAPA 5: SINCRONIZACIÓN, DOSSIER DE MISIONES NASA (<dialog>) E INTEGRACIÓN
+   ========================================================================== */
 
+/* Botón de Audio HUD en el Header */
+.hud-btn-icon {
+  inline-size: 38px;
+  block-size: 38px;
+  display: inline-grid;
+  place-items: center;
+  background: rgba(14, 20, 32, 0.85);
+  color: var(--telemetry-cyan);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+}
 
+.hud-btn-icon:hover {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: var(--telemetry-cyan);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.hud-btn-icon[aria-pressed="false"] {
+  color: var(--text-muted);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Botón de Exportación de Bitácora EVA en Barra Izquierda */
+.eva-export-btn {
+  inline-size: 100%;
+  margin-top: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.14), rgba(255, 107, 43, 0.14));
+  border: 1px solid rgba(0, 229, 255, 0.45);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: all 0.2s ease;
+}
+
+.eva-export-btn:hover {
+  border-color: var(--telemetry-cyan);
+  background: rgba(0, 229, 255, 0.22);
+  color: var(--telemetry-cyan);
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.28);
+}
+
+.hp-action-btn.secondary {
+  margin-top: 0.35rem;
+  background: rgba(0, 229, 255, 0.14);
+  border-color: rgba(0, 229, 255, 0.55);
+  color: var(--telemetry-cyan);
+}
+
+.hp-action-btn.secondary:hover {
+  background: var(--telemetry-cyan);
+  color: #07090e;
+}
+
+/* Modal Nativo <dialog> Dossier Oficial de Misiones NASA */
+.hud-modal-dialog {
+  margin: auto;
+  padding: 0;
+  border: 1px solid rgba(255, 107, 43, 0.55);
+  border-radius: 8px;
+  background: rgba(8, 12, 20, 0.96);
+  color: var(--text-primary);
+  inline-size: min(1140px, 94vw);
+  max-block-size: 88dvh;
+  box-shadow:
+    0 24px 68px rgba(0, 0, 0, 0.9),
+    0 0 32px rgba(255, 107, 43, 0.22);
+  overflow: hidden;
+}
+
+.hud-modal-dialog::backdrop {
+  background-color: rgba(4, 6, 12, 0.78);
+  backdrop-filter: blur(6px);
+}
+
+.dossier-modal-shell {
+  display: flex;
+  flex-direction: column;
+  max-block-size: 88dvh;
+}
+
+.dossier-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.2rem;
+  background: linear-gradient(90deg, rgba(255, 107, 43, 0.16), rgba(10, 15, 25, 0.95));
+  border-bottom: 1px solid rgba(255, 107, 43, 0.35);
+}
+
+.dh-kicker {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--telemetry-cyan);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.15rem;
+}
+
+.dossier-header h2 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+}
+
+.dossier-close-btn {
+  background: rgba(255, 61, 0, 0.16);
+  color: #ff8a65;
+  border: 1px solid rgba(255, 61, 0, 0.5);
+  border-radius: 4px;
+  padding: 0.4rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.dossier-close-btn:hover {
+  background: var(--alert-red);
+  color: #ffffff;
+}
+
+.dossier-body {
+  display: grid;
+  grid-template-columns: 240px 1fr 310px;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  overflow-y: auto;
+}
+
+/* Lista Izquierda de Misiones NASA */
+.dossier-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+  padding-inline-end: 0.85rem;
+}
+
+.dossier-mission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dossier-mission-btn {
+  text-align: left;
+  background: rgba(15, 22, 34, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  padding: 0.55rem 0.65rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  transition: all 0.18s ease;
+}
+
+.dossier-mission-btn:hover {
+  border-color: rgba(255, 107, 43, 0.5);
+  color: var(--text-primary);
+}
+
+.dossier-mission-btn.is-active {
+  background: rgba(255, 107, 43, 0.16);
+  border-color: var(--mars-orange);
+  border-inline-start: 3px solid var(--mars-orange);
+  color: var(--text-primary);
+  box-shadow: 0 0 14px rgba(255, 107, 43, 0.2);
+}
+
+.dmb-icon {
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 4px;
+  background: rgba(255, 107, 43, 0.15);
+  color: var(--mars-orange);
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.dmb-text strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+}
+
+.dmb-text span {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+/* Panel Central de Ficha Técnica NASA */
+.dossier-detail-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ddp-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ddp-agency {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--mars-orange);
+  letter-spacing: 0.08em;
+}
+
+.ddp-name {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  color: var(--text-primary);
+  margin-top: 0.15rem;
+}
+
+.ddp-status-badge {
+  background: rgba(0, 230, 118, 0.15);
+  border: 1px solid rgba(0, 230, 118, 0.5);
+  color: #00e676;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.ddp-summary {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.ddp-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.ddp-spec-box {
+  background: rgba(14, 20, 32, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 0.45rem 0.6rem;
+}
+
+.ddp-spec-box span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-muted);
+}
+
+.ddp-spec-box strong {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--telemetry-cyan);
+  margin-top: 0.15rem;
+}
+
+.ddp-instruments-box {
+  background: rgba(12, 18, 28, 0.78);
+  border: 1px solid rgba(0, 229, 255, 0.22);
+  border-radius: 5px;
+  padding: 0.65rem 0.8rem;
+}
+
+.ddp-instruments-list {
+  list-style: none;
+  margin-top: 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.38rem;
+}
+
+.ddp-instruments-list li {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.ddp-instruments-list li strong {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.ddp-actions-row {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: auto;
+}
+
+/* Columna Derecha: Manifiesto EVA y Descarga JSON */
+.dossier-eva-export-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.08);
+  padding-inline-start: 0.85rem;
+}
+
+.eva-pane-desc {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.eva-json-preview {
+  flex: 1;
+  min-block-size: 210px;
+  max-block-size: 270px;
+  overflow: auto;
+  background: rgba(5, 8, 14, 0.95);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 4px;
+  padding: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  line-height: 1.4;
+  color: var(--telemetry-cyan);
+}
+
+.eva-export-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.full-width {
+  inline-size: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 980px) {
+  .dossier-body {
+    grid-template-columns: 1fr;
+  }
+  .dossier-nav,
+  .dossier-eva-export-pane {
+    border: none;
+    padding: 0;
+  }
+}

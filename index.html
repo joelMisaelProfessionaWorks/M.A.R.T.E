@@ -62,12 +62,21 @@
         </div>
         <div class="telemetry-pill">
           <span class="tp-label">TIEMPO DE MISIÓN</span>
-          <span class="tp-value text-orange">SOL 1420 &bull; 14:32 MTC</span>
+          <span class="tp-value text-orange" id="hud-header-clock">SOL 1420 &bull; 14:32:08 MTC</span>
         </div>
       </div>
 
-      <!-- Acciones de Vista: Activar Street View 360° y Pantalla Dividida -->
+      <!-- Acciones de Vista: Audio HUD, Dossier Misiones NASA, Pantalla Dividida y Street View 360° -->
       <div class="header-actions">
+        <button id="btn-hud-audio" class="hud-btn-icon" type="button" aria-pressed="true" title="Activar/Silenciar Sintetizador de Telemetría Acústica HUD">
+          <i class="fa-solid fa-volume-high" id="hud-audio-icon"></i>
+        </button>
+
+        <button id="btn-open-dossier" class="hud-btn-secondary" type="button" title="Abrir Dossier Oficial de Misiones de la NASA y Bitácora EVA">
+          <i class="fa-solid fa-book-journal-whills text-orange"></i>
+          <span>DOSSIER NASA</span>
+        </button>
+
         <button id="btn-split-view" class="hud-btn-secondary" type="button" title="Alternar Pantalla Dividida (Mapa 2D + Visor 360°)">
           <i class="fa-solid fa-table-columns"></i>
           <span>PANTALLA DIVIDIDA</span>
@@ -222,6 +231,12 @@
             </div>
           </li>
         </ul>
+
+        <!-- Botón de Exportación de Plan de Supervivencia EVA (Etapa 5) -->
+        <button id="btn-export-eva" class="eva-export-btn" type="button">
+          <i class="fa-solid fa-file-export"></i>
+          <span>EXPORTAR PLAN EVA &amp; TELEMETRÍA</span>
+        </button>
       </section>
 
       <!-- Directriz de Supervivencia -->
@@ -468,61 +483,61 @@
         </div>
       </section>
 
-      <!-- Panel de Clima: WEATHER AT JEZERO CRATER -->
+      <!-- Panel de Clima: WEATHER AT JEZERO CRATER (Sincronizado por Región en Etapa 5) -->
       <section class="hud-card weather-station-card">
         <div class="weather-card-header">
           <div>
-            <span class="wc-kicker">ESTACIÓN MEDA // REPORTE METEOROLÓGICO</span>
-            <h3 class="wc-title">WEATHER AT JEZERO CRATER</h3>
+            <span class="wc-kicker" id="wc-kicker">ESTACIÓN MEDA // REPORTE METEOROLÓGICO</span>
+            <h3 class="wc-title" id="wc-title">WEATHER AT JEZERO CRATER</h3>
           </div>
-          <span class="sol-pill">SOL 1420</span>
+          <span class="sol-pill" id="wc-sol">SOL 1420</span>
         </div>
 
         <div class="weather-main-readout">
           <div class="temp-primary">
             <i class="fa-solid fa-temperature-low text-cyan"></i>
             <div>
-              <span class="temp-value">-62°C</span>
+              <span class="temp-value" id="wc-temp-val">-62°C</span>
               <span class="temp-caption">TEMPERATURA SUPERFICIAL</span>
             </div>
           </div>
           <div class="temp-extremes">
-            <span>MÁX: <strong>-18°C</strong></span>
-            <span>MÍN: <strong>-84°C</strong></span>
+            <span>MÁX: <strong id="wc-temp-max">-18°C</strong></span>
+            <span>MÍN: <strong id="wc-temp-min">-84°C</strong></span>
           </div>
         </div>
 
         <div class="weather-metrics-grid">
           <div class="wm-box">
             <span class="wm-label"><i class="fa-solid fa-wind"></i> VIENTO ACTUAL</span>
-            <strong class="wm-val">24.5 <small>km/h</small></strong>
-            <span class="wm-sub">Dirección: ENE (68°)</span>
+            <strong class="wm-val" id="wc-wind-val">24.5 <small>km/h</small></strong>
+            <span class="wm-sub" id="wc-wind-dir">Dirección: ENE (68°)</span>
           </div>
           <div class="wm-box">
             <span class="wm-label"><i class="fa-solid fa-gauge-high"></i> PRESIÓN ATM.</span>
-            <strong class="wm-val">718 <small>Pa</small></strong>
-            <span class="wm-sub">95.3% CO₂ Nominal</span>
+            <strong class="wm-val" id="wc-press-val">718 <small>Pa</small></strong>
+            <span class="wm-sub" id="wc-press-sub">95.3% CO₂ Nominal</span>
           </div>
           <div class="wm-box">
             <span class="wm-label"><i class="fa-solid fa-sun"></i> OPACIDAD SOLAR</span>
-            <strong class="wm-val text-warning">&tau; 0.74</strong>
-            <span class="wm-sub">Polvo en suspensión</span>
+            <strong class="wm-val text-warning" id="wc-tau-val">&tau; 0.74</strong>
+            <span class="wm-sub" id="wc-tau-sub">Polvo en suspensión</span>
           </div>
           <div class="wm-box">
             <span class="wm-label"><i class="fa-solid fa-radiation"></i> RADIACIÓN UV</span>
-            <strong class="wm-val text-cyan">0.24 <small>mSv/h</small></strong>
-            <span class="wm-sub">Dentro de umbral EVA</span>
+            <strong class="wm-val text-cyan" id="wc-uv-val">0.24 <small>mSv/h</small></strong>
+            <span class="wm-sub" id="wc-uv-sub">Dentro de umbral EVA</span>
           </div>
         </div>
 
         <!-- Alerta de Tormenta de Polvo -->
-        <div class="dust-storm-alert" role="alert">
+        <div class="dust-storm-alert" id="wc-alert-box" role="alert">
           <div class="alert-icon">
             <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
           <div class="alert-text">
-            <strong>ALERTA DE TORMENTA DE POLVO</strong>
-            <p>Frente regional detectado a 42 km al SO de Jezero. Reducción de visibilidad y caída de recarga solar (-18%) prevista en 3 horas.</p>
+            <strong id="wc-alert-title">ALERTA DE TORMENTA DE POLVO</strong>
+            <p id="wc-alert-desc">Frente regional detectado a 42 km al SO de Jezero. Reducción de visibilidad y caída de recarga solar (-18%) prevista en 3 horas.</p>
           </div>
         </div>
       </section>
@@ -661,6 +676,100 @@
     </footer>
 
   </div>
+
+  <!-- ====================================================================
+       6. MODAL <dialog> DE DOSSIER DE MISIONES NASA & EXPORTACIÓN EVA (ETAPA 5)
+       ==================================================================== -->
+  <dialog id="mission-dossier-dialog" class="hud-modal-dialog" closedby="any" aria-labelledby="dossier-modal-title">
+    <div class="dossier-modal-shell">
+      <!-- Cabecera del Modal -->
+      <header class="dossier-header">
+        <div class="dh-left">
+          <span class="dh-kicker"><i class="fa-solid fa-database text-orange"></i> ARCHIVO PLANETARIO NASA PDS / JPL-CALTECH</span>
+          <h2 id="dossier-modal-title">DOSSIER OFICIAL DE MISIONES &amp; BITÁCORA DE SUPERVIVENCIA EVA</h2>
+        </div>
+        <button id="btn-close-dossier" class="dossier-close-btn" type="button" aria-label="Cerrar Dossier">
+          <i class="fa-solid fa-xmark"></i> <span>CERRAR [ESC]</span>
+        </button>
+      </header>
+
+      <!-- Cuerpo Dividido: Catálogo de Misiones NASA + Expediente Detallado + Manifiesto EVA -->
+      <div class="dossier-body">
+        <!-- Columna Izquierda: Selector de Misiones de la NASA -->
+        <nav class="dossier-nav" aria-label="Misiones de la NASA en Marte">
+          <div class="card-section-title">
+            <i class="fa-solid fa-satellite"></i> ACTIVOS ESPACIALES NASA
+          </div>
+          <div class="dossier-mission-list" id="dossier-mission-list">
+            <!-- Botones de misión inyectados dinámicamente por app.js -->
+          </div>
+        </nav>
+
+        <!-- Columna Central: Ficha Técnica de la Misión Seleccionada -->
+        <section class="dossier-detail-pane" aria-live="polite">
+          <div class="ddp-banner">
+            <div>
+              <span class="ddp-agency" id="ddp-agency">NASA / JPL-CALTECH // MARS 2020 PROGRAM</span>
+              <h3 class="ddp-name" id="ddp-name">Rover Perseverance &amp; Helicóptero Ingenuity</h3>
+            </div>
+            <span class="ddp-status-badge" id="ddp-status">OPERATIVO EN SUPERFICIE</span>
+          </div>
+
+          <p class="ddp-summary" id="ddp-summary">
+            Explorador astrobiológico nuclear de 1,025 kg diseñado para buscar biofirmas microbianas antiguas en el delta del Cráter Jezero y producir oxígeno respirable mediante el experimento MOXIE (ISRU).
+          </p>
+
+          <!-- Cuadrícula de Especificaciones de Ingeniería -->
+          <div class="ddp-specs-grid" id="ddp-specs-grid">
+            <!-- Especificaciones inyectadas por app.js -->
+          </div>
+
+          <!-- Instrumentos Científicos Clave para Supervivencia Humana -->
+          <div class="ddp-instruments-box">
+            <div class="card-section-title">
+              <i class="fa-solid fa-microchip text-cyan"></i> INSTRUMENTACIÓN CIENTÍFICA &amp; APORTE A SUPERVIVENCIA EVA
+            </div>
+            <ul class="ddp-instruments-list" id="ddp-instruments-list">
+              <!-- Instrumentos inyectados por app.js -->
+            </ul>
+          </div>
+
+          <!-- Acciones de Sincronización Directa desde el Dossier -->
+          <div class="ddp-actions-row">
+            <button id="btn-dossier-flyto" class="planner-btn" type="button">
+              <i class="fa-solid fa-location-crosshairs"></i> <span>LOCALIZAR SITIO EN MAPA 2D</span>
+            </button>
+            <button id="btn-dossier-open360" class="planner-btn secondary" type="button">
+              <i class="fa-solid fa-vr-cardboard text-orange"></i> <span>ABRIR VISOR 360° DE LA REGIÓN</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Columna Derecha: Manifiesto de Supervivencia EVA & Exportación JSON -->
+        <aside class="dossier-eva-export-pane">
+          <div class="card-section-title">
+            <i class="fa-solid fa-file-shield text-orange"></i> MANIFIESTO TÁCTICO EVA ACTUAL
+          </div>
+          <p class="eva-pane-desc">
+            Resumen sincronizado en tiempo real con la ruta activa, puntos de control y telemetría de soporte vital para descarga oficial.
+          </p>
+
+          <pre class="eva-json-preview" id="eva-json-preview"></pre>
+
+          <div class="eva-export-actions">
+            <button id="btn-download-json" class="hud-btn-cta full-width" type="button">
+              <i class="fa-solid fa-download"></i>
+              <span>DESCARGAR REPORTE EVA (.JSON)</span>
+            </button>
+            <button id="btn-copy-manifest" class="planner-btn secondary full-width" type="button">
+              <i class="fa-solid fa-copy"></i>
+              <span id="copy-manifest-label">COPIAR TELEMETRÍA AL PORTAPAPELES</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </dialog>
 
   <!-- Motores Cartográfico (Leaflet.js) y Esférico WebGL 360° (Pannellum.js) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>

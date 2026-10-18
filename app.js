@@ -687,6 +687,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>LON: ${site.coords[1].toFixed(4)}°</span>
           <span>ALT: ${site.elev}</span>
         </div>
+        <button type="button" class="hp-action-btn secondary" data-open-dossier="${site.id}">
+          <i class="fa-solid fa-book-journal-whills"></i> VER EXPEDIENTE TÉCNICO NASA
+        </button>
       </div>
     `);
     nasaLayers.sites.addLayer(marker);
@@ -1116,6 +1119,12 @@ document.addEventListener('DOMContentLoaded', () => {
     renderWaypointsTimeline();
     renderElevationProfileSVG();
     updateSurvivalTelemetry();
+    if (typeof updateRoverVisionConeOnMap === 'function') {
+      updateRoverVisionConeOnMap();
+    }
+    if (typeof syncStreetViewToRoverProgress === 'function') {
+      syncStreetViewToRoverProgress();
+    }
   }
 
   // Carga una ruta del catálogo o inicializa la ruta personalizada
@@ -1148,6 +1157,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderRouteOnMap(flyTo);
     updateRoverProgress(33);
+    if (typeof updateRegionalWeatherPanel === 'function') {
+      updateRegionalWeatherPanel(routeKey);
+    }
+    if (typeof playHudTone === 'function') {
+      playHudTone(580, 0.08, 'sine');
+    }
   }
 
   // ==========================================================================
@@ -2168,9 +2183,86 @@ document.addEventListener('DOMContentLoaded', () => {
       updateRoverProgress(station.progressPct);
       marsMap.panTo(station.coords, { animate: true, duration: 0.8 });
     }
+    if (typeof playHudTone === 'function') {
+      playHudTone(740, 0.06, 'triangle');
+    }
   }
 
-  // Bucle de telemetría de orientación 360° (Brújula, Pitch y FOV en vivo)
+  // ==========================================================================
+  // 10. ETAPA 5: SINCRONIZACIÓN BIDIRECCIONAL (CONO DE VISIÓN 360° EN MAPA 2D)
+  // ==========================================================================
+  let roverVisionCone = null;
+  let lastKnownYaw = 14;
+  let lastKnownHfov = 95;
+  let isInternalStationSync = false;
+
+  // Calcula un punto (lat, lng) proyectado desde un origen dado un rumbo (bearingDeg) y radio en km
+  function projectMarsLatLng(originLat, originLng, bearingDeg, distKm) {
+    const radBearing = (bearingDeg * Math.PI) / 180;
+    const dLat = (distKm / 59.27) * Math.cos(radBearing);
+    const cosLat = Math.max(0.2, Math.cos((originLat * Math.PI) / 180));
+    const dLng = (distKm / (59.27 * cosLat)) * Math.sin(radBearing);
+    return [originLat + dLat, originLng + dLng];
+  }
+
+  // Dibuja o actualiza el Cono de Visión Radar (FOV) sobre el Mapa 2D sincronizado con la cámara 360°
+  function updateRoverVisionConeOnMap(yawDeg = lastKnownYaw, hfovDeg = lastKnownHfov) {
+    lastKnownYaw = yawDeg;
+    lastKnownHfov = hfovDeg;
+
+    const pos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
+    const coneRadiusKm = 1.15;
+    const halfFov = Math.max(20, Math.min(65, hfovDeg / 2));
+
+    const pts = [[pos.lat, pos.lng]];
+    const steps = 10;
+    for (let i = 0; i <= steps; i++) {
+      const angle = yawDeg - halfFov + (i / steps) * (halfFov * 2);
+      pts.push(projectMarsLatLng(pos.lat, pos.lng, angle, coneRadiusKm));
+    }
+
+    if (!roverVisionCone) {
+      roverVisionCone = L.polygon(pts, {
+        color: '#00e5ff',
+        weight: 1.5,
+        dashArray: '4, 4',
+        fillColor: '#00e5ff',
+        fillOpacity: 0.22,
+        interactive: false
+      }).addTo(dynamicRouteLayerGroup);
+    } else {
+      roverVisionCone.setLatLngs(pts);
+      if (!dynamicRouteLayerGroup.hasLayer(roverVisionCone)) {
+        dynamicRouteLayerGroup.addLayer(roverVisionCone);
+      }
+    }
+  }
+
+  // Cuando el usuario mueve el deslizador del Rover en modo Street View o Pantalla Dividida,
+  // sincroniza automáticamente la escena panorámica 360° más cercana a ese porcentaje de ruta
+  function syncStreetViewToRoverProgress() {
+    if (isInternalStationSync || streetContainer.classList.contains('is-hidden')) return;
+
+    let targetScene = null;
+    if (currentRouteKey === 'gale-sharp') {
+      targetScene = 'scene-gale';
+    } else if (currentRouteKey === 'valles-marineris') {
+      targetScene = 'scene-valles';
+    } else {
+      if (roverProgress <= 18) targetScene = 'scene-landing';
+      else if (roverProgress <= 50) targetScene = 'scene-kodiak';
+      else if (roverProgress <= 84) targetScene = 'scene-ice';
+      else targetScene = 'scene-base';
+    }
+
+    if (targetScene && targetScene !== currentStationId) {
+      isInternalStationSync = true;
+      loadStreetViewStation(targetScene, false);
+      isInternalStationSync = false;
+    }
+  }
+
+  // Bucle de telemetría de orientación 360° (Brújula, Pitch, FOV y Cono de Visión en Mapa 2D)
   setInterval(() => {
     if (!panoViewer || streetContainer.classList.contains('is-hidden')) return;
     try {
@@ -2189,6 +2281,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (svCameraAnglesEl && activeStation) {
         svCameraAnglesEl.textContent = `PITCH: ${pitch}° | FOV: ${fov}° | SENSOR: ${activeStation.sensor}`;
       }
+
+      // Actualizar en tiempo real el cono de visión radar sobre el Mapa 2D
+      updateRoverVisionConeOnMap(normYaw, fov);
     } catch {
       // Ignorar mientras la escena WebGL está en transición
     }
@@ -2231,7 +2326,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================================================
-  // 10. CONMUTACIÓN DE VISTAS (MAPA 2D / STREET VIEW 360° / PANTALLA DIVIDIDA)
+  // 11. CONMUTACIÓN DE VISTAS (MAPA 2D / STREET VIEW 360° / PANTALLA DIVIDIDA)
   // ==========================================================================
   function setViewportMode(mode, targetStationId = null) {
     viewportStage.setAttribute('data-view-mode', mode);
@@ -2287,24 +2382,558 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnCloseStreet) btnCloseStreet.addEventListener('click', () => setViewportMode('map'));
   if (btnQuick360) btnQuick360.addEventListener('click', () => setViewportMode('split'));
 
-  // Abrir la estación 360° correspondiente cuando el usuario pulsa "EXPLORAR EN 360°" en un popup del mapa
+  // ==========================================================================
+  // 12. CLIMA DINÁMICO POR REGIÓN PLANETARIA (ETAPA 5)
+  // ==========================================================================
+  const REGIONAL_WEATHER_DATA = {
+    'jezero-alpha': {
+      kicker: 'ESTACIÓN MEDA // REPORTE METEOROLÓGICO',
+      title: 'WEATHER AT JEZERO CRATER',
+      sol: 'SOL 1420',
+      temp: '-62°C',
+      max: '-18°C',
+      min: '-84°C',
+      wind: '24.5 <small>km/h</small>',
+      windDir: 'Dirección: ENE (68°)',
+      press: '718 <small>Pa</small>',
+      pressSub: '95.3% CO₂ Nominal',
+      tau: '&tau; 0.74',
+      uv: '0.24 <small>mSv/h</small>',
+      alertTitle: 'ALERTA DE TORMENTA DE POLVO',
+      alertDesc:
+        'Frente regional detectado a 42 km al SO de Jezero. Reducción de visibilidad y caída de recarga solar (-18%) prevista en 3 horas.'
+    },
+    'jezero-beta': {
+      kicker: 'ESTACIÓN MEDA-NORTE // REPORTE METEOROLÓGICO',
+      title: 'WEATHER AT JEZERO (BELVA RIM)',
+      sol: 'SOL 1420',
+      temp: '-65°C',
+      max: '-21°C',
+      min: '-86°C',
+      wind: '29.2 <small>km/h</small>',
+      windDir: 'Dirección: NE (45°)',
+      press: '704 <small>Pa</small>',
+      pressSub: 'Meseta Deltaica Superior',
+      tau: '&tau; 0.81',
+      uv: '0.26 <small>mSv/h</small>',
+      alertTitle: 'RÁFAGAS TURBULENTAS EN CRÁTER BELVA',
+      alertDesc:
+        'Remolinos convectivos (Dust Devils) activos sobre el borde del cráter de impacto Belva. Mantener anclaje de tracción.'
+    },
+    'gale-sharp': {
+      kicker: 'ESTACIÓN REMS (MSL) // REPORTE METEOROLÓGICO',
+      title: 'WEATHER AT GALE CRATER',
+      sol: 'SOL 4412',
+      temp: '-54°C',
+      max: '-9°C',
+      min: '-79°C',
+      wind: '18.4 <small>km/h</small>',
+      windDir: 'Dirección: NNO (338°)',
+      press: '845 <small>Pa</small>',
+      pressSub: 'Cuenca profunda (-4.5 km)',
+      tau: '&tau; 0.58',
+      uv: '0.21 <small>mSv/h</small>',
+      alertTitle: 'VIENTO DE LADERA EN AEOLIS MONS',
+      alertDesc:
+        'Corrientes térmicas descendentes desde la cumbre del Monte Sharp. Visibilidad orbital clara para ascenso EVA.'
+    },
+    'valles-marineris': {
+      kicker: 'SONDA MRO-MCS // REPORTE METEOROLÓGICO',
+      title: 'WEATHER AT VALLES MARINERIS',
+      sol: 'SOL 1420',
+      temp: '-48°C',
+      max: '-4°C',
+      min: '-74°C',
+      wind: '64.8 <small>km/h</small>',
+      windDir: 'Cañón Axial: E (92°)',
+      press: '890 <small>Pa</small>',
+      pressSub: 'Alta densidad en abismo',
+      tau: '&tau; 1.32',
+      uv: '0.19 <small>mSv/h</small>',
+      alertTitle: '⚠ ALERTA SEVERA: VIENTO CATABÁTICO DE CAÑÓN',
+      alertDesc:
+        'Ráfagas canalizadas de 64.8 km/h en el fondo de Coprates Chasma. Niebla matutina de H₂O y polvo en suspensión denso.'
+    }
+  };
+
+  function updateRegionalWeatherPanel(routeKey) {
+    const w = REGIONAL_WEATHER_DATA[routeKey] || REGIONAL_WEATHER_DATA['jezero-alpha'];
+    const setHtml = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = val;
+    };
+    setHtml('wc-kicker', w.kicker);
+    setHtml('wc-title', w.title);
+    setHtml('wc-sol', w.sol);
+    setHtml('wc-temp-val', w.temp);
+    setHtml('wc-temp-max', w.max);
+    setHtml('wc-temp-min', w.min);
+    setHtml('wc-wind-val', w.wind);
+    setHtml('wc-wind-dir', w.windDir);
+    setHtml('wc-press-val', w.press);
+    setHtml('wc-press-sub', w.pressSub);
+    setHtml('wc-tau-val', w.tau);
+    setHtml('wc-uv-val', w.uv);
+    setHtml('wc-alert-title', w.alertTitle);
+    setHtml('wc-alert-desc', w.alertDesc);
+  }
+
+  // ==========================================================================
+  // 13. DOSSIER DE MISIONES DE LA NASA (<dialog closedby="any">) Y EXPORTACIÓN EVA
+  // ==========================================================================
+  const NASA_MISSIONS_DOSSIER = [
+    {
+      id: 'perseverance-m2020',
+      shortName: 'Perseverance (Mars 2020)',
+      subLabel: 'Cráter Jezero • Activo',
+      icon: 'fa-truck-monster',
+      agency: 'NASA / JPL-CALTECH // MARS 2020 PROGRAM',
+      name: 'Rover Perseverance (Misión Mars 2020)',
+      status: 'OPERATIVO EN SUPERFICIE (SOL 1420)',
+      coords: [18.4447, 77.4508],
+      routeKey: 'jezero-alpha',
+      stationId: 'scene-kodiak',
+      summary:
+        'Laboratorio astrobiológico propulsado por generador termoeléctrico de radioisótopos (MMRTG) de 1,025 kg. Aterrizó el 18 de febrero de 2021 en Octavia E. Butler Landing con la misión de recolectar núcleos de roca del antiguo delta lacustre y validar tecnologías críticas para la exploración humana.',
+      specs: [
+        { label: 'SITIO DE DESCENSO', val: '18.4447°N, 77.4508°E' },
+        { label: 'ALTITUD MOLA', val: '-2,564 metros' },
+        { label: 'FUENTE DE ENERGÍA', val: 'MMRTG Pu-238 (110W)' },
+        { label: 'PRODUCCIÓN O₂ (MOXIE)', val: '122g O₂ (Pureza 98%)' },
+        { label: 'MUESTRAS SELLADAS', val: '24 Tubos de Titanio' },
+        { label: 'VELOCIDAD AUTÓNOMA', val: 'AutoNav 120 m/hora' }
+      ],
+      instruments: [
+        '<strong>MOXIE (ISRU Oxígeno):</strong> Demostró la conversión electroquímica de CO₂ atmosférico marciano en oxígeno respirable para futuros astronautas.',
+        '<strong>RIMFAX (Radar Subsuperficial):</strong> Cartografió estratos enterrados y lentes de hielo de agua hasta 20 metros bajo las ruedas del rover.',
+        '<strong>MEDA (Estación Ambiental):</strong> Provee la telemetría en vivo de viento, presión, humedad, polvo y radiación UV mostrada en este HUD.',
+        '<strong>PIXL & SHERLOC:</strong> Espectrómetros de fluorescencia de rayos X y Raman UV para detectar minerales hidratados y compuestos orgánicos.'
+      ]
+    },
+    {
+      id: 'ingenuity-field',
+      shortName: 'Helicóptero Ingenuity',
+      subLabel: '72 Vuelos Completados',
+      icon: 'fa-helicopter',
+      agency: 'NASA / JPL / AEROVIRONMENT // DEMOSTRADOR TECNOLÓGICO',
+      name: 'Helicóptero Marciano Ingenuity (Ginnie)',
+      status: 'MISIÓN HISTÓRICA COMPLETADA (72 VUELOS)',
+      coords: [18.4486, 77.4509],
+      routeKey: 'jezero-alpha',
+      stationId: 'scene-landing',
+      summary:
+        'Primera aeronave motorizada en lograr vuelo controlado en otro planeta (19 de abril de 2021). Diseñado originalmente para solo 5 vuelos de prueba, superó todas las expectativas realizando 72 vuelos como explorador aéreo adelantado para Perseverance en una atmósfera con apenas el 1% de la densidad terrestre.',
+      specs: [
+        { label: 'AERÓDROMO BASE', val: 'Wright Brothers Field' },
+        { label: 'VUELOS TOTALES', val: '72 Vuelos Exitosos' },
+        { label: 'DISTANCIA VOLADA', val: '17.0 kilómetros' },
+        { label: 'ALTITUD MÁXIMA', val: '24.0 metros AGL' },
+        { label: 'VELOCIDAD DE CRUCERO', val: '10.0 m/s (36 km/h)' },
+        { label: 'ROTOR COAXIAL', val: '2,537 RPM Fibra Carbono' }
+      ],
+      instruments: [
+        '<strong>Cámara RTE en Color (13 MP):</strong> Reconocimiento aéreo de escarpes, campos de dunas (Séítah) y rutas seguras para el rover y futuros exploradores.',
+        '<strong>Cámara Navcam Blanco y Negro:</strong> Seguimiento óptico del terreno a 30 cuadros por segundo para navegación autónoma.',
+        '<strong>Altímetro Láser Garmin:</strong> Medición continua de distancia al suelo sobre relieve rocoso irregular.'
+      ]
+    },
+    {
+      id: 'global-curiosity',
+      shortName: 'Curiosity (MSL)',
+      subLabel: 'Cráter Gale • Monte Sharp',
+      icon: 'fa-robot',
+      agency: 'NASA / JPL-CALTECH // MARS SCIENCE LABORATORY',
+      name: 'Rover Curiosity (MSL) — Cráter Gale',
+      status: 'OPERATIVO EN SUPERFICIE (SOL 4412+)',
+      coords: [-4.5895, 137.4417],
+      routeKey: 'gale-sharp',
+      stationId: 'scene-gale',
+      summary:
+        'En la superficie marciana desde el 6 de agosto de 2012. Curiosity ha ascendido más de 800 metros verticales por las faldas del Monte Sharp (Aeolis Mons), confirmando que el antiguo lago del Cráter Gale poseía agua líquida con pH neutro y todos los ingredientes químicos necesarios para la vida (C, H, N, O, P, S).',
+      specs: [
+        { label: 'SITIO DE DESCENSO', val: 'Bradbury Landing (-4.58°S)' },
+        { label: 'ALTITUD BASE', val: '-4,501 metros (MOLA)' },
+        { label: 'ODOMETRÍA ACUMULADA', val: '+32.4 kilómetros' },
+        { label: 'DOSIS RADIACIÓN (RAD)', val: '0.64 mSv/día en superficie' },
+        { label: 'PERFORACIONES', val: '42 Muestras Analizadas' },
+        { label: 'ENERGÍA', val: 'MMRTG Nuclear' }
+      ],
+      instruments: [
+        '<strong>RAD (Radiation Assessment Detector):</strong> Instrumento clave que midió por primera vez la radiación cósmica galáctica y solar en la superficie para diseñar el blindaje de hábitats humanos.',
+        '<strong>SAM (Sample Analysis at Mars):</strong> Laboratorio químico que detectó moléculas orgánicas complejas y variaciones estacionales de metano.',
+        '<strong>ChemCam (LIBS):</strong> Láser de ablación capaz de vaporizar rocas a 7 metros para identificar su composición elemental.'
+      ]
+    },
+    {
+      id: 'global-insight',
+      shortName: 'Sonda InSight',
+      subLabel: 'Elysium Planitia • Geofísica',
+      icon: 'fa-wave-square',
+      agency: 'NASA DISCOVERY PROGRAM // CNES / DLR',
+      name: 'Lander Geofísico InSight — Elysium Planitia',
+      status: 'ARCHIVO SÍSMICO COMPLETADO (2018-2022)',
+      coords: [4.5024, 135.6234],
+      routeKey: null,
+      stationId: null,
+      summary:
+        'Primera misión dedicada a investigar el interior profundo de Marte. Reveló el grosor de la corteza marciana (24 a 72 km), el tamaño de su núcleo de hierro-níquel líquido (radio de ~1,830 km) y la tasa de impactos meteóricos actuales, datos esenciales para la ingeniería estructural de bases permanentes.',
+      specs: [
+        { label: 'COORDENADAS', val: '4.5024°N, 135.6234°E' },
+        { label: 'ALTITUD MOLA', val: '-2,613 metros' },
+        { label: 'MARTEMOTOS DETECTADOS', val: '1,319 Eventos Sísmicos' },
+        { label: 'SISMO MÁS FUERTE', val: 'Magnitud 4.7 (Sol 1222)' },
+        { label: 'FLUJO TÉRMICO', val: 'Sonda HP³ (40 cm prof.)' },
+        { label: 'ENERGÍA', val: 'Paneles Solares UltraFlex' }
+      ],
+      instruments: [
+        '<strong>SEIS (Sismómetro de Banda Ancha):</strong> Determinó las zonas de actividad tectónica (Cerberus Fossae) para evitar construir campamentos humanos sobre fallas activas.',
+        '<strong>TWINS (Sensores Meteorológicos):</strong> Monitoreo continuo de remolinos de polvo e infrasonido atmosférico.'
+      ]
+    },
+    {
+      id: 'global-viking1',
+      shortName: 'Viking 1 Lander',
+      subLabel: 'Chryse Planitia • 1976',
+      icon: 'fa-flag-usa',
+      agency: 'NASA LANGLEY / JPL // VIKING PROGRAM',
+      name: 'Sonda Histórica Viking 1 — Chryse Planitia',
+      status: 'PATRIMONIO HISTÓRICO PLANETARIO (1976-1982)',
+      coords: [22.48, -47.95],
+      routeKey: null,
+      stationId: null,
+      summary:
+        'Aterrizó el 20 de julio de 1976, transmitiendo las primeras fotografías panorámicas nítidas desde la superficie de Marte y operando durante 2,245 soles (más de 6 años terrestres). Sus análisis del regolito establecieron la presencia de percloratos y óxidos de hierro que hoy guían los protocolos de descontaminación EVA.',
+      specs: [
+        { label: 'COORDENADAS', val: '22.4800°N, 47.9500°O' },
+        { label: 'ALTITUD MOLA', val: '-3,627 metros' },
+        { label: 'DURACIÓN OPERATIVA', val: '2,245 Soles Marcianos' },
+        { label: 'MASA EN SUPERFICIE', val: '572 kilogramos' },
+        { label: 'ENERGÍA', val: '2x RTG SNAP-19' },
+        { label: 'ESTACIÓN DESIGNADA', val: 'Thomas Mutch Memorial' }
+      ],
+      instruments: [
+        '<strong>GCMS (Cromatógrafo de Gases / Espectrómetro de Masas):</strong> Caracterizó la composición química del suelo superficial y la atmósfera de CO₂ (95.3%).',
+        '<strong>Brazo Robótico Colector:</strong> Excavó las primeras trincheras de regolito marciano para ensayos biológicos.'
+      ]
+    },
+    {
+      id: 'global-olympus',
+      shortName: 'MRO HiRISE & MGS MOLA',
+      subLabel: 'Red Orbital Cartográfica',
+      icon: 'fa-satellite',
+      agency: 'NASA / JPL / USGS ASTROGEOLOGY // RED ORBITAL',
+      name: 'Constelación Orbital: MRO (HiRISE/CRISM) & MGS (MOLA)',
+      status: 'ENLACE ORBITAL ACTIVO (250-400 KM)',
+      coords: [18.65, -133.8],
+      routeKey: 'valles-marineris',
+      stationId: 'scene-valles',
+      summary:
+        'Los datos topográficos, geológicos y de hielo de agua que alimentan las 5 capas de esta aplicación provienen del Altímetro Láser MOLA (Mars Global Surveyor) y de los sensores HiRISE (25 cm/píxel), CTX y radar SHARAD a bordo del Mars Reconnaissance Orbiter (MRO), incluyendo el mapeo de Olympus Mons (+21,229m) y Valles Marineris.',
+      specs: [
+        { label: 'RESOLUCIÓN HIRISE', val: '0.25 metros / píxel' },
+        { label: 'PRECISIÓN VERTICAL MOLA', val: '±1.0 metro absoluto' },
+        { label: 'RADAR SHARAD (HIELO)', val: 'Penetración hasta 1 km' },
+        { label: 'CUMBRE OLYMPUS MONS', val: '+21,229 metros' },
+        { label: 'ABISMO VALLES MARINERIS', val: '-4,120 a -7,000 metros' },
+        { label: 'RELÉ TELEMETRÍA UHF', val: 'Electra Transceiver' }
+      ],
+      instruments: [
+        '<strong>MOLA (Mars Orbiter Laser Altimeter):</strong> Base del modelo digital de elevación global utilizado en este planificador para calcular pendientes y esfuerzo metabólico.',
+        '<strong>CRISM & THEMIS:</strong> Espectrómetros orbitales que identifican arcillas hidratadas, carbonatos y reservas de hielo subsuperficial (ISRU).'
+      ]
+    }
+  ];
+
+  const dossierDialog = document.getElementById('mission-dossier-dialog');
+  const btnOpenDossier = document.getElementById('btn-open-dossier');
+  const btnCloseDossier = document.getElementById('btn-close-dossier');
+  const btnExportEva = document.getElementById('btn-export-eva');
+  const dossierMissionListEl = document.getElementById('dossier-mission-list');
+  const ddpAgencyEl = document.getElementById('ddp-agency');
+  const ddpNameEl = document.getElementById('ddp-name');
+  const ddpStatusEl = document.getElementById('ddp-status');
+  const ddpSummaryEl = document.getElementById('ddp-summary');
+  const ddpSpecsGridEl = document.getElementById('ddp-specs-grid');
+  const ddpInstrumentsListEl = document.getElementById('ddp-instruments-list');
+  const btnDossierFlyTo = document.getElementById('btn-dossier-flyto');
+  const btnDossierOpen360 = document.getElementById('btn-dossier-open360');
+  const evaJsonPreviewEl = document.getElementById('eva-json-preview');
+  const btnDownloadJson = document.getElementById('btn-download-json');
+  const btnCopyManifest = document.getElementById('btn-copy-manifest');
+  const copyManifestLabel = document.getElementById('copy-manifest-label');
+
+  let currentDossierMissionId = 'perseverance-m2020';
+
+  // Fallback obligatorio (Modern Web Guidance) para navegadores sin soporte nativo de <dialog closedby="any">
+  if (dossierDialog && !('closedBy' in HTMLDialogElement.prototype)) {
+    dossierDialog.addEventListener('click', (event) => {
+      if (event.target !== dossierDialog) return;
+      const rect = dossierDialog.getBoundingClientRect();
+      const isDialogContent =
+        rect.top <= event.clientY &&
+        event.clientY <= rect.top + rect.height &&
+        rect.left <= event.clientX &&
+        event.clientX <= rect.left + rect.width;
+      if (isDialogContent) return;
+      dossierDialog.close();
+    });
+  }
+
+  // Genera el objeto JSON con toda la telemetría de supervivencia y ruta actual
+  function buildCurrentEvaManifestObject() {
+    const pos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
+    return {
+      missionProgram: 'NASA Space Apps Challenge 2026 — M.A.R.T.E',
+      timestampMTC: document.getElementById('hud-header-clock')?.textContent || 'SOL 1420 MTC',
+      activeRoute: {
+        code: activeRouteData.code,
+        title: activeRouteData.title,
+        difficulty: activeRouteData.difficulty,
+        maxSlopeDeg: activeRouteData.maxSlopeDeg,
+        totalDistanceKm: Number(activeRouteData.totalDistKm.toFixed(2))
+      },
+      roverLiveTelemetry: {
+        progressPercent: roverProgress,
+        currentCoordinates: {
+          lat: Number(pos.lat.toFixed(4)),
+          lon: Number(pos.lng.toFixed(4)),
+          elevationMolaMeters: pos.elev
+        },
+        oxygenConsumedPercent: Number(metricOxygen?.textContent || 22),
+        batteryRemainingPercent: Number(metricBattery?.textContent || 92),
+        estimatedTotalTimeHrs: metricTime?.textContent || '04:45'
+      },
+      waypoints: activeRouteData.waypoints.map((wp, idx) => ({
+        order: idx + 1,
+        name: wp.name,
+        distanceKm: Number(wp.km.toFixed(1)),
+        elevationMeters: wp.elev,
+        coords: wp.coords
+      }))
+    };
+  }
+
+  function refreshEvaManifestPreview() {
+    if (!evaJsonPreviewEl) return;
+    evaJsonPreviewEl.textContent = JSON.stringify(buildCurrentEvaManifestObject(), null, 2);
+  }
+
+  function renderDossierMission(missionId) {
+    const m =
+      NASA_MISSIONS_DOSSIER.find((item) => item.id === missionId) || NASA_MISSIONS_DOSSIER[0];
+    currentDossierMissionId = m.id;
+
+    if (dossierMissionListEl) {
+      dossierMissionListEl.innerHTML = '';
+      NASA_MISSIONS_DOSSIER.forEach((item) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `dossier-mission-btn ${item.id === m.id ? 'is-active' : ''}`;
+        btn.innerHTML = `
+          <div class="dmb-icon"><i class="fa-solid ${item.icon}"></i></div>
+          <div class="dmb-text">
+            <strong>${item.shortName}</strong>
+            <span>${item.subLabel}</span>
+          </div>
+        `;
+        btn.addEventListener('click', () => {
+          renderDossierMission(item.id);
+          playHudTone(660, 0.05, 'sine');
+        });
+        dossierMissionListEl.appendChild(btn);
+      });
+    }
+
+    if (ddpAgencyEl) ddpAgencyEl.textContent = m.agency;
+    if (ddpNameEl) ddpNameEl.textContent = m.name;
+    if (ddpStatusEl) ddpStatusEl.textContent = m.status;
+    if (ddpSummaryEl) ddpSummaryEl.textContent = m.summary;
+
+    if (ddpSpecsGridEl) {
+      ddpSpecsGridEl.innerHTML = m.specs
+        .map(
+          (sp) => `
+          <div class="ddp-spec-box">
+            <span>${sp.label}</span>
+            <strong>${sp.val}</strong>
+          </div>
+        `
+        )
+        .join('');
+    }
+
+    if (ddpInstrumentsListEl) {
+      ddpInstrumentsListEl.innerHTML = m.instruments.map((inst) => `<li>${inst}</li>`).join('');
+    }
+
+    refreshEvaManifestPreview();
+  }
+
+  function openDossierModal(targetMissionId = null) {
+    if (!dossierDialog) return;
+    renderDossierMission(targetMissionId || currentDossierMissionId);
+    if (!dossierDialog.open) {
+      dossierDialog.showModal();
+    }
+    playHudTone(820, 0.08, 'triangle');
+  }
+
+  if (btnOpenDossier) {
+    btnOpenDossier.addEventListener('click', () => openDossierModal());
+  }
+  if (btnExportEva) {
+    btnExportEva.addEventListener('click', () => openDossierModal());
+  }
+  if (btnCloseDossier && dossierDialog) {
+    btnCloseDossier.addEventListener('click', () => dossierDialog.close());
+  }
+
+  // Acciones de sincronización directa dentro del Dossier ("LOCALIZAR EN MAPA" / "ABRIR 360°")
+  if (btnDossierFlyTo) {
+    btnDossierFlyTo.addEventListener('click', () => {
+      const m = NASA_MISSIONS_DOSSIER.find((item) => item.id === currentDossierMissionId);
+      if (!m) return;
+      if (dossierDialog?.open) dossierDialog.close();
+      setViewportMode('map');
+      if (m.routeKey && m.routeKey !== currentRouteKey) {
+        if (routeSelector) routeSelector.value = m.routeKey;
+        loadRoute(m.routeKey, false);
+      }
+      marsMap.flyTo(m.coords, 11, { duration: 1.4 });
+    });
+  }
+
+  if (btnDossierOpen360) {
+    btnDossierOpen360.addEventListener('click', () => {
+      const m = NASA_MISSIONS_DOSSIER.find((item) => item.id === currentDossierMissionId);
+      if (!m) return;
+      if (dossierDialog?.open) dossierDialog.close();
+      const targetScene = m.stationId || currentStationId;
+      setViewportMode('split', targetScene);
+      loadStreetViewStation(targetScene, true);
+    });
+  }
+
+  // Descargar el Manifiesto EVA como archivo .json real
+  if (btnDownloadJson) {
+    btnDownloadJson.addEventListener('click', () => {
+      const manifest = buildCurrentEvaManifestObject();
+      const blob = new Blob([JSON.stringify(manifest, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `MARTE-PLAN-EVA-${activeRouteData.code}-SOL1420.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      playHudTone(960, 0.1, 'sine');
+    });
+  }
+
+  // Copiar telemetría EVA al portapapeles
+  if (btnCopyManifest) {
+    btnCopyManifest.addEventListener('click', async () => {
+      const text = JSON.stringify(buildCurrentEvaManifestObject(), null, 2);
+      try {
+        await navigator.clipboard.writeText(text);
+        if (copyManifestLabel) {
+          copyManifestLabel.textContent = '¡TELEMETRÍA COPIADA AL PORTAPAPELES!';
+          setTimeout(() => {
+            copyManifestLabel.textContent = 'COPIAR TELEMETRÍA AL PORTAPAPELES';
+          }, 2200);
+        }
+        playHudTone(880, 0.08, 'sine');
+      } catch {
+        // Ignorar si el navegador restringe el portapapeles
+      }
+    });
+  }
+
+  // Delegación global de clics en popups del mapa ("EXPLORAR EN 360°" y "VER EXPEDIENTE TÉCNICO NASA")
   document.body.addEventListener('click', (e) => {
     const btn360 = e.target.closest('[data-open-360]');
-    if (!btn360) return;
+    if (btn360) {
+      const targetCode = btn360.getAttribute('data-open-360');
+      const wpToStationMap = {
+        'wp-0': 'scene-landing',
+        'wp-1': 'scene-kodiak',
+        'wp-2': 'scene-ice',
+        'wp-3': 'scene-base',
+        'rover-live': currentStationId
+      };
+      const chosenScene = wpToStationMap[targetCode] || currentStationId;
+      setViewportMode('split', chosenScene);
+      return;
+    }
 
-    const targetCode = btn360.getAttribute('data-open-360');
-    const wpToStationMap = {
-      'wp-0': 'scene-landing',
-      'wp-1': 'scene-kodiak',
-      'wp-2': 'scene-ice',
-      'wp-3': 'scene-base',
-      'rover-live': currentStationId
-    };
-    const chosenScene = wpToStationMap[targetCode] || currentStationId;
-    setViewportMode('split', chosenScene);
+    const btnDossier = e.target.closest('[data-open-dossier]');
+    if (btnDossier) {
+      const dossierId = btnDossier.getAttribute('data-open-dossier');
+      openDossierModal(dossierId);
+    }
   });
 
-  // Inicializar la ruta por defecto (JEZERO-ALPHA) y las píldoras del Street View al arrancar
+  // ==========================================================================
+  // 14. RELOJ MARCIANO MTC EN TIEMPO REAL Y SINTETIZADOR DE AUDIO SCI-FI HUD
+  // ==========================================================================
+  const hudClockEl = document.getElementById('hud-header-clock');
+  let mtcTotalSeconds = 14 * 3600 + 32 * 60 + 8;
+
+  setInterval(() => {
+    mtcTotalSeconds = (mtcTotalSeconds + 1) % 86400;
+    const hrs = String(Math.floor(mtcTotalSeconds / 3600)).padStart(2, '0');
+    const mins = String(Math.floor((mtcTotalSeconds % 3600) / 60)).padStart(2, '0');
+    const secs = String(mtcTotalSeconds % 60).padStart(2, '0');
+    if (hudClockEl) {
+      hudClockEl.innerHTML = `SOL 1420 &bull; ${hrs}:${mins}:${secs} MTC`;
+    }
+  }, 1027); // 1 segundo marciano equivale a ~1.02749 segundos terrestres
+
+  let hudAudioEnabled = true;
+  let audioCtx = null;
+  const btnHudAudio = document.getElementById('btn-hud-audio');
+  const hudAudioIcon = document.getElementById('hud-audio-icon');
+
+  function playHudTone(freq = 640, duration = 0.06, type = 'sine') {
+    if (!hudAudioEnabled) return;
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      if (!audioCtx) audioCtx = new AudioContextClass();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch {
+      // Ignorar si el navegador aún no ha registrado interacción de usuario
+    }
+  }
+
+  if (btnHudAudio) {
+    btnHudAudio.addEventListener('click', () => {
+      hudAudioEnabled = !hudAudioEnabled;
+      btnHudAudio.setAttribute('aria-pressed', String(hudAudioEnabled));
+      if (hudAudioIcon) {
+        hudAudioIcon.className = hudAudioEnabled
+          ? 'fa-solid fa-volume-high'
+          : 'fa-solid fa-volume-xmark';
+      }
+      if (hudAudioEnabled) playHudTone(780, 0.07, 'sine');
+    });
+  }
+
+  // Inicializar la ruta por defecto (JEZERO-ALPHA), el cono de visión y el Street View al arrancar
   renderStreetViewStepPills();
   loadRoute('jezero-alpha', false);
+  updateRoverVisionConeOnMap(14, 95);
 });
