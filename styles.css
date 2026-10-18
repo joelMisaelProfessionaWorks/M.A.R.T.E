@@ -2758,3 +2758,504 @@ body {
     padding: 0;
   }
 }
+
+/* ==========================================================================
+   ETAPA 6: REDISEÑO PANTALLA COMPLETA (FULL-VIEWPORT MAP & 360°),
+   SIDEBARS DESPLEGABLES (TOGGLE DRAWERS) Y MOTOR ESFÉRICO 360° NATIVO
+   ========================================================================== */
+
+/* 1. Contenedor Principal: Mapa y Visor 360° en toda la pantalla debajo del Header */
+.dashboard-shell {
+  display: flex !important;
+  flex-direction: column !important;
+  inline-size: 100vw !important;
+  block-size: 100dvh !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  overflow: clip !important;
+  position: relative;
+  z-index: 10;
+}
+
+/* Header Superior Compacto de Sala de Control */
+.hud-header {
+  block-size: 56px;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0.35rem 0.9rem;
+  border-radius: 0;
+  border-top: none;
+  border-inline: none;
+  border-bottom: 1.5px solid rgba(255, 107, 43, 0.5);
+  background: rgba(7, 10, 17, 0.94);
+  z-index: 650;
+  gap: 0.65rem;
+}
+
+.nasa-badge {
+  inline-size: 36px;
+  block-size: 36px;
+  font-size: 1rem;
+}
+
+.project-title {
+  font-size: clamp(0.88rem, 1.1vw, 1.12rem);
+}
+
+.challenge-kicker {
+  font-size: 0.62rem;
+}
+
+/* Botones de Toggle de Paneles en el Header */
+.header-panel-toggles {
+  display: flex;
+  align-items: center;
+  gap: 0.38rem;
+  background: rgba(11, 16, 26, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.22rem 0.32rem;
+  border-radius: 6px;
+}
+
+.hud-panel-toggle {
+  background: rgba(18, 26, 42, 0.75);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 0.32rem 0.58rem;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.hud-panel-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--mars-orange);
+  background: rgba(255, 107, 43, 0.18);
+}
+
+.hud-panel-toggle.is-active {
+  background: rgba(255, 107, 43, 0.24);
+  color: #ffffff;
+  border-color: var(--mars-orange);
+  box-shadow: 0 0 10px rgba(255, 107, 43, 0.35);
+}
+
+.hud-panel-toggle.zen-btn {
+  border-color: rgba(0, 229, 255, 0.4);
+  color: var(--telemetry-cyan);
+}
+
+.hud-panel-toggle.zen-btn:hover,
+.hud-panel-toggle.zen-btn.is-active {
+  background: var(--telemetry-cyan);
+  color: #07090e;
+  border-color: var(--telemetry-cyan);
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.55);
+}
+
+.telemetry-pill.compact-pill {
+  padding: 0.22rem 0.55rem;
+}
+
+/* 2. Escenario Central a Pantalla Completa (100% del área bajo el Header) */
+.hud-center-stage {
+  position: relative;
+  flex: 1;
+  inline-size: 100vw;
+  block-size: calc(100dvh - 56px);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  gap: 0;
+  padding: 0;
+  z-index: 10;
+}
+
+.hud-center-stage[data-view-mode="split"] {
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  background: rgba(255, 107, 43, 0.35);
+}
+
+.viewport-panel {
+  border-radius: 0;
+  border: none;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* 3. Sidebars y Footer como Paneles Flotantes Desplegables (Toggle Drawers) */
+.hud-sidebar-left {
+  position: fixed;
+  top: 64px;
+  left: 10px;
+  bottom: 10px;
+  inline-size: 320px;
+  max-inline-size: calc(100vw - 20px);
+  z-index: 520;
+  background: rgba(10, 14, 23, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 107, 43, 0.45);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.82);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+
+.hud-sidebar-right {
+  position: fixed;
+  top: 64px;
+  right: 10px;
+  bottom: 10px;
+  inline-size: 325px;
+  max-inline-size: calc(100vw - 20px);
+  z-index: 520;
+  background: rgba(10, 14, 23, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 107, 43, 0.45);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.82);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+
+/* Si el footer inferior está abierto, acortar ligeramente la parte inferior de los sidebars en pantallas grandes */
+.dashboard-shell:has(#hud-footer:not(.is-collapsed)) .hud-sidebar-left,
+.dashboard-shell:has(#hud-footer:not(.is-collapsed)) .hud-sidebar-right {
+  bottom: 144px;
+}
+
+.hud-footer {
+  position: fixed;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  block-size: 124px;
+  z-index: 515;
+  background: rgba(9, 13, 22, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 107, 43, 0.5);
+  box-shadow: 0 -8px 34px rgba(0, 0, 0, 0.82);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+
+/* Estados Ocultos (.is-collapsed) para cada Panel */
+.hud-sidebar-left.is-collapsed {
+  transform: translateX(calc(-100% - 24px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hud-sidebar-right.is-collapsed {
+  transform: translateX(calc(100% + 24px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hud-footer.is-collapsed {
+  transform: translateY(calc(100% + 24px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Botón interno para ocultar cada Sidebar / HUD */
+.heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.panel-collapse-btn {
+  background: rgba(255, 107, 43, 0.16);
+  color: var(--mars-orange);
+  border: 1px solid rgba(255, 107, 43, 0.55);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.18s ease;
+}
+
+.panel-collapse-btn:hover {
+  background: var(--mars-orange);
+  color: #07090e;
+  box-shadow: 0 0 10px rgba(255, 107, 43, 0.5);
+}
+
+.footer-collapse-btn {
+  position: absolute;
+  top: -26px;
+  right: 14px;
+  background: rgba(9, 13, 22, 0.95);
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  padding: 0.22rem 0.7rem;
+  z-index: 10;
+}
+
+/* 4. Pestañas Flotantes en los Bordes (Edge Tabs) para Reabrir Paneles Ocultos */
+.hud-edge-tab {
+  position: fixed;
+  z-index: 540;
+  background: rgba(10, 15, 25, 0.94);
+  backdrop-filter: blur(12px);
+  color: var(--mars-orange);
+  border: 1.5px solid var(--mars-orange);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.8), 0 0 14px rgba(255, 107, 43, 0.3);
+  transition: all 0.22s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hud-edge-tab:hover {
+  background: var(--mars-orange);
+  color: #07090e;
+  box-shadow: 0 0 22px rgba(255, 107, 43, 0.75);
+}
+
+.hud-edge-tab.edge-left {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%) translateX(-100%);
+  padding: 0.65rem 0.6rem;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.hud-edge-tab.edge-right {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%) translateX(100%);
+  padding: 0.65rem 0.6rem;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.hud-edge-tab.edge-bottom {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  padding: 0.42rem 1.15rem;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+
+/* Mostrar pestañas automáticamente cuando su panel correspondiente está oculto */
+.dashboard-shell:has(#sidebar-left.is-collapsed) .hud-edge-tab.edge-left {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0);
+}
+
+.dashboard-shell:has(#sidebar-right.is-collapsed) .hud-edge-tab.edge-right {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0);
+}
+
+.dashboard-shell:has(#hud-footer.is-collapsed) .hud-edge-tab.edge-bottom {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Desplazar controles flotantes del Mapa y 360° cuando los sidebars están abiertos */
+.map-baselayer-Floating,
+.map-floating-toolbar,
+.map-bottom-badge,
+.sv-inspector-card,
+.sv-step-navigator,
+.sv-floating-controls {
+  transition: left 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+              right 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+              bottom 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (min-width: 900px) {
+  /* Cuando Sidebar Izquierdo está abierto en vista individual */
+  .dashboard-shell:has(#sidebar-left:not(.is-collapsed)) .hud-center-stage:not([data-view-mode="split"]) .map-baselayer-Floating,
+  .dashboard-shell:has(#sidebar-left:not(.is-collapsed)) .hud-center-stage:not([data-view-mode="split"]) .map-bottom-badge,
+  .dashboard-shell:has(#sidebar-left:not(.is-collapsed)) .hud-center-stage:not([data-view-mode="split"]) .sv-step-navigator,
+  .dashboard-shell:has(#sidebar-left:not(.is-collapsed)) .hud-center-stage:not([data-view-mode="split"]) .sv-floating-controls {
+    left: 342px;
+  }
+
+  /* Cuando Sidebar Derecho está abierto en vista individual */
+  .dashboard-shell:has(#sidebar-right:not(.is-collapsed)) .hud-center-stage:not([data-view-mode="split"]) .map-floating-toolbar,
+  .dashboard-shell:has(#sidebar-right:not(.is-collapsed)) .hud-center-stage:not([data-view-mode="split"]) .map-bottom-badge,
+  .dashboard-shell:has(#sidebar-right:not(.is-collapsed)) .hud-center-stage:not([data-view-mode="split"]) .sv-inspector-card,
+  .dashboard-shell:has(#sidebar-right:not(.is-collapsed)) .hud-center-stage:not([data-view-mode="split"]) .sv-step-navigator {
+    right: 348px;
+  }
+
+  /* Cuando el HUD Inferior está abierto */
+  .dashboard-shell:has(#hud-footer:not(.is-collapsed)) .map-bottom-badge,
+  .dashboard-shell:has(#hud-footer:not(.is-collapsed)) .sv-step-navigator {
+    bottom: 144px;
+  }
+
+  .dashboard-shell:has(#hud-footer:not(.is-collapsed)) .sv-floating-controls {
+    bottom: 202px;
+  }
+}
+
+/* 5. Motor Esférico 360° Interactivo en <canvas> + Capa de Hotspots 3D */
+.pannellum-hud-mount {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: clip;
+  user-select: none;
+  cursor: grab;
+}
+
+.pannellum-hud-mount:active {
+  cursor: grabbing;
+}
+
+.mars-360-canvas {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+  z-index: 2;
+}
+
+.mars-360-hotspots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+  overflow: clip;
+}
+
+.mars-360-hotspots .hud-360-hotspot {
+  position: absolute;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.15s ease;
+}
+
+/* Controles Flotantes de Zoom / Reset e Indicador de Arrastre en 360° */
+.sv-floating-controls {
+  position: absolute;
+  bottom: 4.2rem;
+  left: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  z-index: 24;
+}
+
+.sv-drag-hint {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.85rem;
+  z-index: 20;
+  background: rgba(8, 12, 20, 0.82);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 107, 43, 0.45);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: 4px;
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sv-drag-hint i {
+  color: var(--mars-orange);
+}
+
+/* 6. Ventana Emergente 360° (#sv-inspector-card) con Cierre Total y Minimizado */
+.sv-inspector-card {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.85rem;
+  inline-size: min(330px, calc(100% - 1.7rem));
+  z-index: 30;
+  background: rgba(8, 12, 20, 0.94);
+  border: 1px solid rgba(0, 229, 255, 0.55);
+  border-inline-start: 3px solid var(--telemetry-cyan);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85);
+}
+
+.sv-inspector-card.is-closed {
+  display: none !important;
+}
+
+.svi-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.svi-minimize-btn {
+  inline-size: 24px;
+  block-size: 24px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-secondary);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.svi-minimize-btn:hover {
+  color: var(--telemetry-cyan);
+  border-color: var(--telemetry-cyan);
+}
+
+.svi-close-btn {
+  background: rgba(255, 61, 0, 0.2);
+  color: #ff8a65;
+  border: 1px solid rgba(255, 61, 0, 0.6);
+  border-radius: 4px;
+  padding: 0.18rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  transition: all 0.18s ease;
+}
+
+.svi-close-btn:hover {
+  background: #ff3d00;
+  color: #ffffff;
+  border-color: #ff3d00;
+  box-shadow: 0 0 12px rgba(255, 61, 0, 0.6);
+}
+

@@ -1865,19 +1865,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
-  const panoTextureCache = {};
-  let panoViewer = null;
+  const panoCanvasCache = {};
   let currentStationId = 'scene-kodiak';
   let isAutoRotating = true;
 
+  // Estado de cámara del Motor Esférico 360° Nativo (<canvas id="mars-360-canvas">)
+  const mars360Canvas = document.getElementById('mars-360-canvas');
+  const mars360HotspotsEl = document.getElementById('mars-360-hotspots');
+  const pannellumMountEl = document.getElementById('pannellum-viewer');
+  const btnMinimizeInspector = document.getElementById('btn-minimize-inspector');
+  const btnReopenInspector = document.getElementById('btn-sv-reopen-inspector');
+  const btn360ZoomIn = document.getElementById('btn-360-zoom-in');
+  const btn360ZoomOut = document.getElementById('btn-360-zoom-out');
+  const btn360ResetCam = document.getElementById('btn-360-reset-cam');
+
+  let camYaw = 10;       // 0° a 360°
+  let camPitch = 2;      // -42° a +42°
+  let camFov = 90;       // 45° a 115°
+  let targetYaw = null;
+  let targetPitch = null;
+  let targetFov = null;
+  let isDragging360 = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let dragStartYaw = 0;
+  let dragStartPitch = 0;
+  let activeHotspotNodes = [];
+
   // Generador procedural equirectangular 2:1 (sin costuras en 0°/360°) de alta resolución para cada estación de Marte
-  function getOrGeneratePanoramaTexture(station) {
-    if (panoTextureCache[station.id]) {
-      return panoTextureCache[station.id];
+  function getOrGeneratePanoramaCanvas(station) {
+    if (panoCanvasCache[station.id]) {
+      return panoCanvasCache[station.id];
     }
 
-    const width = 2048;
-    const height = 1024;
+    const width = 2400;
+    const height = 1200;
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -1885,26 +1907,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const pal = station.palette;
 
     // 1. Cielo marciano atmosférico (Cénit a Horizonte)
-    const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.52);
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.53);
     skyGrad.addColorStop(0, pal.skyZenith);
-    skyGrad.addColorStop(0.55, pal.skyMid);
+    skyGrad.addColorStop(0.5, pal.skyMid);
     skyGrad.addColorStop(1, pal.skyHorizon);
     ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, width, height * 0.55);
 
+    // 1b. Estrellas tenues en el cénit y lunas Fobos / Deimos
+    ctx.fillStyle = 'rgba(255, 245, 235, 0.45)';
+    for (let st = 0; st < 90; st++) {
+      const sx = ((st * 197) % width);
+      const sy = ((st * 73) % Math.floor(height * 0.22));
+      ctx.fillRect(sx, sy, 1.6, 1.6);
+    }
+
     // 2. Disco solar en el cielo marciano con halo azulado de dispersión de Mie
-    const sunX = width * 0.62;
-    const sunY = height * 0.24;
-    const sunGlow = ctx.createRadialGradient(sunX, sunY, 4, sunX, sunY, 170);
-    sunGlow.addColorStop(0, 'rgba(255, 250, 240, 1)');
-    sunGlow.addColorStop(0.15, 'rgba(190, 225, 255, 0.65)');
-    sunGlow.addColorStop(0.5, 'rgba(255, 165, 110, 0.25)');
+    const sunX = width * 0.58;
+    const sunY = height * 0.23;
+    const sunGlow = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, 210);
+    sunGlow.addColorStop(0, 'rgba(255, 252, 245, 1)');
+    sunGlow.addColorStop(0.14, 'rgba(185, 228, 255, 0.72)');
+    sunGlow.addColorStop(0.45, 'rgba(255, 165, 110, 0.32)');
     sunGlow.addColorStop(1, 'rgba(255, 130, 80, 0)');
     ctx.fillStyle = sunGlow;
-    ctx.fillRect(sunX - 180, sunY - 180, 360, 360);
+    ctx.fillRect(sunX - 220, sunY - 220, 440, 440);
 
     // 3. Cordilleras y bordes de cráter 360° continuos (Funciones periódicas en 2*PI para costura cero)
-    const drawPeriodicMountainLayer = (baseY, amp, freqMult, fillStyle, detailBoost = 1) => {
+    const drawPeriodicMountainLayer = (baseY, amp, freqMult, fillStyle, detailBoost = 1, strokeTop = null) => {
       ctx.beginPath();
       ctx.moveTo(0, height);
       for (let x = 0; x <= width; x += 4) {
@@ -1915,13 +1945,12 @@ document.addEventListener('DOMContentLoaded', () => {
           Math.sin(theta * 9 + freqMult * 2) * amp * 0.15 * detailBoost +
           Math.cos(theta * 17) * amp * 0.08 * detailBoost;
 
-        // Si es Kodiak o Gale, añadimos una meseta truncada o pico imponente al frente (theta ~ PI)
         if (pal.accentFeature === 'kodiak' && Math.abs(theta - Math.PI) < 0.45) {
-          offset = Math.max(offset, amp * 0.85);
-        } else if (pal.accentFeature === 'gale' && Math.abs(theta - Math.PI) < 0.6) {
-          offset += Math.cos((theta - Math.PI) * 2.5) * amp * 1.35;
+          offset = Math.max(offset, amp * 0.95);
+        } else if (pal.accentFeature === 'gale' && Math.abs(theta - Math.PI) < 0.65) {
+          offset += Math.cos((theta - Math.PI) * 2.3) * amp * 1.65;
         } else if (pal.accentFeature === 'valles') {
-          offset *= 1.65;
+          offset *= 1.85;
         }
 
         ctx.lineTo(x, baseY - offset);
@@ -1930,137 +1959,406 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.closePath();
       ctx.fillStyle = fillStyle;
       ctx.fill();
+
+      if (strokeTop) {
+        ctx.strokeStyle = strokeTop;
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+      }
     };
 
     // Cordillera lejana del borde del cráter
-    drawPeriodicMountainLayer(height * 0.51, 58, 1.1, pal.groundFar, 1.0);
+    drawPeriodicMountainLayer(height * 0.50, 74, 1.1, pal.groundFar, 1.0, 'rgba(255, 195, 145, 0.22)');
     // Mesetas intermedias y escarpes deltaicos
-    drawPeriodicMountainLayer(height * 0.54, 38, 2.4, pal.ridgeColor, 1.3);
+    drawPeriodicMountainLayer(height * 0.535, 48, 2.4, pal.ridgeColor, 1.35, 'rgba(255, 150, 95, 0.28)');
 
     // 4. Suelo marciano (Gradiente desde el horizonte hasta el nadir bajo el Rover)
     const groundGrad = ctx.createLinearGradient(0, height * 0.52, 0, height);
     groundGrad.addColorStop(0, pal.groundFar);
-    groundGrad.addColorStop(0.32, pal.groundMid);
-    groundGrad.addColorStop(0.78, pal.groundNear);
+    groundGrad.addColorStop(0.28, pal.groundMid);
+    groundGrad.addColorStop(0.76, pal.groundNear);
     groundGrad.addColorStop(1, '#120804');
     ctx.fillStyle = groundGrad;
     ctx.fillRect(0, height * 0.53, width, height * 0.47);
 
-    // 5. Estratos sedimentarios horizontales en el terreno y afloramientos rocosos
-    ctx.strokeStyle = 'rgba(255, 165, 110, 0.14)';
-    ctx.lineWidth = 2;
-    for (let s = 0; s < 14; s++) {
-      const yLine = height * 0.53 + s * s * 2.2;
-      if (yLine > height * 0.92) break;
+    // 5. Estratos sedimentarios horizontales y dunas eólicas en el terreno
+    ctx.strokeStyle = 'rgba(255, 175, 120, 0.18)';
+    ctx.lineWidth = 2.2;
+    for (let s = 0; s < 16; s++) {
+      const yLine = height * 0.53 + s * s * 2.15;
+      if (yLine > height * 0.91) break;
       ctx.beginPath();
-      for (let x = 0; x <= width; x += 16) {
+      for (let x = 0; x <= width; x += 14) {
         const theta = (x / width) * Math.PI * 2;
-        const wave = Math.sin(theta * 6 + s) * (3 + s * 0.6);
+        const wave = Math.sin(theta * 6 + s) * (3.5 + s * 0.65);
         if (x === 0) ctx.moveTo(x, yLine + wave);
         else ctx.lineTo(x, yLine + wave);
       }
       ctx.stroke();
     }
 
-    // 6. Rasgos visuales distintivos según la estación (Hielo ISRU, Domos de Campamento Base, Rocas)
+    // 6. Rasgos visuales distintivos según la estación (Mesa Kodiak, Hielo ISRU, Domos de Base, Rocas)
     let seed = station.id.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
     const pseudoRand = () => {
       seed = (seed * 1664525 + 1013904223) % 4294967296;
       return seed / 4294967296;
     };
 
-    // Rocas basálticas y sedimentarias distribuidas en el suelo
-    for (let r = 0; r < 160; r++) {
-      const rx = pseudoRand() * width;
-      const ry = height * 0.55 + Math.pow(pseudoRand(), 1.5) * (height * 0.37);
-      const scale = ((ry - height * 0.52) / (height * 0.45)) * 26 + 3;
-      const rw = scale * (0.8 + pseudoRand() * 1.2);
-      const rh = scale * (0.45 + pseudoRand() * 0.55);
-
-      // Sombra de la roca
-      ctx.fillStyle = 'rgba(10, 4, 2, 0.55)';
+    // Si es Mesa Kodiak (scene-kodiak), dibujamos la gran meseta estratificada frontal con capas geológicas visibles
+    if (pal.accentFeature === 'kodiak') {
+      ctx.save();
+      const mesaX = width * 0.48;
+      const mesaY = height * 0.49;
+      ctx.fillStyle = '#6c2d14';
       ctx.beginPath();
-      ctx.ellipse(rx + rw * 0.3, ry + rh * 0.35, rw * 0.65, rh * 0.3, 0, 0, Math.PI * 2);
+      ctx.moveTo(mesaX - 240, mesaY + 55);
+      ctx.lineTo(mesaX - 165, mesaY - 48);
+      ctx.lineTo(mesaX + 175, mesaY - 44);
+      ctx.lineTo(mesaX + 255, mesaY + 55);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255, 185, 130, 0.55)';
+      ctx.lineWidth = 2;
+      for (let l = -32; l <= 40; l += 12) {
+        ctx.beginPath();
+        ctx.moveTo(mesaX - 190, mesaY + l);
+        ctx.lineTo(mesaX + 200, mesaY + l + 4);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // Rocas basálticas y afloramientos distribuidos en 360°
+    for (let r = 0; r < 220; r++) {
+      const rx = pseudoRand() * width;
+      const ry = height * 0.545 + Math.pow(pseudoRand(), 1.45) * (height * 0.365);
+      const scale = ((ry - height * 0.52) / (height * 0.45)) * 32 + 4;
+      const rw = scale * (0.85 + pseudoRand() * 1.3);
+      const rh = scale * (0.48 + pseudoRand() * 0.62);
+
+      // Sombra proyectada
+      ctx.fillStyle = 'rgba(8, 3, 1, 0.6)';
+      ctx.beginPath();
+      ctx.ellipse(rx + rw * 0.28, ry + rh * 0.35, rw * 0.68, rh * 0.32, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Cuerpo de la roca
-      ctx.fillStyle = pseudoRand() > 0.3 ? '#4a1f10' : '#69301a';
+      // Polígono facetado de roca marciana
+      ctx.fillStyle = pseudoRand() > 0.35 ? '#522211' : '#73341c';
       ctx.beginPath();
-      ctx.moveTo(rx - rw * 0.5, ry + rh * 0.3);
-      ctx.lineTo(rx - rw * 0.3, ry - rh * 0.5);
-      ctx.lineTo(rx + rw * 0.25, ry - rh * 0.4);
-      ctx.lineTo(rx + rw * 0.55, ry + rh * 0.3);
+      ctx.moveTo(rx - rw * 0.52, ry + rh * 0.32);
+      ctx.lineTo(rx - rw * 0.34, ry - rh * 0.52);
+      ctx.lineTo(rx + rw * 0.26, ry - rh * 0.42);
+      ctx.lineTo(rx + rw * 0.56, ry + rh * 0.32);
       ctx.closePath();
       ctx.fill();
 
-      // Iluminación superior solar
-      ctx.strokeStyle = 'rgba(255, 180, 130, 0.35)';
-      ctx.lineWidth = 1.2;
+      // Borde iluminado por el sol
+      ctx.strokeStyle = 'rgba(255, 190, 140, 0.42)';
+      ctx.lineWidth = 1.3;
       ctx.stroke();
     }
 
-    // Si es la estación de Hielo Subterráneo (scene-ice), dibujamos la trinchera de hielo cristalino H2O
+    // Si es la estación de Hielo Subterráneo (scene-ice), dibujamos la trinchera de hielo cristalino H2O y planta MOXIE
     if (pal.accentFeature === 'ice') {
       ctx.save();
       const iceX = width * 0.46;
       const iceY = height * 0.67;
-      const iceGlow = ctx.createRadialGradient(iceX, iceY, 10, iceX, iceY, 190);
-      iceGlow.addColorStop(0, 'rgba(180, 250, 255, 0.85)');
-      iceGlow.addColorStop(0.4, 'rgba(0, 229, 255, 0.38)');
+      const iceGlow = ctx.createRadialGradient(iceX, iceY, 12, iceX, iceY, 220);
+      iceGlow.addColorStop(0, 'rgba(200, 252, 255, 0.92)');
+      iceGlow.addColorStop(0.45, 'rgba(0, 229, 255, 0.48)');
       iceGlow.addColorStop(1, 'rgba(0, 229, 255, 0)');
       ctx.fillStyle = iceGlow;
       ctx.beginPath();
-      ctx.ellipse(iceX, iceY, 175, 52, -0.08, 0, Math.PI * 2);
+      ctx.ellipse(iceX, iceY, 210, 64, -0.08, 0, Math.PI * 2);
       ctx.fill();
+
+      // Cristales poligonales de hielo expuestos
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(iceX - 70, iceY - 15, 140, 30);
       ctx.restore();
     }
 
-    // Si es el Campamento Base (scene-base), dibujamos el domo presurizado en el horizonte frontal
+    // Si es el Campamento Base (scene-base), dibujamos el complejo de domos presurizados "Ares Prime"
     if (pal.accentFeature === 'base') {
       ctx.save();
       const domeX = width * 0.45;
-      const domeY = height * 0.53;
-      ctx.fillStyle = '#dce4ec';
+      const domeY = height * 0.535;
+      // Domo Principal
+      ctx.fillStyle = '#e2e8f0';
       ctx.beginPath();
-      ctx.arc(domeX, domeY, 44, Math.PI, 0);
+      ctx.arc(domeX, domeY, 58, Math.PI, 0);
       ctx.fill();
       ctx.strokeStyle = '#FF6B2B';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 3.5;
       ctx.stroke();
+
+      // Módulo Esclusa EVA y Paneles Solares
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillRect(domeX + 55, domeY - 26, 65, 26);
+      ctx.fillStyle = '#0284c7';
+      ctx.fillRect(domeX - 140, domeY - 18, 68, 16);
       ctx.restore();
     }
 
     // 7. Huellas de las ruedas de titanio del Rover convergiendo hacia el horizonte
-    ctx.strokeStyle = 'rgba(25, 10, 4, 0.65)';
-    ctx.lineWidth = 6;
-    ctx.setLineDash([12, 6]);
+    ctx.strokeStyle = 'rgba(22, 9, 4, 0.72)';
+    ctx.lineWidth = 7;
+    ctx.setLineDash([14, 7]);
     ctx.beginPath();
-    ctx.moveTo(width * 0.44, height * 0.92);
-    ctx.lineTo(width * 0.54, height * 0.55);
-    ctx.moveTo(width * 0.58, height * 0.92);
+    ctx.moveTo(width * 0.43, height * 0.91);
+    ctx.lineTo(width * 0.53, height * 0.55);
+    ctx.moveTo(width * 0.59, height * 0.91);
     ctx.lineTo(width * 0.56, height * 0.55);
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // 8. Cubierta técnica del Rover en el Nadir (parte inferior de la esfera)
-    ctx.fillStyle = '#181d26';
-    ctx.fillRect(0, height * 0.91, width, height * 0.09);
+    // 8. Cubierta técnica del Rover Perseverance en el Nadir (parte inferior de la esfera)
+    ctx.fillStyle = '#141923';
+    ctx.fillRect(0, height * 0.90, width, height * 0.10);
     ctx.strokeStyle = '#FF6B2B';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 3.5;
     ctx.beginPath();
-    ctx.moveTo(0, height * 0.91);
-    ctx.lineTo(width, height * 0.91);
+    ctx.moveTo(0, height * 0.90);
+    ctx.lineTo(width, height * 0.90);
     ctx.stroke();
 
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-    panoTextureCache[station.id] = dataUrl;
-    return dataUrl;
+    // Detalles técnicos de chasis del Rover en el nadir
+    ctx.fillStyle = 'rgba(0, 229, 255, 0.25)';
+    for (let c = 80; c < width; c += 240) {
+      ctx.fillRect(c, height * 0.92, 110, 36);
+    }
+
+    panoCanvasCache[station.id] = canvas;
+    return canvas;
   }
+
+  // Crea los elementos DOM interactivos para los Hotspots 3D de la estación activa
+  function buildStationHotspotElements(station) {
+    if (!mars360HotspotsEl) return;
+    mars360HotspotsEl.innerHTML = '';
+    activeHotspotNodes = [];
+
+    station.hotspots.forEach((hs) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'hud-360-hotspot';
+      const pinTypeClass =
+        hs.kind === 'nav' ? 'type-nav' : hs.kind === 'ice' ? 'type-ice' : 'type-science';
+
+      wrapper.innerHTML = `
+        <div class="hs360-pin ${pinTypeClass}">
+          <div class="hs360-icon"><i class="fa-solid ${hs.icon}"></i></div>
+          <span class="hs360-label">${hs.label}</span>
+        </div>
+      `;
+
+      wrapper.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (hs.kind === 'nav' && hs.targetScene) {
+          loadStreetViewStation(hs.targetScene, true);
+        } else {
+          isAutoRotating = false;
+          if (btnSvAutoRotate) btnSvAutoRotate.classList.remove('is-active');
+          animateCameraTo(hs.yaw, hs.pitch, 72);
+          if (svInspectorCard) {
+            svInspectorCard.classList.remove('is-closed', 'is-minimized');
+          }
+          updateInspectorCard({
+            kicker: hs.kicker,
+            title: hs.label,
+            desc: hs.desc,
+            dist: hs.dist,
+            comp: hs.comp
+          });
+          if (typeof playHudTone === 'function') playHudTone(860, 0.07, 'sine');
+        }
+      });
+
+      mars360HotspotsEl.appendChild(wrapper);
+      activeHotspotNodes.push({ data: hs, el: wrapper });
+    });
+  }
+
+  // Animación suave de la cámara esférica 360° hacia un objetivo (yaw, pitch, fov)
+  function animateCameraTo(yaw, pitch, fov = camFov) {
+    targetYaw = ((yaw % 360) + 360) % 360;
+    targetPitch = Math.max(-38, Math.min(38, pitch));
+    targetFov = Math.max(45, Math.min(115, fov));
+  }
+
+  // Renderiza en tiempo real (60FPS) la proyección esférica 360° en <canvas> y proyecta los Hotspots 3D
+  function renderMars360Frame() {
+    requestAnimationFrame(renderMars360Frame);
+    if (!mars360Canvas || streetContainer.classList.contains('is-hidden')) return;
+
+    const station =
+      STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
+    const sourceCanvas = getOrGeneratePanoramaCanvas(station);
+
+    const rect = mars360Canvas.parentElement.getBoundingClientRect();
+    const cw = Math.max(300, Math.floor(rect.width));
+    const ch = Math.max(220, Math.floor(rect.height));
+    if (mars360Canvas.width !== cw || mars360Canvas.height !== ch) {
+      mars360Canvas.width = cw;
+      mars360Canvas.height = ch;
+    }
+
+    // Interpolación suave hacia objetivo o giro orbital automático
+    if (targetYaw !== null) {
+      let diffY = targetYaw - camYaw;
+      if (diffY > 180) diffY -= 360;
+      if (diffY < -180) diffY += 360;
+      camYaw = ((camYaw + diffY * 0.12) % 360 + 360) % 360;
+      camPitch += (targetPitch - camPitch) * 0.12;
+      camFov += (targetFov - camFov) * 0.12;
+      if (Math.abs(diffY) < 0.25 && Math.abs(targetPitch - camPitch) < 0.25) {
+        targetYaw = null;
+        targetPitch = null;
+        targetFov = null;
+      }
+    } else if (isAutoRotating && !isDragging360) {
+      camYaw = (camYaw + 0.12) % 360;
+    }
+
+    const ctx = mars360Canvas.getContext('2d');
+    const sw = sourceCanvas.width;
+    const sh = sourceCanvas.height;
+
+    const vFov = Math.max(30, Math.min(95, camFov * (ch / cw)));
+    const cropW = (camFov / 360) * sw;
+    const cropH = (vFov / 180) * sh;
+
+    // Coordenada central en la textura equirectangular (yaw=0 corresponde al centro sw*0.5)
+    const normYaw = ((camYaw % 360) + 360) % 360;
+    const centerX = ((normYaw / 360) * sw + sw * 0.5) % sw;
+    const centerY = ((90 - camPitch) / 180) * sh;
+
+    const sy = Math.max(0, Math.min(sh - cropH, centerY - cropH / 2));
+    let sx = centerX - cropW / 2;
+    if (sx < 0) sx += sw;
+
+    // Dibujo continuo con envoltura horizontal sin costuras (360° wrap-around)
+    if (sx + cropW <= sw) {
+      ctx.drawImage(sourceCanvas, sx, sy, cropW, cropH, 0, 0, cw, ch);
+    } else {
+      const firstPartW = sw - sx;
+      const secondPartW = cropW - firstPartW;
+      const destSplitX = (firstPartW / cropW) * cw;
+
+      ctx.drawImage(sourceCanvas, sx, sy, firstPartW, cropH, 0, 0, destSplitX + 1, ch);
+      ctx.drawImage(
+        sourceCanvas,
+        0,
+        sy,
+        secondPartW,
+        cropH,
+        destSplitX,
+        0,
+        cw - destSplitX,
+        ch
+      );
+    }
+
+    // Superposición HUD táctica en el lienzo 360° (Línea de horizonte artificial y marcas acimutales)
+    const horizonScreenY = (0.5 - (0 - camPitch) / vFov) * ch;
+    if (horizonScreenY > 20 && horizonScreenY < ch - 20) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(0, 229, 255, 0.22)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([6, 8]);
+      ctx.beginPath();
+      ctx.moveTo(40, horizonScreenY);
+      ctx.lineTo(cw - 40, horizonScreenY);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Proyectar cada Hotspot 3D desde coordenadas esféricas (yaw, pitch) a píxeles de pantalla
+    activeHotspotNodes.forEach(({ data, el }) => {
+      let deltaYaw = data.yaw - camYaw;
+      while (deltaYaw > 180) deltaYaw -= 360;
+      while (deltaYaw < -180) deltaYaw += 360;
+
+      const deltaPitch = data.pitch - camPitch;
+
+      if (Math.abs(deltaYaw) <= camFov * 0.58 && Math.abs(deltaPitch) <= vFov * 0.58) {
+        const screenX = (0.5 + deltaYaw / camFov) * cw;
+        const screenY = (0.5 - deltaPitch / vFov) * ch;
+        el.style.display = 'block';
+        el.style.left = `${screenX}px`;
+        el.style.top = `${screenY}px`;
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  // Eventos de interacción de cámara 360° (Arrastrar para mirar, Rueda de ratón para Zoom y Botones)
+  if (pannellumMountEl) {
+    pannellumMountEl.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.hud-360-hotspot')) return;
+      isDragging360 = true;
+      targetYaw = null;
+      targetPitch = null;
+      targetFov = null;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      dragStartYaw = camYaw;
+      dragStartPitch = camPitch;
+      pannellumMountEl.setPointerCapture?.(e.pointerId);
+    });
+
+    pannellumMountEl.addEventListener('pointermove', (e) => {
+      if (!isDragging360) return;
+      const dx = e.clientX - dragStartX;
+      const dy = e.clientY - dragStartY;
+      const sensitivity = camFov / 480;
+      camYaw = ((dragStartYaw - dx * sensitivity) % 360 + 360) % 360;
+      camPitch = Math.max(-38, Math.min(38, dragStartPitch + dy * sensitivity));
+    });
+
+    const endDrag360 = () => {
+      isDragging360 = false;
+    };
+    pannellumMountEl.addEventListener('pointerup', endDrag360);
+    pannellumMountEl.addEventListener('pointercancel', endDrag360);
+
+    pannellumMountEl.addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        targetYaw = null;
+        camFov = Math.max(45, Math.min(115, camFov + (e.deltaY > 0 ? 5 : -5)));
+      },
+      { passive: false }
+    );
+  }
+
+  if (btn360ZoomIn) {
+    btn360ZoomIn.addEventListener('click', () => {
+      targetYaw = null;
+      camFov = Math.max(45, camFov - 10);
+    });
+  }
+  if (btn360ZoomOut) {
+    btn360ZoomOut.addEventListener('click', () => {
+      targetYaw = null;
+      camFov = Math.min(115, camFov + 10);
+    });
+  }
+  if (btn360ResetCam) {
+    btn360ResetCam.addEventListener('click', () => {
+      const st = STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
+      animateCameraTo(st.initialYaw, st.initialPitch, 90);
+    });
+  }
+
+  // Arrancar el bucle gráfico 60FPS del visor 360°
+  requestAnimationFrame(renderMars360Frame);
 
   // Actualiza la tarjeta holográfica de inspección científica dentro del visor 360°
   function updateInspectorCard(info) {
     if (!info) return;
-    if (svInspectorCard) svInspectorCard.classList.remove('is-minimized');
     if (sviKickerEl && info.kicker) {
       sviKickerEl.innerHTML = `<i class="fa-solid fa-microscope"></i> ${info.kicker}`;
     }
@@ -2091,59 +2389,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Construye el objeto de configuración de escenas para Pannellum.js
-  function buildPannellumScenesConfig() {
-    const scenesObj = {};
-
-    STREETVIEW_STATIONS.forEach((station) => {
-      const textureUrl = getOrGeneratePanoramaTexture(station);
-
-      const formattedHotspots = station.hotspots.map((hs) => ({
-        pitch: hs.pitch,
-        yaw: hs.yaw,
-        cssClass: 'hud-360-hotspot',
-        createTooltipFunc: (hotSpotDiv) => {
-          const pinTypeClass =
-            hs.kind === 'nav' ? 'type-nav' : hs.kind === 'ice' ? 'type-ice' : 'type-science';
-          hotSpotDiv.innerHTML = `
-            <div class="hs360-pin ${pinTypeClass}">
-              <div class="hs360-icon"><i class="fa-solid ${hs.icon}"></i></div>
-              <span class="hs360-label">${hs.label}</span>
-            </div>
-          `;
-        },
-        clickHandlerFunc: () => {
-          if (hs.kind === 'nav' && hs.targetScene) {
-            loadStreetViewStation(hs.targetScene, true);
-          } else {
-            if (panoViewer) {
-              panoViewer.lookAt(hs.pitch, hs.yaw, 75, 800);
-            }
-            updateInspectorCard({
-              kicker: hs.kicker,
-              title: hs.label,
-              desc: hs.desc,
-              dist: hs.dist,
-              comp: hs.comp
-            });
-          }
-        }
-      }));
-
-      scenesObj[station.id] = {
-        type: 'equirectangular',
-        panorama: textureUrl,
-        yaw: station.initialYaw,
-        pitch: station.initialPitch,
-        hfov: 95,
-        hotSpots: formattedHotspots
-      };
-    });
-
-    return scenesObj;
-  }
-
-  // Inicializa o actualiza la estación activa en el motor WebGL Pannellum.js
+  // Inicializa o actualiza la estación activa en el motor esférico 360°
   function loadStreetViewStation(stationId, syncWithMapAndRoute = true) {
     const station =
       STREETVIEW_STATIONS.find((s) => s.id === stationId) || STREETVIEW_STATIONS[1];
@@ -2153,26 +2399,12 @@ document.addEventListener('DOMContentLoaded', () => {
       svStationTitleEl.textContent = `MARTIAN STREET VIEW 360° // ${station.title}`;
     }
 
+    getOrGeneratePanoramaCanvas(station);
+    buildStationHotspotElements(station);
+    animateCameraTo(station.initialYaw, station.initialPitch, 90);
+
     updateInspectorCard(station.defaultInspect);
     renderStreetViewStepPills();
-
-    if (!panoViewer && typeof pannellum !== 'undefined') {
-      const scenesConfig = buildPannellumScenesConfig();
-      panoViewer = pannellum.viewer('pannellum-viewer', {
-        default: {
-          firstScene: station.id,
-          autoLoad: true,
-          autoRotate: -2.2,
-          compass: false,
-          showZoomCtrl: true,
-          showFullscreenCtrl: true,
-          sceneFadeDuration: 650
-        },
-        scenes: scenesConfig
-      });
-    } else if (panoViewer && panoViewer.getScene() !== station.id) {
-      panoViewer.loadScene(station.id, station.initialPitch, station.initialYaw, 95);
-    }
 
     // Sincronizar con la ruta activa, posición del Rover en el mapa 2D y telemetría de supervivencia
     if (syncWithMapAndRoute) {
@@ -2193,7 +2425,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   let roverVisionCone = null;
   let lastKnownYaw = 14;
-  let lastKnownHfov = 95;
+  let lastKnownHfov = 90;
   let isInternalStationSync = false;
 
   // Calcula un punto (lat, lng) proyectado desde un origen dado un rumbo (bearingDeg) y radio en km
@@ -2264,30 +2496,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Bucle de telemetría de orientación 360° (Brújula, Pitch, FOV y Cono de Visión en Mapa 2D)
   setInterval(() => {
-    if (!panoViewer || streetContainer.classList.contains('is-hidden')) return;
-    try {
-      const rawYaw = panoViewer.getYaw() || 0;
-      const normYaw = Math.round(((rawYaw % 360) + 360) % 360);
-      const pitch = (panoViewer.getPitch() || 0).toFixed(1);
-      const fov = Math.round(panoViewer.getHfov() || 95);
+    if (streetContainer.classList.contains('is-hidden')) return;
+    const normYaw = Math.round(((camYaw % 360) + 360) % 360);
+    const pitch = camPitch.toFixed(1);
+    const fov = Math.round(camFov);
 
-      const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
-      const dirLabel = dirs[Math.round(normYaw / 45) % 8];
+    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+    const dirLabel = dirs[Math.round(normYaw / 45) % 8];
 
-      if (svCompassHeadingEl) {
-        svCompassHeadingEl.textContent = `AZIMUT: ${String(normYaw).padStart(3, '0')}° ${dirLabel}`;
-      }
-      const activeStation = STREETVIEW_STATIONS.find((s) => s.id === currentStationId);
-      if (svCameraAnglesEl && activeStation) {
-        svCameraAnglesEl.textContent = `PITCH: ${pitch}° | FOV: ${fov}° | SENSOR: ${activeStation.sensor}`;
-      }
-
-      // Actualizar en tiempo real el cono de visión radar sobre el Mapa 2D
-      updateRoverVisionConeOnMap(normYaw, fov);
-    } catch {
-      // Ignorar mientras la escena WebGL está en transición
+    if (svCompassHeadingEl) {
+      svCompassHeadingEl.textContent = `AZIMUT: ${String(normYaw).padStart(3, '0')}° ${dirLabel}`;
     }
-  }, 180);
+    const activeStation = STREETVIEW_STATIONS.find((s) => s.id === currentStationId);
+    if (svCameraAnglesEl && activeStation) {
+      svCameraAnglesEl.textContent = `PITCH: ${pitch}° | FOV: ${fov}° | SENSOR: ${activeStation.sensor}`;
+    }
+
+    // Actualizar en tiempo real el cono de visión radar sobre el Mapa 2D
+    updateRoverVisionConeOnMap(normYaw, fov);
+  }, 160);
 
   // Botones de Navegación Paso a Paso (Anterior / Siguiente)
   if (btnSvPrev) {
@@ -2311,18 +2538,130 @@ document.addEventListener('DOMContentLoaded', () => {
     btnSvAutoRotate.addEventListener('click', () => {
       isAutoRotating = !isAutoRotating;
       btnSvAutoRotate.classList.toggle('is-active', isAutoRotating);
-      if (panoViewer) {
-        if (isAutoRotating) panoViewer.startAutoRotate(-2.2);
-        else panoViewer.stopAutoRotate();
-      }
     });
   }
 
-  // Minimizar / expandir tarjeta de inspección científica en 360°
+  // CERRAR COMPLETAMENTE, minimizar o reabrir la ventana emergente de inspección científica en 360°
   if (btnCloseInspector && svInspectorCard) {
     btnCloseInspector.addEventListener('click', () => {
+      svInspectorCard.classList.add('is-closed');
+      if (btnReopenInspector) btnReopenInspector.classList.remove('is-active');
+      if (typeof playHudTone === 'function') playHudTone(520, 0.05, 'sine');
+    });
+  }
+
+  if (btnMinimizeInspector && svInspectorCard) {
+    btnMinimizeInspector.addEventListener('click', () => {
       svInspectorCard.classList.toggle('is-minimized');
     });
+  }
+
+  if (btnReopenInspector && svInspectorCard) {
+    btnReopenInspector.addEventListener('click', () => {
+      const willOpen = svInspectorCard.classList.contains('is-closed');
+      svInspectorCard.classList.toggle('is-closed', !willOpen);
+      if (willOpen) svInspectorCard.classList.remove('is-minimized');
+      btnReopenInspector.classList.toggle('is-active', willOpen);
+    });
+  }
+
+  // Cerrar la ventana emergente de inspección con la tecla Escape
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && svInspectorCard && !svInspectorCard.classList.contains('is-closed')) {
+      if (!dossierDialog?.open) {
+        svInspectorCard.classList.add('is-closed');
+      }
+    }
+  });
+
+  // ==========================================================================
+  // 10B. CONTROL DE SIDEBARS DESPLEGABLES (TOGGLE DRAWERS) Y MODO INMERSIVO
+  // ==========================================================================
+  const sidebarLeftEl = document.getElementById('sidebar-left');
+  const sidebarRightEl = document.getElementById('sidebar-right');
+  const hudFooterEl = document.getElementById('hud-footer');
+
+  const btnToggleLeft = document.getElementById('btn-toggle-left-panel');
+  const btnToggleRight = document.getElementById('btn-toggle-right-panel');
+  const btnToggleBottom = document.getElementById('btn-toggle-bottom-panel');
+  const btnZenMode = document.getElementById('btn-zen-mode');
+
+  const btnCloseLeftSidebar = document.getElementById('btn-close-left-sidebar');
+  const btnCloseRightSidebar = document.getElementById('btn-close-right-sidebar');
+  const btnCloseBottomHud = document.getElementById('btn-close-bottom-hud');
+
+  const btnEdgeLeft = document.getElementById('btn-edge-left');
+  const btnEdgeRight = document.getElementById('btn-edge-right');
+  const btnEdgeBottom = document.getElementById('btn-edge-bottom');
+
+  function syncZenButtonState() {
+    if (!btnZenMode) return;
+    const allHidden =
+      sidebarLeftEl?.classList.contains('is-collapsed') &&
+      sidebarRightEl?.classList.contains('is-collapsed') &&
+      hudFooterEl?.classList.contains('is-collapsed');
+    btnZenMode.classList.toggle('is-active', Boolean(allHidden));
+  }
+
+  function setPanelOpen(which, shouldOpen) {
+    const map = {
+      left: { panel: sidebarLeftEl, btn: btnToggleLeft },
+      right: { panel: sidebarRightEl, btn: btnToggleRight },
+      bottom: { panel: hudFooterEl, btn: btnToggleBottom }
+    };
+    const item = map[which];
+    if (!item || !item.panel) return;
+
+    const openState =
+      typeof shouldOpen === 'boolean' ? shouldOpen : item.panel.classList.contains('is-collapsed');
+
+    item.panel.classList.toggle('is-collapsed', !openState);
+    if (item.btn) {
+      item.btn.classList.toggle('is-active', openState);
+      item.btn.setAttribute('aria-expanded', String(openState));
+    }
+
+    syncZenButtonState();
+    setTimeout(() => {
+      marsMap.invalidateSize();
+    }, 330);
+  }
+
+  if (btnToggleLeft) btnToggleLeft.addEventListener('click', () => setPanelOpen('left'));
+  if (btnCloseLeftSidebar) btnCloseLeftSidebar.addEventListener('click', () => setPanelOpen('left', false));
+  if (btnEdgeLeft) btnEdgeLeft.addEventListener('click', () => setPanelOpen('left', true));
+
+  if (btnToggleRight) btnToggleRight.addEventListener('click', () => setPanelOpen('right'));
+  if (btnCloseRightSidebar) btnCloseRightSidebar.addEventListener('click', () => setPanelOpen('right', false));
+  if (btnEdgeRight) btnEdgeRight.addEventListener('click', () => setPanelOpen('right', true));
+
+  if (btnToggleBottom) btnToggleBottom.addEventListener('click', () => setPanelOpen('bottom'));
+  if (btnCloseBottomHud) btnCloseBottomHud.addEventListener('click', () => setPanelOpen('bottom', false));
+  if (btnEdgeBottom) btnEdgeBottom.addEventListener('click', () => setPanelOpen('bottom', true));
+
+  if (btnZenMode) {
+    btnZenMode.addEventListener('click', () => {
+      const anyOpen =
+        !sidebarLeftEl?.classList.contains('is-collapsed') ||
+        !sidebarRightEl?.classList.contains('is-collapsed') ||
+        !hudFooterEl?.classList.contains('is-collapsed');
+
+      if (anyOpen) {
+        setPanelOpen('left', false);
+        setPanelOpen('right', false);
+        setPanelOpen('bottom', false);
+      } else {
+        setPanelOpen('left', true);
+        setPanelOpen('right', true);
+        setPanelOpen('bottom', true);
+      }
+      if (typeof playHudTone === 'function') playHudTone(680, 0.07, 'triangle');
+    });
+  }
+
+  // Iniciar con el HUD inferior oculto en pantallas compactas para dar máxima amplitud al mapa
+  if (window.innerHeight < 860) {
+    setPanelOpen('bottom', false);
   }
 
   // ==========================================================================
@@ -2338,12 +2677,20 @@ document.addEventListener('DOMContentLoaded', () => {
       btnToggleStreet.setAttribute('aria-pressed', 'true');
       btnSplitView.classList.remove('is-active');
       streetBtnLabel.textContent = 'VOLVER AL MAPA 2D';
+      // Despejar automáticamente los paneles laterales al entrar a 360° para vista inmersiva limpia
+      setPanelOpen('left', false);
+      setPanelOpen('right', false);
+      setPanelOpen('bottom', false);
     } else if (mode === 'split') {
       mapContainer.classList.remove('is-hidden');
       streetContainer.classList.remove('is-hidden');
       btnToggleStreet.classList.add('is-active');
       btnSplitView.classList.add('is-active');
       streetBtnLabel.textContent = '360° ACTIVO (DIVIDIDO)';
+      // En pantalla dividida, ocultar automáticamente los sidebars para que el Mapa y el 360° tengan toda la pantalla
+      setPanelOpen('left', false);
+      setPanelOpen('right', false);
+      setPanelOpen('bottom', false);
     } else {
       mapContainer.classList.remove('is-hidden');
       streetContainer.classList.add('is-hidden');
@@ -2359,10 +2706,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => {
       marsMap.invalidateSize();
-      if (panoViewer && typeof panoViewer.resize === 'function') {
-        panoViewer.resize();
-      }
-    }, 180);
+    }, 220);
   }
 
   if (btnToggleStreet) {
@@ -2933,7 +3277,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Inicializar la ruta por defecto (JEZERO-ALPHA), el cono de visión y el Street View al arrancar
-  renderStreetViewStepPills();
+  loadStreetViewStation('scene-kodiak', false);
   loadRoute('jezero-alpha', false);
-  updateRoverVisionConeOnMap(14, 95);
+  updateRoverVisionConeOnMap(14, 90);
 });
