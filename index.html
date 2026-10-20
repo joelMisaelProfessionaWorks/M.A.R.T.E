@@ -14,8 +14,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <!-- Motor Esférico WebGL Pannellum.js (Etapa 4: Martian Street View 360°) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" crossorigin="">
-  <!-- Hoja de Estilos Principal HUD (v8 Fullscreen + Vista Real / Vista 2D Separadas) -->
-  <link rel="stylesheet" href="styles.css?v=8">
+  <!-- Hoja de Estilos Principal HUD (v9 Fullscreen + Vista Real / Vista 2D Separadas) -->
+  <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body class="nasa-hud-theme">
 
@@ -65,6 +65,18 @@
           <i class="fa-solid fa-expand"></i>
           <span id="zen-btn-label">MAPA COMPLETO</span>
         </button>
+      </div>
+
+      <!-- Telemetría de Enlace Orbital Central (Reloj Marciano MTC y Coordenadas) -->
+      <div class="header-telemetry">
+        <div class="telemetry-pill">
+          <span class="tp-label">COORDENADAS</span>
+          <span class="tp-value" id="hud-header-coords">18.38°N &bull; 77.58°E</span>
+        </div>
+        <div class="telemetry-pill">
+          <span class="tp-label">TIEMPO MARCIANO</span>
+          <span class="tp-value text-orange" id="hud-header-clock">SOL 1420 &bull; 14:32:08 MTC</span>
+        </div>
       </div>
 
       <!-- Acciones de Vista: Audio HUD, Dossier Misiones NASA, Pantalla Dividida y Street View 360° -->
@@ -905,6 +917,6 @@
   <!-- Motores Cartográfico (Leaflet.js) y Esférico WebGL 360° (Pannellum.js) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js" crossorigin=""></script>
-  <script type="module" src="/app.js"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>

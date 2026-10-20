@@ -8,7 +8,7 @@
  * ============================================================================
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+function initMarsDashboard() {
   // Referencias del DOM principales
   const viewportStage = document.getElementById('viewport-stage');
   const mapContainer = document.getElementById('map-container');
@@ -4310,14 +4310,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const hudClockEl = document.getElementById('hud-header-clock');
   let mtcTotalSeconds = 14 * 3600 + 32 * 60 + 8;
 
-  setInterval(() => {
-    mtcTotalSeconds = (mtcTotalSeconds + 1) % 86400;
+  const updateHudClock = () => {
     const hrs = String(Math.floor(mtcTotalSeconds / 3600)).padStart(2, '0');
     const mins = String(Math.floor((mtcTotalSeconds % 3600) / 60)).padStart(2, '0');
     const secs = String(mtcTotalSeconds % 60).padStart(2, '0');
     if (hudClockEl) {
       hudClockEl.innerHTML = `SOL 1420 &bull; ${hrs}:${mins}:${secs} MTC`;
     }
+  };
+  updateHudClock();
+
+  setInterval(() => {
+    mtcTotalSeconds = (mtcTotalSeconds + 1) % 86400;
+    updateHudClock();
   }, 1027); // 1 segundo marciano equivale a ~1.02749 segundos terrestres
 
   let hudAudioEnabled = true;
@@ -4366,4 +4371,11 @@ document.addEventListener('DOMContentLoaded', () => {
   loadStreetViewStation('scene-kodiak', false);
   loadRoute('jezero-alpha', false);
   updateRoverVisionConeOnMap(14, 90);
-});
+}
+
+// Iniciar de inmediato si el DOM ya está listo, o al dispararse DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMarsDashboard);
+} else {
+  initMarsDashboard();
+}

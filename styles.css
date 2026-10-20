@@ -1475,11 +1475,17 @@ body {
    DISEÑO RESPONSIVE (TABLETS Y PANTALLAS COMPACTAS)
    ========================================================================== */
 @media (max-width: 1280px) {
-  .header-telemetry {
-    display: none;
+  .header-telemetry .telemetry-pill:first-child {
+    display: none; /* Oculta coordenadas en pantallas medianas pero mantiene el Reloj Marciano visible */
   }
   .dashboard-shell {
     grid-template-columns: 280px minmax(0, 1fr) 290px;
+  }
+}
+
+@media (max-width: 860px) {
+  .header-telemetry {
+    display: none;
   }
 }
 
