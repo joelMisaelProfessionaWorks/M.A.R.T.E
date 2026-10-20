@@ -73,13 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const metricTimeSub = document.getElementById('metric-time-sub');
   const barTime = document.getElementById('bar-time');
 
-  // Constantes Planetarias Marcianas
+  // Constantes Planetarias Marcianas (Zoom calibrado a resolución nativa orbital para nitidez total)
   const MARS_RADIUS_KM = 3396.2; // Radio ecuatorial de Marte en km
-  const JEZERO_CENTER = [18.448, 77.432];
-  const DEFAULT_ZOOM = 12;
+  const JEZERO_CENTER = [18.45, 77.42];
+  const DEFAULT_ZOOM = 8;
 
   // ==========================================================================
-  // 1. CATÁLOGO CIENTÍFICO DE RUTAS MARCIANAS (ETAPA 3)
+  // 1. CATÁLOGO CIENTÍFICO DE RUTAS MARCIANAS (ETAPA 3 — ESCALA TÁCTICA NÍTIDA)
   // ==========================================================================
   const ROUTES_CATALOG = {
     'jezero-alpha': {
@@ -95,44 +95,44 @@ document.addEventListener('DOMContentLoaded', () => {
       totalDistKm: 14.6,
       baseO2RatePerKm: 3.15, // % de tanque EVA por km
       baseBatteryPerKm: 1.65, // % de batería por km
-      center: [18.448, 77.432],
-      zoom: 12,
+      center: [18.45, 77.42],
+      zoom: 8,
       pathCoords: [
-        [18.4447, 77.4508, -2540],
-        [18.4365, 77.4420, -2518],
-        [18.4280, 77.4310, -2490],
-        [18.4440, 77.4220, -2465],
-        [18.4590, 77.4150, -2435],
-        [18.4665, 77.4020, -2405],
-        [18.4720, 77.3920, -2380]
+        [18.28, 77.68, -2540],
+        [18.33, 77.59, -2518],
+        [18.38, 77.49, -2490],
+        [18.45, 77.41, -2465],
+        [18.52, 77.33, -2435],
+        [18.58, 77.24, -2405],
+        [18.64, 77.15, -2380]
       ],
       waypoints: [
         {
           name: 'Punto de Inicio (Start)',
           sub: 'Octavia E. Butler Landing',
           km: 0.0,
-          coords: [18.4447, 77.4508],
+          coords: [18.28, 77.68],
           elev: -2540
         },
         {
           name: 'Parada Científica: Kodiak',
           sub: 'Análisis estratigráfico fluvial',
           km: 4.8,
-          coords: [18.4280, 77.4310],
+          coords: [18.38, 77.49],
           elev: -2490
         },
         {
           name: 'Depósito de Hielo Subterráneo',
           sub: 'Extracción ISRU de H₂O',
           km: 9.4,
-          coords: [18.4590, 77.4150],
+          coords: [18.52, 77.33],
           elev: -2435
         },
         {
           name: 'Campamento Base (Base Camp)',
           sub: 'Hábitat Delta Prime',
           km: 14.6,
-          coords: [18.4720, 77.3920],
+          coords: [18.64, 77.15],
           elev: -2380
         }
       ]
@@ -151,43 +151,43 @@ document.addEventListener('DOMContentLoaded', () => {
       totalDistKm: 19.2,
       baseO2RatePerKm: 3.45,
       baseBatteryPerKm: 2.15,
-      center: [18.458, 77.405],
-      zoom: 12,
+      center: [18.52, 77.32],
+      zoom: 8,
       pathCoords: [
-        [18.4447, 77.4508, -2540],
-        [18.4580, 77.4360, -2495],
-        [18.4630, 77.4120, -2420],
-        [18.4710, 77.3890, -2365],
-        [18.4790, 77.3690, -2325],
-        [18.4850, 77.3520, -2295]
+        [18.28, 77.68, -2540],
+        [18.39, 77.55, -2495],
+        [18.49, 77.42, -2420],
+        [18.58, 77.28, -2365],
+        [18.66, 77.14, -2325],
+        [18.74, 76.98, -2295]
       ],
       waypoints: [
         {
           name: 'Octavia E. Butler Landing',
           sub: 'Base de partida en llanura',
           km: 0.0,
-          coords: [18.4447, 77.4508],
+          coords: [18.28, 77.68],
           elev: -2540
         },
         {
           name: 'Frente del Delta Norte',
           sub: 'Ascenso por talud sedimentario',
           km: 6.1,
-          coords: [18.4630, 77.4120],
+          coords: [18.49, 77.42],
           elev: -2420
         },
         {
           name: 'Mirador Cráter Belva',
           sub: 'Impacto expone estratos antiguos',
           km: 12.8,
-          coords: [18.4710, 77.3890],
+          coords: [18.58, 77.28],
           elev: -2365
         },
         {
           name: 'Boca de Neretva Vallis',
           sub: 'Estación Hidrológica Avanzada',
           km: 19.2,
-          coords: [18.4850, 77.3520],
+          coords: [18.74, 76.98],
           elev: -2295
         }
       ]
@@ -206,42 +206,42 @@ document.addEventListener('DOMContentLoaded', () => {
       totalDistKm: 24.8,
       baseO2RatePerKm: 3.30,
       baseBatteryPerKm: 2.35,
-      center: [-4.64, 137.40],
-      zoom: 11,
+      center: [-4.68, 137.38],
+      zoom: 8,
       pathCoords: [
-        [-4.5895, 137.4417, -4501],
-        [-4.6120, 137.4250, -4440],
-        [-4.6450, 137.4010, -4310],
-        [-4.6780, 137.3850, -4185],
-        [-4.7120, 137.3680, -4011]
+        [-4.42, 137.62, -4501],
+        [-4.54, 137.50, -4440],
+        [-4.68, 137.38, -4310],
+        [-4.81, 137.26, -4185],
+        [-4.95, 137.14, -4011]
       ],
       waypoints: [
         {
           name: 'Bradbury Landing (Inicio)',
           sub: 'Sitio de descenso MSL Curiosity',
           km: 0.0,
-          coords: [-4.5895, 137.4417],
+          coords: [-4.42, 137.62],
           elev: -4501
         },
         {
           name: 'Campo de Dunas Bagnold',
           sub: 'Arena basáltica eólica activa',
           km: 7.4,
-          coords: [-4.6120, 137.4250],
+          coords: [-4.54, 137.50],
           elev: -4440
         },
         {
           name: 'Cresta Vera Rubin',
           sub: 'Depósitos de óxido férrico (Hematita)',
           km: 16.2,
-          coords: [-4.6450, 137.4010],
+          coords: [-4.68, 137.38],
           elev: -4310
         },
         {
           name: 'Unidad de Sulfatos Monte Sharp',
           sub: 'Campamento de Altura Gale',
           km: 24.8,
-          coords: [-4.7120, 137.3680],
+          coords: [-4.95, 137.14],
           elev: -4011
         }
       ]
@@ -261,41 +261,41 @@ document.addEventListener('DOMContentLoaded', () => {
       baseO2RatePerKm: 3.65,
       baseBatteryPerKm: 2.65,
       center: [-13.88, -59.18],
-      zoom: 11,
+      zoom: 8,
       pathCoords: [
-        [-13.8200, -59.2600, -4120],
-        [-13.8550, -59.2200, -3960],
-        [-13.8900, -59.1800, -3790],
-        [-13.9250, -59.1400, -3610],
-        [-13.9600, -59.0950, -3440]
+        [-13.62, -59.52, -4120],
+        [-13.75, -59.35, -3960],
+        [-13.88, -59.18, -3790],
+        [-14.01, -59.01, -3610],
+        [-14.14, -58.84, -3440]
       ],
       waypoints: [
         {
           name: 'Plataforma Coprates Floor',
           sub: 'Fondo del cañón abisal',
           km: 0.0,
-          coords: [-13.8200, -59.2600],
+          coords: [-13.62, -59.52],
           elev: -4120
         },
         {
           name: 'Escarpe de Falla Normal 01',
           sub: 'Pendiente rocosa de 27.6°',
           km: 10.5,
-          coords: [-13.8550, -59.2200],
+          coords: [-13.75, -59.35],
           elev: -3960
         },
         {
           name: 'Terraza de Sulfatos Hídricos',
           sub: 'Vetas minerales expuestas',
           km: 21.0,
-          coords: [-13.8900, -59.1800],
+          coords: [-13.88, -59.18],
           elev: -3790
         },
         {
           name: 'Refugio Subterráneo de Pared',
           sub: 'Tubo de lava / Caverna protegida',
           km: 31.5,
-          coords: [-13.9600, -59.0950],
+          coords: [-14.14, -58.84],
           elev: -3440
         }
       ]
@@ -310,13 +310,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let simIntervalId = null;
 
   // ==========================================================================
-  // 2. INICIALIZACIÓN DEL MOTOR CARTOGRÁFICO LEAFLET.JS (ETAPA 2)
+  // 2. INICIALIZACIÓN DEL MOTOR CARTOGRÁFICO LEAFLET.JS (ETAPA 2 — ALTA NITIDEZ)
   // ==========================================================================
   const marsMap = L.map('mars-leaflet-map', {
     center: JEZERO_CENTER,
     zoom: DEFAULT_ZOOM,
     minZoom: 2,
-    maxZoom: 16,
+    maxZoom: 10,
     zoomControl: false,
     attributionControl: true
   });
@@ -325,41 +325,144 @@ document.addEventListener('DOMContentLoaded', () => {
     '<span class="hud-attr-tag">NASA / JPL-Caltech / USGS Astrogeology / OpenPlanetaryMap</span>'
   );
 
+  const USGS_MARS_WMS_URL =
+    'https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map';
+
   const baseTiles = {
     opmMars: L.tileLayer(
       'https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-2/all/{z}/{x}/{y}.png',
       {
-        maxZoom: 16,
+        maxZoom: 10,
         maxNativeZoom: 6,
+        keepBuffer: 6,
+        updateWhenIdle: false,
+        zIndex: 1,
         attribution: 'OpenPlanetaryMap / Viking MDIM 2.1'
       }
     ),
-    molaColor: L.tileLayer(
+    molaBase: L.tileLayer(
       'https://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/mola-color/{z}/{x}/{y}.png',
       {
         tms: true,
-        maxZoom: 16,
+        maxZoom: 10,
         maxNativeZoom: 6,
-        opacity: 0.72,
-        attribution: 'NASA MGS MOLA Altimetry'
+        keepBuffer: 6,
+        updateWhenIdle: false,
+        zIndex: 2,
+        attribution: 'NASA MGS MOLA Altimetry Color'
       }
     ),
     shadedRelief: L.tileLayer(
       'https://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/celestia_mars-shaded-16k_global/{z}/{x}/{y}.png',
       {
         tms: true,
-        maxZoom: 16,
+        maxZoom: 10,
         maxNativeZoom: 5,
-        opacity: 0.65,
+        keepBuffer: 6,
+        updateWhenIdle: false,
+        opacity: 0.35,
+        zIndex: 2,
         attribution: 'Celestia 16K Shaded Relief'
       }
-    )
+    ),
+    usgsBlend: L.tileLayer.wms(USGS_MARS_WMS_URL, {
+      layers: 'MOLA_THEMIS_blend',
+      format: 'image/jpeg',
+      maxZoom: 10,
+      zIndex: 3,
+      attribution: 'USGS Astrogeology / NASA MGS MOLA + Odyssey THEMIS IR (100m)'
+    }),
+    usgsHrsc: L.tileLayer.wms(USGS_MARS_WMS_URL, {
+      layers: 'HRSC_MOLA_Blend_Hillshade',
+      format: 'image/jpeg',
+      maxZoom: 10,
+      zIndex: 3,
+      attribution: 'ESA Mars Express HRSC + NASA MGS MOLA Blended Hillshade'
+    })
   };
 
+  // Capa independiente para el switch "Topography (MOLA)" para que NUNCA se borre al cambiar el modelo de mapa
+  const molaTopoOverlay = L.tileLayer(
+    'https://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/mola-color/{z}/{x}/{y}.png',
+    {
+      tms: true,
+      maxZoom: 10,
+      maxNativeZoom: 6,
+      opacity: 0.42,
+      zIndex: 5,
+      attribution: 'NASA MGS MOLA Altimetry Overlay'
+    }
+  );
+
+  // Capa Procedural Táctica de Alta Definición (HiRISE/CTX Detail Grid) para evitar pixelado en zoom de Rover
+  const TacticalDetailGridLayer = L.GridLayer.extend({
+    createTile: function (coords) {
+      const tile = document.createElement('canvas');
+      tile.width = 256;
+      tile.height = 256;
+      if (coords.z < 6) return tile;
+
+      const ctx = tile.getContext('2d');
+      const seedBase = ((coords.x * 73856093) ^ (coords.y * 19349663) ^ (coords.z * 83492791)) >>> 0;
+      const rand = (n) => {
+        const x = Math.sin(seedBase + n * 127.1) * 43758.5453;
+        return x - Math.floor(x);
+      };
+
+      // Retícula telemétrica fina de sub-sector orbital
+      ctx.strokeStyle = 'rgba(255, 107, 43, 0.14)';
+      ctx.lineWidth = 0.75;
+      ctx.strokeRect(0.5, 0.5, 255, 255);
+
+      ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
+      ctx.beginPath();
+      ctx.moveTo(128, 0);
+      ctx.lineTo(128, 256);
+      ctx.moveTo(0, 128);
+      ctx.lineTo(256, 128);
+      ctx.stroke();
+
+      // Micro-cráteres y anillos de relieve HiRISE nítidos a alto zoom
+      const craterCount = 5 + (seedBase % 6);
+      for (let i = 0; i < craterCount; i++) {
+        const cx = 24 + rand(i * 3 + 1) * 208;
+        const cy = 24 + rand(i * 3 + 2) * 208;
+        const r = 4 + rand(i * 3 + 3) * 18;
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 180, 130, 0.22)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(cx - 1, cy - 1, r * 0.85, Math.PI * 0.8, Math.PI * 1.75);
+        ctx.strokeStyle = 'rgba(15, 8, 4, 0.32)';
+        ctx.stroke();
+      }
+
+      // Etiqueta telemétrica de cuadrícula MRO CTX
+      ctx.fillStyle = 'rgba(255, 158, 102, 0.34)';
+      ctx.font = '9px "Share Tech Mono", monospace';
+      ctx.fillText(`CTX-${coords.z}:${coords.x}:${coords.y}`, 6, 14);
+
+      return tile;
+    }
+  });
+
+  const tacticalDetailGrid = new TacticalDetailGridLayer({
+    maxZoom: 10,
+    zIndex: 6,
+    opacity: 0.85
+  });
+
+  // Iniciar con el modelo híbrido CDN instantáneo (Viking OPM + Relieve + Detalle Táctico HiRISE)
   baseTiles.opmMars.addTo(marsMap);
+  baseTiles.shadedRelief.addTo(marsMap);
+  tacticalDetailGrid.addTo(marsMap);
 
   // ==========================================================================
-  // 3. CONSTRUCCIÓN DE LAS 5 CAPAS CIENTÍFICAS DE LA NASA
+  // 3. CONSTRUCCIÓN DINÁMICA DE LAS 5 CAPAS CIENTÍFICAS DE LA NASA POR REGIÓN
   // ==========================================================================
   const nasaLayers = {
     topo: L.layerGroup(),
@@ -373,246 +476,488 @@ document.addEventListener('DOMContentLoaded', () => {
   const dynamicRouteLayerGroup = L.layerGroup();
   nasaLayers.sites.addLayer(dynamicRouteLayerGroup);
 
-  // CAPA 1: TOPOGRAPHY (MOLA)
-  nasaLayers.topo.addLayer(baseTiles.molaColor);
+  // Sub-grupo dinámico para las curvas de nivel MOLA de la región activa
+  const regionalContoursGroup = L.layerGroup();
+  nasaLayers.topo.addLayer(molaTopoOverlay);
+  nasaLayers.topo.addLayer(regionalContoursGroup);
 
-  const molaContoursData = [
-    {
-      elev: '-2,560m (Llanura del Cráter)',
-      color: '#ff9e66',
-      dash: '6, 6',
-      coords: [
-        [18.412, 77.410],
-        [18.420, 77.465],
-        [18.455, 77.495],
-        [18.485, 77.480],
-        [18.492, 77.435],
-        [18.468, 77.405]
-      ]
+  // Base de datos cartográfica regional para que las capas (Topography, Geology, Resources, Weather)
+  // se actualicen automáticamente con el mapa al cambiar de ruta o sector marciano
+  const REGIONAL_LAYERS_DB = {
+    'jezero-alpha': {
+      contours: [
+        {
+          elev: '-2,560m (Piso Lacustre Jezero)',
+          color: '#ff9e66',
+          dash: '6, 6',
+          coords: [[18.18, 77.52], [18.25, 77.74], [18.46, 77.78], [18.65, 77.62], [18.68, 77.38]]
+        },
+        {
+          elev: '-2,460m (Talud Frontal del Delta)',
+          color: '#FF6B2B',
+          dash: null,
+          coords: [[18.24, 77.38], [18.38, 77.52], [18.54, 77.48], [18.66, 77.30], [18.72, 77.12]]
+        },
+        {
+          elev: '-2,340m (Meseta Delta Prime & Borde Cráter)',
+          color: '#ff3d00',
+          dash: '10, 5',
+          coords: [[18.32, 77.10], [18.48, 77.26], [18.62, 77.22], [18.75, 77.05]]
+        }
+      ],
+      geology: [
+        {
+          name: 'Unidad Deltaica Aluvial (Filosilicatos y Carbonatos)',
+          code: 'Nh-d1 // Alta Prioridad Astrobiológica',
+          desc: 'Sedimentos fluviales ricos en arcillas esmectitas y carbonatos depositados por el antiguo río Neretva Vallis hace ~3.700 millones de años.',
+          color: '#ce93d8',
+          fillColor: '#ab47bc',
+          coords: [[18.44, 77.12], [18.68, 77.14], [18.64, 77.42], [18.40, 77.38]]
+        },
+        {
+          name: 'Unidad Máaz (Piso Volcánico Basáltico / Olivino)',
+          code: 'Ah-v2 // Regolito Ígneo Fracturado',
+          desc: 'Rocas ígneas ricas en piroxeno y olivino alteradas por agua subterránea. Terreno firme óptimo para tracción de rovers.',
+          color: '#ffb74d',
+          fillColor: '#f57c00',
+          coords: [[18.20, 77.46], [18.44, 77.48], [18.42, 77.76], [18.18, 77.72]]
+        },
+        {
+          name: 'Unidad Séítah (Cumulados de Olivino y Carbonato Magnésico)',
+          code: 'Nh-s3 // Zona de Dunas Eólicas',
+          desc: 'Afloramiento geológico más antiguo del piso del cráter con presencia de ondas eólicas (megaripples). Precaución: riesgo de atasco en ruedas.',
+          color: '#ef5350',
+          fillColor: '#d32f2f',
+          coords: [[18.30, 77.32], [18.48, 77.35], [18.46, 77.54], [18.28, 77.50]]
+        }
+      ],
+      resources: [
+        {
+          name: 'Reserva de Hielo Subsuperficial: Delta Norte (ISRU-01)',
+          coords: [18.52, 77.33],
+          radius: 5800,
+          purity: '84% H₂O Cristalino + Sílice Hidratada',
+          depth: '1.2m bajo regolito',
+          yield: 'Estimado: 42,000 Litros procesables'
+        },
+        {
+          name: 'Bolsón de Permafrost Protegido: Neretva Rim (ISRU-02)',
+          coords: [18.64, 77.15],
+          radius: 4800,
+          purity: '91% Hielo de Agua Subterráneo',
+          depth: '0.8m (Sombra térmica permanente)',
+          yield: 'Estimado: 68,500 Litros (Soporte Vital Campamento Base)'
+        },
+        {
+          name: 'Depósito de Sulfatos Polihidratados: Kodiak Este',
+          coords: [18.35, 77.56],
+          radius: 4200,
+          purity: '38% Agua ligada a minerales',
+          depth: 'Superficial (0.2m)',
+          yield: 'Requiere horno de pirólisis a 450°C'
+        }
+      ],
+      weather: {
+        coords: [18.24, 77.22],
+        outerRadius: 11500,
+        innerRadius: 5500,
+        tag: 'TORMENTA DE POLVO (&tau; 1.45 | 24.5 KM/H)',
+        title: 'Frente de Tormenta de Polvo Regional (Jezero SO)',
+        desc: 'Avance hacia el ENE a 24.5 km/h. Opacidad atmosférica Tau (&tau;) subiendo a 1.45. Se recomienda completar travesía antes de las 17:30 MTC.'
+      }
     },
-    {
-      elev: '-2,480m (Talud Frontal del Delta)',
-      color: '#FF6B2B',
-      dash: null,
-      coords: [
-        [18.425, 77.390],
-        [18.442, 77.428],
-        [18.465, 77.438],
-        [18.482, 77.415],
-        [18.488, 77.382]
-      ]
+    'jezero-beta': {
+      contours: [
+        {
+          elev: '-2,420m (Rampa de Ascenso Belva)',
+          color: '#ff9e66',
+          dash: '6, 6',
+          coords: [[18.34, 77.45], [18.48, 77.56], [18.64, 77.46], [18.74, 77.28]]
+        },
+        {
+          elev: '-2,350m (Anillo de Eyección Cráter Belva)',
+          color: '#FF6B2B',
+          dash: null,
+          coords: [[18.48, 77.18], [18.58, 77.34], [18.68, 77.26], [18.76, 77.08]]
+        },
+        {
+          elev: '-2,280m (Garganta de Neretva Vallis)',
+          color: '#ff3d00',
+          dash: '10, 5',
+          coords: [[18.60, 76.88], [18.72, 77.04], [18.82, 76.96]]
+        }
+      ],
+      geology: [
+        {
+          name: 'Brecha de Impacto Cráter Belva (Estratigrafía Expuesta)',
+          code: 'Hc-b1 // Ventana Cortical Profunda',
+          desc: 'Cráter de impacto de 900m que expone secuencias deltaicas profundas y megabloques transportados por inundaciones.',
+          color: '#ce93d8',
+          fillColor: '#8e24aa',
+          coords: [[18.50, 77.18], [18.66, 77.20], [18.64, 77.38], [18.48, 77.35]]
+        },
+        {
+          name: 'Canal Fluvial Neretva Vallis (Arcillas Fe/Mg)',
+          code: 'Nh-nv // Antiguo Cañón Alimentador',
+          desc: 'Lecho rocoso tallado por el río que alimentó el lago Jezero. Abundantes filosilicatos hidratados.',
+          color: '#4dd0e1',
+          fillColor: '#0097a7',
+          coords: [[18.64, 76.88], [18.80, 76.90], [18.78, 77.16], [18.62, 77.12]]
+        }
+      ],
+      resources: [
+        {
+          name: 'Acuífero Congelado Neretva Gorge (ISRU-NV1)',
+          coords: [18.74, 76.98],
+          radius: 6200,
+          purity: '93% Hielo Subsuperficial en Pared de Cañón',
+          depth: '0.7m bajo talud norte',
+          yield: 'Estimado: 74,000 Litros procesables'
+        },
+        {
+          name: 'Lente de Hielo Cráter Belva Sur (ISRU-BV2)',
+          coords: [18.58, 77.28],
+          radius: 4800,
+          purity: '81% H₂O en brecha porosa',
+          depth: '1.4m bajo piso del cráter',
+          yield: 'Estimado: 39,000 Litros procesables'
+        }
+      ],
+      weather: {
+        coords: [18.62, 77.18],
+        outerRadius: 10500,
+        innerRadius: 4800,
+        tag: 'TURBULENCIA BELVA (&tau; 0.81 | 29.2 KM/H)',
+        title: 'Enjambre de Remolinos (Dust Devils) en Borde Belva',
+        desc: 'Vórtices convectivos detectados por el sensor MEDA-Norte con ráfagas de 29.2 km/h.'
+      }
     },
-    {
-      elev: '-2,390m (Meseta Superior Delta Prime)',
+    'gale-sharp': {
+      contours: [
+        {
+          elev: '-4,500m (Llanura Aeolis Palus / Bradbury)',
+          color: '#ff9e66',
+          dash: '6, 6',
+          coords: [[-4.35, 137.45], [-4.42, 137.70], [-4.60, 137.68], [-4.68, 137.52]]
+        },
+        {
+          elev: '-4,310m (Cresta de Hematita Vera Rubin)',
+          color: '#FF6B2B',
+          dash: null,
+          coords: [[-4.55, 137.28], [-4.68, 137.45], [-4.82, 137.38], [-4.88, 137.22]]
+        },
+        {
+          elev: '-4,010m (Faldas de Sulfatos Aeolis Mons / Monte Sharp)',
+          color: '#ff3d00',
+          dash: '10, 5',
+          coords: [[-4.78, 137.05], [-4.92, 137.22], [-5.05, 137.12]]
+        }
+      ],
+      geology: [
+        {
+          name: 'Campo de Dunas Eólicas Bagnold (Basalto y Olivino)',
+          code: 'Am-bd // Dunas Activas Oscuras',
+          desc: 'Cinturón de dunas de arena basáltica moldeadas por vientos del Monte Sharp. Baja tracción para ruedas metálicas.',
+          color: '#ef5350',
+          fillColor: '#c62828',
+          coords: [[-4.48, 137.38], [-4.62, 137.40], [-4.60, 137.58], [-4.46, 137.55]]
+        },
+        {
+          name: 'Formación Murray & Cresta Vera Rubin (Lutitas Lacustres)',
+          code: 'Hm-vr // Hematita y Arcillas Esmectitas',
+          desc: 'Sedimentos lacustres finamente laminados que prueban la existencia de un lago habitable de larga duración en Gale.',
+          color: '#ce93d8',
+          fillColor: '#9c27b0',
+          coords: [[-4.62, 137.24], [-4.80, 137.26], [-4.78, 137.46], [-4.60, 137.42]]
+        },
+        {
+          name: 'Unidad Portadora de Sulfatos (Monte Sharp / Gediz Vallis)',
+          code: 'Hs-ms // Kieserita y Sulfatos de Magnesio',
+          desc: 'Estratos depositados durante la transición climática de Marte hacia una era más árida.',
+          color: '#ffb74d',
+          fillColor: '#ef6c00',
+          coords: [[-4.82, 137.04], [-5.02, 137.06], [-4.98, 137.28], [-4.80, 137.24]]
+        }
+      ],
+      resources: [
+        {
+          name: 'Arcillas Hidratadas Glen Torridon (ISRU-GALE-01)',
+          coords: [-4.68, 137.38],
+          radius: 6400,
+          purity: '62% Agua Estructural en Filosilicatos',
+          depth: '0.4m bajo superficie',
+          yield: 'Estimado: 51,000 Litros mediante extracción térmica'
+        },
+        {
+          name: 'Canal Aluvial Gediz Vallis (ISRU-GALE-02)',
+          coords: [-4.95, 137.14],
+          radius: 5600,
+          purity: '78% Sulfatos Polihidratados + H₂O Subsuperficial',
+          depth: '1.1m en abanico de escombros',
+          yield: 'Estimado: 63,000 Litros procesables'
+        }
+      ],
+      weather: {
+        coords: [-4.76, 137.52],
+        outerRadius: 12000,
+        innerRadius: 5200,
+        tag: 'VIENTO DE LADERA GALE (&tau; 0.58 | 18.4 KM/H)',
+        title: 'Corriente Descendente de Aeolis Mons (Monte Sharp)',
+        desc: 'Flujo térmico NNO a 18.4 km/h registrado por la estación REMS del rover Curiosity.'
+      }
+    },
+    'valles-marineris': {
+      contours: [
+        {
+          elev: '-4,120m (Piso Abisal Coprates Chasma)',
+          color: '#ff9e66',
+          dash: '6, 6',
+          coords: [[-13.52, -59.62], [-13.68, -59.40], [-13.84, -59.48]]
+        },
+        {
+          elev: '-3,790m (Terraza Tectónica de Falla Normal)',
+          color: '#FF6B2B',
+          dash: null,
+          coords: [[-13.70, -59.38], [-13.88, -59.18], [-14.04, -59.25]]
+        },
+        {
+          elev: '-3,440m (Escarpe Superior y Pared del Cañón)',
+          color: '#ff3d00',
+          dash: '10, 5',
+          coords: [[-13.92, -59.02], [-14.12, -58.82], [-14.24, -58.95]]
+        }
+      ],
+      geology: [
+        {
+          name: 'Depósitos Estratificados Interiores (Sulfatos Hídricos)',
+          code: 'Hvi-s1 // Mesetas Sedimentarias del Cañón',
+          desc: 'Secuencias kilométricas de sulfatos hidratados y óxidos férricos expuestos por el colapso tectónico de Valles Marineris.',
+          color: '#ce93d8',
+          fillColor: '#8e24aa',
+          coords: [[-13.76, -59.32], [-13.98, -59.30], [-13.96, -59.05], [-13.74, -59.08]]
+        },
+        {
+          name: 'Escarpe Basáltico y Deslizamientos de Roca (Landslides)',
+          code: 'Av-ls // Pendiente Crítica 27.6°',
+          desc: 'Taludes de fragmentación volcánica con líneas de pendiente recurrentes (RSL).',
+          color: '#ef5350',
+          fillColor: '#d32f2f',
+          coords: [[-13.96, -59.04], [-14.20, -59.02], [-14.18, -58.76], [-13.94, -58.78]]
+        }
+      ],
+      resources: [
+        {
+          name: 'Acuífero Salino y Niebla H₂O Coprates (ISRU-VM-01)',
+          coords: [-13.88, -59.18],
+          radius: 7500,
+          purity: '89% Salmueras Hidratadas + Condensación Atmosférica',
+          depth: '0.9m en terraza fracturada',
+          yield: 'Estimado: 92,000 Litros procesables'
+        },
+        {
+          name: 'Caverna / Tubo Subterráneo con Glaciar Enterrado (ISRU-VM-02)',
+          coords: [-14.14, -58.84],
+          radius: 6200,
+          purity: '95% Hielo Protegido de Radiación UV',
+          depth: 'Interior de caverna de pared',
+          yield: 'Estimado: 120,000 Litros (Base Permanente)'
+        }
+      ],
+      weather: {
+        coords: [-13.78, -59.02],
+        outerRadius: 14500,
+        innerRadius: 6800,
+        tag: '⚠ VIENTO CATABÁTICO CAÑÓN (&tau; 1.32 | 64.8 KM/H)',
+        title: 'Corriente de Chorro Canalizada en Coprates Chasma',
+        desc: 'Ráfagas severas de 64.8 km/h a lo largo del eje del cañón con niebla de polvo en suspensión (&tau; 1.32).'
+      }
+    }
+  };
+
+  function buildProceduralSectorLayers(centerLat, centerLng) {
+    return {
+      contours: [
+        {
+          elev: `${estimateNumericAltitude(centerLat, centerLng)}m (Contorno Regional Primario)`,
+          color: '#FF6B2B',
+          dash: '6, 6',
+          coords: [
+            [centerLat - 0.18, centerLng - 0.22],
+            [centerLat - 0.06, centerLng + 0.18],
+            [centerLat + 0.16, centerLng + 0.24],
+            [centerLat + 0.22, centerLng - 0.12]
+          ]
+        }
+      ],
+      geology: [
+        {
+          name: 'Unidad Litoestratigráfica Regional Cartografiada (THEMIS IR)',
+          code: 'Nh-custom // Sector de Exploración EVA',
+          desc: 'Regolito basáltico y sedimentos minerales analizados por espectrometría orbital.',
+          color: '#ce93d8',
+          fillColor: '#ab47bc',
+          coords: [
+            [centerLat - 0.14, centerLng - 0.16],
+            [centerLat + 0.14, centerLng - 0.14],
+            [centerLat + 0.12, centerLng + 0.16],
+            [centerLat - 0.12, centerLng + 0.14]
+          ]
+        }
+      ],
+      resources: [
+        {
+          name: 'Depósito Subsuperficial de H₂O Detectado por Radar SHARAD',
+          coords: [centerLat + 0.06, centerLng - 0.05],
+          radius: 5500,
+          purity: '82% Hielo de Agua + Regolito Hidratado',
+          depth: '1.3m bajo superficie',
+          yield: 'Estimado: 45,000 Litros procesables'
+        }
+      ],
+      weather: {
+        coords: [centerLat - 0.10, centerLng + 0.12],
+        outerRadius: 11000,
+        innerRadius: 5000,
+        tag: 'FRENTE EÓLICO REGIONAL (&tau; 0.95 | 26.0 KM/H)',
+        title: 'Actividad Eólica Regional Detectada',
+        desc: 'Corrientes superficiales monitoreadas por sensores orbitales de la NASA en el sector activo.'
+      }
+    };
+  }
+
+  // Reconstruye y sincroniza las capas NASA (Topography, Geology, Resources, Weather) para la región activa
+  function rebuildRegionalNasaLayers(routeKey) {
+    const center = activeRouteData?.center || JEZERO_CENTER;
+    const regionData =
+      REGIONAL_LAYERS_DB[routeKey] || buildProceduralSectorLayers(center[0], center[1]);
+
+    // 1. Actualizar Curvas de Nivel MOLA (Capa Topography)
+    regionalContoursGroup.clearLayers();
+    regionData.contours.forEach((contour) => {
+      const polyline = L.polyline(contour.coords, {
+        color: contour.color,
+        weight: 2.2,
+        opacity: 0.9,
+        dashArray: contour.dash
+      }).bindTooltip(`MOLA ALTITUD: ${contour.elev}`, {
+        sticky: true,
+        className: 'cyber-leaflet-tooltip'
+      });
+      regionalContoursGroup.addLayer(polyline);
+    });
+
+    // 2. Actualizar Polígonos Litológicos (Capa Geology)
+    nasaLayers.geol.clearLayers();
+    regionData.geology.forEach((unit) => {
+      const polygon = L.polygon(unit.coords, {
+        color: unit.color,
+        fillColor: unit.fillColor,
+        fillOpacity: 0.25,
+        weight: 2,
+        dashArray: '5, 5'
+      }).bindPopup(`
+        <div class="hud-popup-card">
+          <div class="hp-kicker">${unit.code}</div>
+          <h4 class="hp-title">${unit.name}</h4>
+          <p class="hp-desc">${unit.desc}</p>
+          <div class="hp-meta">
+            <span><i class="fa-solid fa-satellite"></i> Sensor: CRISM / THEMIS</span>
+            <span><i class="fa-solid fa-microscope"></i> PIXL / SHERLOC</span>
+          </div>
+        </div>
+      `);
+      nasaLayers.geol.addLayer(polygon);
+    });
+
+    // 3. Actualizar Reservas de Hielo Subterráneo (Capa Resources)
+    nasaLayers.res.clearLayers();
+    regionData.resources.forEach((res) => {
+      const outerCircle = L.circle(res.coords, {
+        radius: res.radius,
+        color: '#00e5ff',
+        weight: 2,
+        dashArray: '6, 4',
+        fillColor: '#00e5ff',
+        fillOpacity: 0.2
+      }).bindPopup(`
+        <div class="hud-popup-card cyan-theme">
+          <div class="hp-kicker">RADAR SUBSUPERFICIAL SHARAD / RIMFAX</div>
+          <h4 class="hp-title"><i class="fa-solid fa-snowflake"></i> ${res.name}</h4>
+          <ul class="hp-list">
+            <li><strong>Pureza Detectada:</strong> ${res.purity}</li>
+            <li><strong>Profundidad de Extracción:</strong> ${res.depth}</li>
+            <li><strong>Potencial ISRU (O₂ / Agua):</strong> ${res.yield}</li>
+          </ul>
+        </div>
+      `);
+
+      const resIcon = L.divIcon({
+        className: 'hud-custom-div-icon',
+        html: `
+          <div class="hud-map-pin pin-cyan">
+            <i class="fa-solid fa-droplet"></i>
+            <span class="pin-pulse"></span>
+          </div>
+        `,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+      });
+
+      const centerMarker = L.marker(res.coords, { icon: resIcon }).bindTooltip(
+        `RECURSO H₂O: ${res.name}`,
+        { className: 'cyber-leaflet-tooltip cyan' }
+      );
+
+      nasaLayers.res.addLayer(outerCircle);
+      nasaLayers.res.addLayer(centerMarker);
+    });
+
+    // 4. Actualizar Frente Meteorológico Regional (Capa Weather)
+    nasaLayers.weather.clearLayers();
+    const w = regionData.weather;
+    const dustStormZone = L.circle(w.coords, {
+      radius: w.outerRadius,
+      color: '#ffab00',
+      weight: 2.5,
+      dashArray: '10, 6',
+      fillColor: '#ff6b2b',
+      fillOpacity: 0.24
+    }).bindPopup(`
+      <div class="hud-popup-card warning-theme">
+        <div class="hp-kicker">ALERTA METEOROLÓGICA ACTIVA // SOL 1420</div>
+        <h4 class="hp-title"><i class="fa-solid fa-triangle-exclamation"></i> ${w.title}</h4>
+        <p class="hp-desc">${w.desc}</p>
+      </div>
+    `);
+
+    const dustStormCore = L.circle(w.coords, {
+      radius: w.innerRadius,
       color: '#ff3d00',
-      dash: '10, 5',
-      coords: [
-        [18.445, 77.365],
-        [18.458, 77.395],
-        [18.476, 77.402],
-        [18.490, 77.385],
-        [18.495, 77.358]
-      ]
-    },
-    {
-      elev: '-2,210m (Borde Occidental del Cráter Jezero)',
-      color: '#ffab40',
-      dash: '4, 4',
-      coords: [
-        [18.410, 77.342],
-        [18.445, 77.352],
-        [18.478, 77.356],
-        [18.508, 77.348]
-      ]
-    }
-  ];
-
-  molaContoursData.forEach((contour) => {
-    const polyline = L.polyline(contour.coords, {
-      color: contour.color,
-      weight: 2,
-      opacity: 0.85,
-      dashArray: contour.dash
-    }).bindTooltip(`MOLA ALTITUD: ${contour.elev}`, {
-      sticky: true,
-      className: 'cyber-leaflet-tooltip'
-    });
-    nasaLayers.topo.addLayer(polyline);
-  });
-
-  // CAPA 2: GEOLOGY
-  const geologyUnits = [
-    {
-      name: 'Unidad Deltaica Aluvial (Filosilicatos y Carbonatos)',
-      code: 'Nh-d1 // Alta Prioridad Astrobiológica',
-      desc: 'Sedimentos fluviales ricos en arcillas esmectitas y carbonatos depositados por el antiguo río Neretva Vallis hace ~3.700 millones de años.',
-      color: '#ce93d8',
-      fillColor: '#ab47bc',
-      coords: [
-        [18.452, 77.372],
-        [18.485, 77.376],
-        [18.478, 77.422],
-        [18.446, 77.416]
-      ]
-    },
-    {
-      name: 'Unidad Máaz (Piso Volcánico Basáltico / Olivino)',
-      code: 'Ah-v2 // Regolito Ígneo Fracturado',
-      desc: 'Rocas ígneas ricas en piroxeno y olivino alteradas por agua subterránea. Terreno firme óptimo para tracción de rovers.',
-      color: '#ffb74d',
-      fillColor: '#f57c00',
-      coords: [
-        [18.418, 77.425],
-        [18.456, 77.432],
-        [18.452, 77.478],
-        [18.415, 77.468]
-      ]
-    },
-    {
-      name: 'Unidad Séítah (Cumulados de Olivino y Carbonato Magnésico)',
-      code: 'Nh-s3 // Zona de Dunas Peligrosas',
-      desc: 'Afloramiento geológico más antiguo del piso del cráter con presencia de ondas eólicas (megaripples). Precaución: riesgo de atasco en ruedas.',
-      color: '#ef5350',
-      fillColor: '#d32f2f',
-      coords: [
-        [18.436, 77.402],
-        [18.458, 77.408],
-        [18.454, 77.429],
-        [18.431, 77.422]
-      ]
-    }
-  ];
-
-  geologyUnits.forEach((unit) => {
-    const polygon = L.polygon(unit.coords, {
-      color: unit.color,
-      fillColor: unit.fillColor,
-      fillOpacity: 0.22,
-      weight: 1.8,
-      dashArray: '5, 5'
-    }).bindPopup(`
-      <div class="hud-popup-card">
-        <div class="hp-kicker">${unit.code}</div>
-        <h4 class="hp-title">${unit.name}</h4>
-        <p class="hp-desc">${unit.desc}</p>
-        <div class="hp-meta">
-          <span><i class="fa-solid fa-satellite"></i> Sensor: CRISM / THEMIS</span>
-          <span><i class="fa-solid fa-microscope"></i> PIXL / SHERLOC</span>
-        </div>
-      </div>
-    `);
-    nasaLayers.geol.addLayer(polygon);
-  });
-
-  // CAPA 3: RESOURCES (ICE)
-  const iceResources = [
-    {
-      name: 'Reserva de Hielo Subsuperficial: Delta Norte (ISRU-01)',
-      coords: [18.459, 77.415],
-      radius: 850,
-      purity: '84% H₂O Cristalino + Sílice Hidratada',
-      depth: '1.2m bajo regolito',
-      yield: 'Estimado: 42,000 Litros procesables'
-    },
-    {
-      name: 'Bolsón de Permafrost Protegido: Neretva Rim (ISRU-02)',
-      coords: [18.476, 77.386],
-      radius: 620,
-      purity: '91% Hielo de Agua Subterráneo',
-      depth: '0.8m (Sombra térmica permanente)',
-      yield: 'Estimado: 68,500 Litros (Soporte Vital Campamento Base)'
-    },
-    {
-      name: 'Depósito de Sulfatos Polihidratados: Kodiak Este',
-      coords: [18.431, 77.452],
-      radius: 520,
-      purity: '38% Agua ligada a minerales',
-      depth: 'Superficial (0.2m)',
-      yield: 'Requiere horno de pirólisis a 450°C'
-    }
-  ];
-
-  iceResources.forEach((res) => {
-    const outerCircle = L.circle(res.coords, {
-      radius: res.radius,
-      color: '#00e5ff',
-      weight: 2,
-      dashArray: '6, 4',
-      fillColor: '#00e5ff',
-      fillOpacity: 0.18
-    }).bindPopup(`
-      <div class="hud-popup-card cyan-theme">
-        <div class="hp-kicker">RADAR SUBSUPERFICIAL SHARAD / RIMFAX</div>
-        <h4 class="hp-title"><i class="fa-solid fa-snowflake"></i> ${res.name}</h4>
-        <ul class="hp-list">
-          <li><strong>Pureza Detectada:</strong> ${res.purity}</li>
-          <li><strong>Profundidad de Extracción:</strong> ${res.depth}</li>
-          <li><strong>Potencial ISRU (O₂ / Agua):</strong> ${res.yield}</li>
-        </ul>
-      </div>
-    `);
-
-    const resIcon = L.divIcon({
-      className: 'hud-custom-div-icon',
-      html: `
-        <div class="hud-map-pin pin-cyan">
-          <i class="fa-solid fa-droplet"></i>
-          <span class="pin-pulse"></span>
-        </div>
-      `,
-      iconSize: [30, 30],
-      iconAnchor: [15, 15]
+      weight: 1.2,
+      fillColor: '#ffab00',
+      fillOpacity: 0.3
     });
 
-    const centerMarker = L.marker(res.coords, { icon: resIcon }).bindTooltip(
-      `RECURSO H₂O: ${res.name}`,
-      { className: 'cyber-leaflet-tooltip cyan' }
-    );
+    const stormAlertBadge = L.marker(w.coords, {
+      icon: L.divIcon({
+        className: 'hud-custom-div-icon',
+        html: `
+          <div class="weather-map-tag">
+            <i class="fa-solid fa-wind"></i> ${w.tag}
+          </div>
+        `,
+        iconSize: [240, 28],
+        iconAnchor: [120, 14]
+      })
+    });
 
-    nasaLayers.res.addLayer(outerCircle);
-    nasaLayers.res.addLayer(centerMarker);
-  });
+    nasaLayers.weather.addLayer(dustStormZone);
+    nasaLayers.weather.addLayer(dustStormCore);
+    nasaLayers.weather.addLayer(stormAlertBadge);
+  }
 
-  // CAPA 4: WEATHER (Tormenta de Polvo)
-  const dustStormZone = L.circle([18.415, 77.368], {
-    radius: 1550,
-    color: '#ffab00',
-    weight: 2.5,
-    dashArray: '10, 6',
-    fillColor: '#ff6b2b',
-    fillOpacity: 0.24
-  }).bindPopup(`
-    <div class="hud-popup-card warning-theme">
-      <div class="hp-kicker">ALERTA METEOROLÓGICA ACTIVA // SOL 1420</div>
-      <h4 class="hp-title"><i class="fa-solid fa-triangle-exclamation"></i> Frente de Tormenta de Polvo Regional</h4>
-      <p class="hp-desc">Avance hacia el ENE a 24.5 km/h. Opacidad atmosférica Tau (&tau;) subiendo a 1.45. Se recomienda completar travesía antes de las 17:30 MTC.</p>
-    </div>
-  `);
-
-  const dustStormCore = L.circle([18.415, 77.368], {
-    radius: 750,
-    color: '#ff3d00',
-    weight: 1,
-    fillColor: '#ffab00',
-    fillOpacity: 0.3
-  });
-
-  const stormAlertBadge = L.marker([18.415, 77.368], {
-    icon: L.divIcon({
-      className: 'hud-custom-div-icon',
-      html: `
-        <div class="weather-map-tag">
-          <i class="fa-solid fa-wind"></i> TORMENTA DE POLVO (&tau; 1.45 | 24.5 KM/H)
-        </div>
-      `,
-      iconSize: [230, 28],
-      iconAnchor: [115, 14]
-    })
-  });
-
-  nasaLayers.weather.addLayer(dustStormZone);
-  nasaLayers.weather.addLayer(dustStormCore);
-  nasaLayers.weather.addLayer(stormAlertBadge);
+  // Inicializar las capas regionales en Jezero al arrancar
+  rebuildRegionalNasaLayers('jezero-alpha');
 
   // CAPA 5: SITIOS HISTÓRICOS GLOBALES DE LA NASA
   const historicGlobalSites = [
@@ -861,7 +1206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dynamicRouteLayerGroup.addLayer(liveRoverMarker);
 
     if (flyToRoute && activeRouteData.center) {
-      marsMap.flyTo(activeRouteData.center, activeRouteData.zoom || 12, { duration: 1.3 });
+      marsMap.flyTo(activeRouteData.center, activeRouteData.zoom || 8, { duration: 1.1 });
     }
   }
 
@@ -902,7 +1247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      // Al hacer clic en un waypoint, movemos el Rover y la cámara hacia ese punto
+      // Al hacer clic en un waypoint, movemos el Rover y la cámara hacia ese punto con zoom nítido (8-9)
       li.addEventListener('click', () => {
         stopRoverSimulation();
         const targetPct =
@@ -910,7 +1255,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ? Math.round((wp.km / activeRouteData.totalDistKm) * 100)
             : 0;
         updateRoverProgress(targetPct);
-        marsMap.flyTo(wp.coords, Math.max(marsMap.getZoom(), 12), { duration: 0.9 });
+        marsMap.flyTo(wp.coords, 8, { duration: 0.85 });
       });
 
       waypointsListEl.appendChild(li);
@@ -1127,7 +1472,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Carga una ruta del catálogo o inicializa la ruta personalizada
+  // Carga una ruta del catálogo o inicializa la ruta personalizada, actualizando todas las capas de la NASA
   function loadRoute(routeKey, flyTo = true) {
     stopRoverSimulation();
     currentRouteKey = routeKey;
@@ -1155,7 +1500,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (missionSectorEl) missionSectorEl.textContent = activeRouteData.sector;
     if (missionDescEl) missionDescEl.textContent = activeRouteData.desc;
 
+    // Actualizar las 4 capas regionales de la NASA (Topography, Geology, Resources, Weather) junto con la ruta
+    rebuildRegionalNasaLayers(routeKey);
     renderRouteOnMap(flyTo);
+    syncLayersWithCheckboxes();
     updateRoverProgress(33);
     if (typeof updateRegionalWeatherPanel === 'function') {
       updateRegionalWeatherPanel(routeKey);
@@ -1286,7 +1634,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const { lat, lng } = e.latlng;
     const elev = estimateNumericAltitude(lat, lng);
 
-    // Si veníamos de una ruta predefinida y es el primer clic en modo custom, conservamos el punto de inicio actual o creamos nuevo punto
     if (activeRouteData.id !== 'custom') {
       const startPt = activeRouteData.pathCoords[0];
       activeRouteData = {
@@ -1315,6 +1662,8 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         ]
       };
+    } else {
+      activeRouteData.center = [lat, lng];
     }
 
     const prevCoord = activeRouteData.pathCoords[activeRouteData.pathCoords.length - 1];
@@ -1349,6 +1698,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (missionSectorEl) missionSectorEl.textContent = activeRouteData.sector;
     if (missionDescEl) missionDescEl.textContent = activeRouteData.desc;
 
+    rebuildRegionalNasaLayers('custom');
     renderRouteOnMap(false);
     updateRoverProgress(roverProgress);
   });
@@ -1392,7 +1742,10 @@ document.addEventListener('DOMContentLoaded', () => {
   Object.keys(layerMapping).forEach((checkboxId) => {
     const cb = document.getElementById(checkboxId);
     if (cb) {
-      cb.addEventListener('change', syncLayersWithCheckboxes);
+      cb.addEventListener('change', () => {
+        syncLayersWithCheckboxes();
+        if (typeof playHudTone === 'function') playHudTone(620, 0.04, 'sine');
+      });
     }
   });
 
@@ -1432,37 +1785,63 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnCenterRover) {
     btnCenterRover.addEventListener('click', () => {
       if (liveRoverMarker) {
-        marsMap.flyTo(liveRoverMarker.getLatLng(), 13, { duration: 1.2 });
-        setTimeout(() => liveRoverMarker.openPopup(), 1250);
+        marsMap.flyTo(liveRoverMarker.getLatLng(), 8, { duration: 1.0 });
+        setTimeout(() => liveRoverMarker.openPopup(), 1050);
       } else {
-        marsMap.flyTo(JEZERO_CENTER, DEFAULT_ZOOM, { duration: 1.2 });
+        marsMap.flyTo(JEZERO_CENTER, DEFAULT_ZOOM, { duration: 1.0 });
       }
     });
   }
 
   if (btnGlobalMars) {
     btnGlobalMars.addEventListener('click', () => {
-      marsMap.flyTo([12.0, 45.0], 3, { duration: 1.6 });
+      marsMap.flyTo([12.0, 45.0], 3, { duration: 1.4 });
     });
   }
 
+  // Cambio instantáneo de modelo de mapa sin borrar molaTopoOverlay ni dejar pantalla en blanco
   if (baseLayerSelect) {
     baseLayerSelect.addEventListener('change', (e) => {
       const val = e.target.value;
-      marsMap.removeLayer(baseTiles.opmMars);
-      marsMap.removeLayer(baseTiles.shadedRelief);
+      const mapEl = marsMap.getContainer();
+      if (mapEl) mapEl.setAttribute('data-map-model', val);
 
-      if (val === 'shaded') {
-        baseTiles.shadedRelief.setOpacity(1);
-        baseTiles.shadedRelief.addTo(marsMap);
-      } else {
+      // Siempre mantenemos opmMars como base CDN ultrarrápida (zIndex 1) para evitar parpadeos
+      if (!marsMap.hasLayer(baseTiles.opmMars)) {
         baseTiles.opmMars.addTo(marsMap);
       }
+
+      [baseTiles.molaBase, baseTiles.shadedRelief, baseTiles.usgsBlend, baseTiles.usgsHrsc].forEach((layer) => {
+        if (marsMap.hasLayer(layer)) marsMap.removeLayer(layer);
+      });
+
+      if (val === 'mola-color') {
+        baseTiles.molaBase.setOpacity(0.92);
+        baseTiles.molaBase.addTo(marsMap);
+      } else if (val === 'shaded') {
+        baseTiles.shadedRelief.setOpacity(0.92);
+        baseTiles.shadedRelief.addTo(marsMap);
+      } else if (val === 'themis-ir') {
+        baseTiles.shadedRelief.setOpacity(0.65);
+        baseTiles.shadedRelief.addTo(marsMap);
+      } else if (val === 'usgs-blend') {
+        baseTiles.usgsBlend.addTo(marsMap);
+      } else if (val === 'usgs-hrsc') {
+        baseTiles.usgsHrsc.addTo(marsMap);
+      } else {
+        // 'opm-hybrid': Viking OPM + Relieve Celestia (Carga instantánea CDN)
+        baseTiles.shadedRelief.setOpacity(0.35);
+        baseTiles.shadedRelief.addTo(marsMap);
+      }
+
+      // Re-sincronizar capas NASA activas para que queden siempre visibles encima del mapa base
+      syncLayersWithCheckboxes();
+      if (typeof playHudTone === 'function') playHudTone(640, 0.05, 'sine');
     });
   }
 
   // ==========================================================================
-  // 9. ETAPA 4: MÓDULO "MARTIAN STREET VIEW 360°" (PANNELLUM.JS) Y NAVEGACIÓN PASO A PASO
+  // 9. ETAPA 4: MÓDULO "MARTIAN STREET VIEW 360°" (FOTOGRAFÍA REAL NASA + SIMULACIÓN 2D)
   // ==========================================================================
   const svStationTitleEl = document.getElementById('sv-station-title');
   const svCompassHeadingEl = document.getElementById('sv-compass-heading');
@@ -1479,7 +1858,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSvPrev = document.getElementById('btn-sv-prev');
   const btnSvNext = document.getElementById('btn-sv-next');
 
-  // Definición de las 6 Estaciones Panorámicas 360° Paso a Paso en Marte
+  // Referencias DOM para Conmutador de Modo Óptico 360° (Fusión Real+2D / Foto Real NASA / Simulada 2D) y API NASA
+  const svRenderModeGroup = document.getElementById('sv-render-mode-group');
+  const svBlendControl = document.getElementById('sv-blend-control');
+  const svBlendSlider = document.getElementById('sv-blend-slider');
+  const svBlendPctEl = document.getElementById('sv-blend-pct');
+  const srpbPiaIdEl = document.getElementById('srpb-pia-id');
+  const srpbSolTagEl = document.getElementById('srpb-sol-tag');
+  const srpbStatusTagEl = document.getElementById('srpb-status-tag');
+  const srpbCreditTextEl = document.getElementById('srpb-credit-text');
+  const srpbJplLinkEl = document.getElementById('srpb-jpl-link');
+  const btnSvNasaApi = document.getElementById('btn-sv-nasa-api');
+  const svNasaApiDrawer = document.getElementById('sv-nasa-api-drawer');
+  const btnCloseNasaDrawer = document.getElementById('btn-close-nasa-drawer');
+  const nasaApiSearchInput = document.getElementById('nasa-api-search-input');
+  const btnNasaApiSearch = document.getElementById('btn-nasa-api-search');
+  const nasaApiResultsGrid = document.getElementById('nasa-api-results-grid');
+
+  // Definición de las 6 Estaciones Panorámicas 360° Paso a Paso en Marte (con Fotografía Real NASA JPL-Caltech + Geometría 2D)
   const STREETVIEW_STATIONS = [
     {
       id: 'scene-landing',
@@ -1489,10 +1885,18 @@ document.addEventListener('DOMContentLoaded', () => {
       sensor: 'NAVCAM + MASTCAM-Z (PERSEVERANCE)',
       routeKey: 'jezero-alpha',
       progressPct: 0,
-      coords: [18.4447, 77.4508],
+      coords: [18.28, 77.68],
       elev: -2540,
       initialYaw: 18,
       initialPitch: -2,
+      realPano: {
+        piaId: 'PIA24264',
+        sol: 'SOL 3 (MARS 2020)',
+        localUrl: 'public/panoramas/PIA24264-landing.jpg',
+        remoteUrl: 'https://images-assets.nasa.gov/image/PIA24264/PIA24264~large.jpg',
+        jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24264',
+        credit: 'NASA/JPL-Caltech/ASU/MSSS — Primer Panorama 360° Mastcam-Z en Octavia E. Butler Landing (142 imágenes cosidas)'
+      },
       palette: {
         skyZenith: '#182232',
         skyMid: '#6e422c',
@@ -1551,10 +1955,18 @@ document.addEventListener('DOMContentLoaded', () => {
       sensor: 'MASTCAM-Z SUPER-RESOLUCIÓN 110MM',
       routeKey: 'jezero-alpha',
       progressPct: 33,
-      coords: [18.4280, 77.4310],
+      coords: [18.38, 77.49],
       elev: -2490,
       initialYaw: 10,
       initialPitch: 2,
+      realPano: {
+        piaId: 'PIA24921',
+        sol: 'SOL 466 (MARS 2020)',
+        localUrl: 'public/panoramas/PIA24921-kodiak-delta.jpg',
+        remoteUrl: 'https://images-assets.nasa.gov/image/PIA24921/PIA24921~large.jpg',
+        jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24921',
+        credit: 'NASA/JPL-Caltech/ASU/MSSS — Mosaico Real 2.5-Gigapíxeles del Frente Deltaico de Jezero y Butte Kodiak (1,118 cuadros)'
+      },
       palette: {
         skyZenith: '#1a202c',
         skyMid: '#7c482b',
@@ -1621,10 +2033,18 @@ document.addEventListener('DOMContentLoaded', () => {
       sensor: 'MASTCAM-Z + RADAR RIMFAX OVERLAY',
       routeKey: 'jezero-alpha',
       progressPct: 65,
-      coords: [18.4590, 77.4150],
+      coords: [18.52, 77.33],
       elev: -2435,
       initialYaw: 0,
       initialPitch: -4,
+      realPano: {
+        piaId: 'PIA26369',
+        sol: 'SOL 1178 (NERETVA VALLIS)',
+        localUrl: 'public/panoramas/PIA26369-bright-angel.jpg',
+        remoteUrl: 'https://images-assets.nasa.gov/image/PIA26369/PIA26369~large.jpg',
+        jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26369',
+        credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° de "Bright Angel" y Canal Fluvial Neretva Vallis (Cheyava Falls)'
+      },
       palette: {
         skyZenith: '#111d2e',
         skyMid: '#593d38',
@@ -1691,10 +2111,18 @@ document.addEventListener('DOMContentLoaded', () => {
       sensor: 'CÁMARA EXTERIOR DE TORRE METEOROLÓGICA',
       routeKey: 'jezero-alpha',
       progressPct: 100,
-      coords: [18.4720, 77.3920],
+      coords: [18.64, 77.15],
       elev: -2380,
       initialYaw: -10,
       initialPitch: 0,
+      realPano: {
+        piaId: 'PIA26474',
+        sol: 'SOL 1337 (CUMBRE BORDE JEZERO)',
+        localUrl: 'public/panoramas/PIA26474-rio-chiquito.jpg',
+        remoteUrl: 'https://images-assets.nasa.gov/image/PIA26474/PIA26474~large.jpg',
+        jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26474',
+        credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° en "Rio Chiquito" (Mirador de la Cumbre del Borde Occidental de Jezero)'
+      },
       palette: {
         skyZenith: '#171f2e',
         skyMid: '#784126',
@@ -1761,10 +2189,18 @@ document.addEventListener('DOMContentLoaded', () => {
       sensor: 'MASTCAM 100MM // ROVER CURIOSITY',
       routeKey: 'gale-sharp',
       progressPct: 65,
-      coords: [-4.6450, 137.4010],
+      coords: [-4.68, 137.38],
       elev: -4310,
       initialYaw: 5,
       initialPitch: 4,
+      realPano: {
+        piaId: 'PIA22545',
+        sol: 'SOL 2137 / 4220 (CURIOSITY MSL)',
+        localUrl: 'public/panoramas/PIA22545-gale-curiosity.jpg',
+        remoteUrl: 'https://images-assets.nasa.gov/image/PIA22545/PIA22545~large.jpg',
+        jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA22545',
+        credit: 'NASA/JPL-Caltech/MSSS — Panorama 360° Real de Curiosity Mastcam en Cresta Vera Rubin y Aeolis Mons (Monte Sharp)'
+      },
       palette: {
         skyZenith: '#211c19',
         skyMid: '#8a5232',
@@ -1824,6 +2260,14 @@ document.addEventListener('DOMContentLoaded', () => {
       elev: -3790,
       initialYaw: 0,
       initialPitch: 6,
+      realPano: {
+        piaId: 'PIA13077',
+        sol: 'MRO HiRISE + GEDIZ VALLIS',
+        localUrl: 'public/panoramas/PIA26363-gediz-vallis.jpg',
+        remoteUrl: 'https://images-assets.nasa.gov/image/PIA26363/PIA26363~large.jpg',
+        jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26363',
+        credit: 'NASA/JPL-Caltech/MSSS/UArizona — Garganta Tectónica y Canal de Escombros Sulfatados (Mosaico 360° Real)'
+      },
       palette: {
         skyZenith: '#121521',
         skyMid: '#6b3222',
@@ -1866,8 +2310,11 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   const panoCanvasCache = {};
+  const realPanoCanvasCache = {};
   let currentStationId = 'scene-kodiak';
   let isAutoRotating = true;
+  let render360Mode = 'real'; // 'real' (VISTA REAL) | 'sim2d' (VISTA 2D) — sin superposición
+  let needs360Redraw = true;
 
   // Estado de cámara del Motor Esférico 360° Nativo (<canvas id="mars-360-canvas">)
   const mars360Canvas = document.getElementById('mars-360-canvas');
@@ -2133,6 +2580,145 @@ document.addEventListener('DOMContentLoaded', () => {
     return canvas;
   }
 
+  // Compone un lienzo equirectangular 360° (2048x1024) a partir de fotografía real de NASA JPL-Caltech (Mastcam-Z / Mastcam / HiRISE)
+  function getOrComposeRealPanoramaCanvas(station) {
+    if (!station || !station.realPano) return null;
+    const cacheKey = `${station.id}::${station.realPano.localUrl || station.realPano.remoteUrl}`;
+    if (realPanoCanvasCache[cacheKey]) {
+      return realPanoCanvasCache[cacheKey];
+    }
+
+    const width = 2048;
+    const height = 1024;
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+
+    const entry = {
+      canvas,
+      loaded: false,
+      error: false,
+      sourceUsed: 'CARGANDO TELEMETRÍA ÓPTICA NASA...'
+    };
+    realPanoCanvasCache[cacheKey] = entry;
+
+    const buildFromImage = (img, sourceLabel) => {
+      const ctx = canvas.getContext('2d', { alpha: false });
+      const p = station.palette;
+
+      // 1. Proyección equirectangular a cuadro completo (100% del alto y ancho del lienzo 360°)
+      //    Las 6 imágenes locales de public/panoramas/ ya están restauradas fotogramétricamente de borde a borde
+      const imgAspect = img.naturalWidth / Math.max(1, img.naturalHeight);
+      const topY = Math.floor(height * 0.03);
+      const botY = Math.floor(height * 0.97);
+      const bandH = botY - topY;
+
+      ctx.fillStyle = p.skyMid;
+      ctx.fillRect(0, 0, width, height / 2);
+      ctx.fillStyle = p.groundNear;
+      ctx.fillRect(0, height / 2, width, height / 2);
+
+      if (imgAspect >= 1.8) {
+        ctx.drawImage(img, 0, topY, width, bandH);
+      } else {
+        // Fotografía orbital o de cámara estrecha (de la API en vivo de la NASA): mosaico continuo con espejo horizontal
+        const tileW = width / 2;
+        ctx.drawImage(img, 0, topY, tileW, bandH);
+        ctx.save();
+        ctx.translate(width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(img, 0, topY, tileW, bandH);
+        ctx.restore();
+      }
+
+      // 2. Transición suave únicamente en el extremo cenital (3% superior) y nadir (3% inferior)
+      const topGrad = ctx.createLinearGradient(0, 0, 0, topY + 28);
+      topGrad.addColorStop(0.0, p.skyMid);
+      topGrad.addColorStop(0.45, p.skyHorizon);
+      topGrad.addColorStop(1.0, 'rgba(0,0,0,0)');
+      ctx.fillStyle = topGrad;
+      ctx.fillRect(0, 0, width, topY + 28);
+
+      const botGrad = ctx.createLinearGradient(0, botY - 28, 0, height);
+      botGrad.addColorStop(0.0, 'rgba(0,0,0,0)');
+      botGrad.addColorStop(0.65, p.groundMid);
+      botGrad.addColorStop(1.0, p.groundNear);
+      ctx.fillStyle = botGrad;
+      ctx.fillRect(0, botY - 28, width, height - (botY - 28));
+
+      entry.loaded = true;
+      entry.sourceUsed = sourceLabel;
+      needs360Redraw = true;
+      if (station.id === currentStationId) {
+        updateRealPhotoBadge(station, entry);
+      }
+    };
+
+    const loadAndDecode = (url, label, onFail) => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        if (typeof img.decode === 'function') {
+          img.decode().then(() => buildFromImage(img, label)).catch(() => buildFromImage(img, label));
+        } else {
+          buildFromImage(img, label);
+        }
+      };
+      img.onerror = onFail;
+      img.src = url;
+    };
+
+    const primaryUrl = station.realPano.localUrl || station.realPano.remoteUrl;
+    loadAndDecode(primaryUrl, 'ARCHIVO OFICIAL NASA JPL (ALTA VELOCIDAD)', () => {
+      if (station.realPano.remoteUrl && station.realPano.remoteUrl !== primaryUrl) {
+        loadAndDecode(station.realPano.remoteUrl, 'SERVIDOR REMOTO NASA IMAGES API', () => {
+          entry.error = true;
+          needs360Redraw = true;
+          if (station.id === currentStationId) updateRealPhotoBadge(station, entry);
+        });
+      } else {
+        entry.error = true;
+        needs360Redraw = true;
+        if (station.id === currentStationId) updateRealPhotoBadge(station, entry);
+      }
+    });
+
+    return entry;
+  }
+
+  // Precargar en segundo plano las 6 fotografías panorámicas reales de la NASA para cambio instantáneo sin tirones
+  setTimeout(() => {
+    STREETVIEW_STATIONS.forEach((st) => {
+      getOrComposeRealPanoramaCanvas(st);
+    });
+  }, 120);
+
+  // Actualiza la insignia inferior izquierda con los metadatos reales del catálogo NASA Photojournal (PIA)
+  function updateRealPhotoBadge(station, realEntry) {
+    if (!station || !station.realPano) return;
+    if (srpbPiaIdEl) srpbPiaIdEl.textContent = `NASA ID: ${station.realPano.piaId || 'NASA-RAW'}`;
+    if (srpbSolTagEl) srpbSolTagEl.textContent = station.realPano.sol || 'MARS ARCHIVE';
+    if (srpbCreditTextEl) srpbCreditTextEl.textContent = station.realPano.credit || '';
+    if (srpbJplLinkEl && station.realPano.jplUrl) {
+      srpbJplLinkEl.href = station.realPano.jplUrl;
+    }
+    if (srpbStatusTagEl) {
+      if (render360Mode === 'sim2d') {
+        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-vector-square"></i> VISTA 2D SIMULADA ACTIVA';
+        srpbStatusTagEl.style.color = '#00E5FF';
+      } else if (realEntry && realEntry.loaded) {
+        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> VISTA REAL NASA 360° ACTIVA';
+        srpbStatusTagEl.style.color = '#38F28D';
+      } else if (realEntry && realEntry.error) {
+        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> RESPALDO VISTA 2D';
+        srpbStatusTagEl.style.color = '#FFB020';
+      } else {
+        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-satellite-dish fa-spin"></i> CARGANDO VISTA REAL NASA...';
+        srpbStatusTagEl.style.color = '#00E5FF';
+      }
+    }
+  }
+
   // Crea los elementos DOM interactivos para los Hotspots 3D de la estación activa
   function buildStationHotspotElements(station) {
     if (!mars360HotspotsEl) return;
@@ -2175,56 +2761,129 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       mars360HotspotsEl.appendChild(wrapper);
-      activeHotspotNodes.push({ data: hs, el: wrapper });
+      activeHotspotNodes.push({ data: hs, el: wrapper, visible: null });
     });
+    needs360Redraw = true;
   }
 
   // Animación suave de la cámara esférica 360° hacia un objetivo (yaw, pitch, fov)
   function animateCameraTo(yaw, pitch, fov = camFov) {
     targetYaw = ((yaw % 360) + 360) % 360;
-    targetPitch = Math.max(-38, Math.min(38, pitch));
+    targetPitch = Math.max(-34, Math.min(34, pitch));
     targetFov = Math.max(45, Math.min(115, fov));
+    needs360Redraw = true;
   }
 
-  // Renderiza en tiempo real (60FPS) la proyección esférica 360° en <canvas> y proyecta los Hotspots 3D
+  // Caché de dimensiones del viewport 360° mediante ResizeObserver (evita getBoundingClientRect() en cada frame)
+  let cached360Width = 960;
+  let cached360Height = 540;
+  let mars360Ctx = null;
+
+  function sync360ViewportSize() {
+    if (!mars360Canvas || !mars360Canvas.parentElement) return;
+    const rect = mars360Canvas.parentElement.getBoundingClientRect();
+    if (rect.width > 50 && rect.height > 50) {
+      cached360Width = Math.floor(rect.width);
+      cached360Height = Math.floor(rect.height);
+      if (mars360Canvas.width !== cached360Width || mars360Canvas.height !== cached360Height) {
+        mars360Canvas.width = cached360Width;
+        mars360Canvas.height = cached360Height;
+        mars360Ctx = mars360Canvas.getContext('2d', { alpha: false });
+        if (mars360Ctx) mars360Ctx.imageSmoothingQuality = 'medium';
+        needs360Redraw = true;
+      }
+    }
+  }
+
+  if (typeof ResizeObserver !== 'undefined' && pannellumMountEl) {
+    const ro360 = new ResizeObserver(() => {
+      sync360ViewportSize();
+    });
+    ro360.observe(pannellumMountEl);
+  }
+  window.addEventListener('resize', sync360ViewportSize, { passive: true });
+
+  // Dibuja una única textura equirectangular 360° con envoltura horizontal continua (sin superposición)
+  function drawEquirectangularLayer(ctx, texCanvas, sx, sy, cropW, cropH, sw, cw, ch) {
+    if (!texCanvas) return;
+    if (sx + cropW <= sw) {
+      ctx.drawImage(texCanvas, sx, sy, cropW, cropH, 0, 0, cw, ch);
+    } else {
+      const firstPartW = sw - sx;
+      const secondPartW = cropW - firstPartW;
+      const destSplitX = Math.floor((firstPartW / cropW) * cw);
+
+      ctx.drawImage(texCanvas, sx, sy, firstPartW, cropH, 0, 0, destSplitX + 1, ch);
+      ctx.drawImage(
+        texCanvas,
+        0,
+        sy,
+        secondPartW,
+        cropH,
+        destSplitX,
+        0,
+        cw - destSplitX,
+        ch
+      );
+    }
+  }
+
+  // Renderiza en tiempo real (60FPS ultra fluido) la proyección esférica 360° (VISTA REAL o VISTA 2D por separado)
   function renderMars360Frame() {
     requestAnimationFrame(renderMars360Frame);
     if (!mars360Canvas || streetContainer.classList.contains('is-hidden')) return;
-
-    const station =
-      STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
-    const sourceCanvas = getOrGeneratePanoramaCanvas(station);
-
-    const rect = mars360Canvas.parentElement.getBoundingClientRect();
-    const cw = Math.max(300, Math.floor(rect.width));
-    const ch = Math.max(220, Math.floor(rect.height));
-    if (mars360Canvas.width !== cw || mars360Canvas.height !== ch) {
-      mars360Canvas.width = cw;
-      mars360Canvas.height = ch;
-    }
 
     // Interpolación suave hacia objetivo o giro orbital automático
     if (targetYaw !== null) {
       let diffY = targetYaw - camYaw;
       if (diffY > 180) diffY -= 360;
       if (diffY < -180) diffY += 360;
-      camYaw = ((camYaw + diffY * 0.12) % 360 + 360) % 360;
-      camPitch += (targetPitch - camPitch) * 0.12;
-      camFov += (targetFov - camFov) * 0.12;
-      if (Math.abs(diffY) < 0.25 && Math.abs(targetPitch - camPitch) < 0.25) {
+      camYaw = ((camYaw + diffY * 0.14) % 360 + 360) % 360;
+      camPitch += (targetPitch - camPitch) * 0.14;
+      camFov += (targetFov - camFov) * 0.14;
+      needs360Redraw = true;
+      if (Math.abs(diffY) < 0.2 && Math.abs(targetPitch - camPitch) < 0.2) {
         targetYaw = null;
         targetPitch = null;
         targetFov = null;
       }
     } else if (isAutoRotating && !isDragging360) {
-      camYaw = (camYaw + 0.12) % 360;
+      camYaw = (camYaw + 0.09) % 360;
+      needs360Redraw = true;
     }
 
-    const ctx = mars360Canvas.getContext('2d');
-    const sw = sourceCanvas.width;
-    const sh = sourceCanvas.height;
+    if (!needs360Redraw) return;
+    needs360Redraw = false;
 
-    const vFov = Math.max(30, Math.min(95, camFov * (ch / cw)));
+    if (!mars360Ctx || mars360Canvas.width < 100) {
+      sync360ViewportSize();
+      if (!mars360Ctx) mars360Ctx = mars360Canvas.getContext('2d', { alpha: false });
+    }
+
+    const station =
+      STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
+
+    // Seleccionar EXCLUSIVAMENTE la vista activa (sin sobreponer una con la otra):
+    // - 'real'  -> Fotografía Real 360° de la NASA a cuadro completo
+    // - 'sim2d' -> Vista 360° Simulada en 2D Táctica
+    let activeSourceCanvas = null;
+    if (render360Mode === 'real') {
+      const realEntry = getOrComposeRealPanoramaCanvas(station);
+      if (realEntry && realEntry.loaded) {
+        activeSourceCanvas = realEntry.canvas;
+      } else {
+        activeSourceCanvas = getOrGeneratePanoramaCanvas(station);
+      }
+    } else {
+      activeSourceCanvas = getOrGeneratePanoramaCanvas(station);
+    }
+
+    const cw = cached360Width;
+    const ch = cached360Height;
+    const sw = activeSourceCanvas.width;
+    const sh = activeSourceCanvas.height;
+
+    const vFov = Math.max(28, Math.min(88, camFov * (ch / cw)));
     const cropW = (camFov / 360) * sw;
     const cropH = (vFov / 180) * sh;
 
@@ -2237,61 +2896,318 @@ document.addEventListener('DOMContentLoaded', () => {
     let sx = centerX - cropW / 2;
     if (sx < 0) sx += sw;
 
-    // Dibujo continuo con envoltura horizontal sin costuras (360° wrap-around)
-    if (sx + cropW <= sw) {
-      ctx.drawImage(sourceCanvas, sx, sy, cropW, cropH, 0, 0, cw, ch);
-    } else {
-      const firstPartW = sw - sx;
-      const secondPartW = cropW - firstPartW;
-      const destSplitX = (firstPartW / cropW) * cw;
+    // Dibujar únicamente la capa seleccionada (0% superposición, máxima fluidez GPU)
+    drawEquirectangularLayer(mars360Ctx, activeSourceCanvas, sx, sy, cropW, cropH, sw, cw, ch);
 
-      ctx.drawImage(sourceCanvas, sx, sy, firstPartW, cropH, 0, 0, destSplitX + 1, ch);
-      ctx.drawImage(
-        sourceCanvas,
-        0,
-        sy,
-        secondPartW,
-        cropH,
-        destSplitX,
-        0,
-        cw - destSplitX,
-        ch
-      );
+    // En modo VISTA 2D, mostrar la línea de horizonte artificial táctica
+    if (render360Mode === 'sim2d') {
+      const horizonScreenY = (0.5 - (0 - camPitch) / vFov) * ch;
+      if (horizonScreenY > 20 && horizonScreenY < ch - 20) {
+        mars360Ctx.save();
+        mars360Ctx.strokeStyle = 'rgba(0, 229, 255, 0.25)';
+        mars360Ctx.lineWidth = 1;
+        mars360Ctx.setLineDash([6, 8]);
+        mars360Ctx.beginPath();
+        mars360Ctx.moveTo(40, horizonScreenY);
+        mars360Ctx.lineTo(cw - 40, horizonScreenY);
+        mars360Ctx.stroke();
+        mars360Ctx.restore();
+      }
     }
 
-    // Superposición HUD táctica en el lienzo 360° (Línea de horizonte artificial y marcas acimutales)
-    const horizonScreenY = (0.5 - (0 - camPitch) / vFov) * ch;
-    if (horizonScreenY > 20 && horizonScreenY < ch - 20) {
-      ctx.save();
-      ctx.strokeStyle = 'rgba(0, 229, 255, 0.22)';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([6, 8]);
-      ctx.beginPath();
-      ctx.moveTo(40, horizonScreenY);
-      ctx.lineTo(cw - 40, horizonScreenY);
-      ctx.stroke();
-      ctx.restore();
-    }
+    // Proyectar cada Hotspot 3D usando transformaciones GPU (translate3d) sin recalcular layout DOM
+    const maxYawVis = camFov * 0.58;
+    const maxPitchVis = vFov * 0.58;
+    for (let i = 0; i < activeHotspotNodes.length; i++) {
+      const node = activeHotspotNodes[i];
+      const data = node.data;
+      const el = node.el;
 
-    // Proyectar cada Hotspot 3D desde coordenadas esféricas (yaw, pitch) a píxeles de pantalla
-    activeHotspotNodes.forEach(({ data, el }) => {
-      let deltaYaw = data.yaw - camYaw;
-      while (deltaYaw > 180) deltaYaw -= 360;
-      while (deltaYaw < -180) deltaYaw += 360;
+      let deltaYaw = data.yaw - normYaw;
+      if (deltaYaw > 180) deltaYaw -= 360;
+      else if (deltaYaw < -180) deltaYaw += 360;
 
       const deltaPitch = data.pitch - camPitch;
 
-      if (Math.abs(deltaYaw) <= camFov * 0.58 && Math.abs(deltaPitch) <= vFov * 0.58) {
+      if (Math.abs(deltaYaw) <= maxYawVis && Math.abs(deltaPitch) <= maxPitchVis) {
         const screenX = (0.5 + deltaYaw / camFov) * cw;
         const screenY = (0.5 - deltaPitch / vFov) * ch;
-        el.style.display = 'block';
-        el.style.left = `${screenX}px`;
-        el.style.top = `${screenY}px`;
-      } else {
-        el.style.display = 'none';
+        if (node.visible !== true) {
+          el.style.visibility = 'visible';
+          el.style.pointerEvents = 'auto';
+          node.visible = true;
+        }
+        el.style.transform = `translate3d(${screenX.toFixed(1)}px, ${screenY.toFixed(1)}px, 0) translate(-50%, -50%)`;
+      } else if (node.visible !== false) {
+        el.style.visibility = 'hidden';
+        el.style.pointerEvents = 'none';
+        node.visible = false;
+      }
+    }
+  }
+
+  // Eventos del Selector de Modo 360° (VISTA REAL / VISTA 2D — completamente separadas)
+  if (svRenderModeGroup) {
+    svRenderModeGroup.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-360-mode]');
+      if (!btn) return;
+      const mode = btn.getAttribute('data-360-mode');
+      if (!mode) return;
+
+      render360Mode = mode;
+      needs360Redraw = true;
+      svRenderModeGroup.querySelectorAll('[data-360-mode]').forEach((b) => {
+        b.classList.toggle('is-active', b === btn);
+      });
+
+      const st =
+        STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
+      const cacheKey = `${st.id}::${st.realPano?.localUrl || st.realPano?.remoteUrl}`;
+      updateRealPhotoBadge(st, realPanoCanvasCache[cacheKey]);
+      if (typeof playHudTone === 'function') playHudTone(680, 0.05, 'sine');
+    });
+  }
+
+  // ==========================================================================
+  // ARCHIVO FOTOGRÁFICO REAL DE LA NASA (CATÁLOGO LOCAL INSTANTÁNEO + API EN VIVO)
+  // ==========================================================================
+  const LOCAL_CURATED_PANORAMAS = [
+    {
+      nasaId: 'PIA24264',
+      title: 'Perseverance 360° — Octavia E. Butler Landing (Sol 3)',
+      dateStr: 'MARS 2020',
+      thumbUrl: 'public/panoramas/PIA24264-landing.jpg',
+      hiResUrl: 'public/panoramas/PIA24264-landing.jpg',
+      jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24264',
+      credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° Mastcam-Z en Octavia E. Butler Landing'
+    },
+    {
+      nasaId: 'PIA24921',
+      title: 'Perseverance 360° — Frente del Delta Jezero y Mesa Kodiak',
+      dateStr: 'SOL 466',
+      thumbUrl: 'public/panoramas/PIA24921-kodiak-delta.jpg',
+      hiResUrl: 'public/panoramas/PIA24921-kodiak-delta.jpg',
+      jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24921',
+      credit: 'NASA/JPL-Caltech/ASU/MSSS — Mosaico Real 2.5-Gigapíxeles del Frente Deltaico y Mesa Kodiak'
+    },
+    {
+      nasaId: 'PIA26369',
+      title: 'Perseverance 360° — Bright Angel y Canal Neretva Vallis',
+      dateStr: 'SOL 1178',
+      thumbUrl: 'public/panoramas/PIA26369-bright-angel.jpg',
+      hiResUrl: 'public/panoramas/PIA26369-bright-angel.jpg',
+      jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26369',
+      credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° en Bright Angel (Neretva Vallis)'
+    },
+    {
+      nasaId: 'PIA26474',
+      title: 'Perseverance 360° — Cumbre del Borde Occidental (Rio Chiquito)',
+      dateStr: 'SOL 1337',
+      thumbUrl: 'public/panoramas/PIA26474-rio-chiquito.jpg',
+      hiResUrl: 'public/panoramas/PIA26474-rio-chiquito.jpg',
+      jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26474',
+      credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° en Mirador Rio Chiquito (Cumbre de Jezero)'
+    },
+    {
+      nasaId: 'PIA22545',
+      title: 'Curiosity 360° — Cresta Vera Rubin y Monte Sharp (Cráter Gale)',
+      dateStr: 'MSL CURIOSITY',
+      thumbUrl: 'public/panoramas/PIA22545-gale-curiosity.jpg',
+      hiResUrl: 'public/panoramas/PIA22545-gale-curiosity.jpg',
+      jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA22545',
+      credit: 'NASA/JPL-Caltech/MSSS — Panorama 360° Mastcam en Cresta Vera Rubin (Cráter Gale)'
+    },
+    {
+      nasaId: 'PIA26363',
+      title: 'Curiosity 360° — Canal Gediz Vallis y Rocas de Azufre Elemental',
+      dateStr: 'SOL 4208',
+      thumbUrl: 'public/panoramas/PIA26363-gediz-vallis.jpg',
+      hiResUrl: 'public/panoramas/PIA26363-gediz-vallis.jpg',
+      jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26363',
+      credit: 'NASA/JPL-Caltech/MSSS — Panorama 360° Mastcam en Canal Gediz Vallis (Monte Sharp)'
+    },
+    {
+      nasaId: 'PIA13077',
+      title: 'MRO HiRISE + Viking — Cañón Coprates (Valles Marineris)',
+      dateStr: 'MRO / VIKING',
+      thumbUrl: 'public/panoramas/PIA13077-valles-marineris.jpg',
+      hiResUrl: 'public/panoramas/PIA13077-valles-marineris.jpg',
+      jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA13077',
+      credit: 'NASA/JPL-Caltech/Univ. of Arizona — Mosaico Real de Valles Marineris'
+    }
+  ];
+
+  function closeNasaPhotoDrawer() {
+    if (svNasaApiDrawer) svNasaApiDrawer.classList.add('is-hidden');
+    if (btnSvNasaApi) btnSvNasaApi.classList.remove('is-active');
+  }
+
+  function applySelectedPanoramaToViewer(panoItem) {
+    const st =
+      STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
+    st.realPano = {
+      piaId: panoItem.nasaId,
+      sol: panoItem.dateStr || 'ARCHIVO NASA',
+      localUrl: panoItem.thumbUrl,
+      remoteUrl: panoItem.hiResUrl,
+      jplUrl: panoItem.jplUrl,
+      credit: panoItem.credit
+    };
+
+    // Activar VISTA REAL (LIFE) sin superposición y cerrar el cajón fotográfico inmediatamente
+    render360Mode = 'real';
+    needs360Redraw = true;
+    if (svRenderModeGroup) {
+      svRenderModeGroup.querySelectorAll('[data-360-mode]').forEach((b) => {
+        b.classList.toggle('is-active', b.getAttribute('data-360-mode') === 'real');
+      });
+    }
+
+    const newEntry = getOrComposeRealPanoramaCanvas(st);
+    updateRealPhotoBadge(st, newEntry);
+    closeNasaPhotoDrawer();
+    if (typeof playHudTone === 'function') playHudTone(920, 0.08, 'sine');
+  }
+
+  function renderPanoramaCardsInDrawer(list) {
+    if (!nasaApiResultsGrid) return;
+    nasaApiResultsGrid.innerHTML = '';
+
+    list.forEach((item) => {
+      const card = document.createElement('div');
+      card.className = 'snad-card';
+      card.innerHTML = `
+        <img class="snad-thumb" src="${item.thumbUrl}" alt="${item.title.replace(/"/g, '&quot;')}" loading="lazy">
+        <div class="snad-body">
+          <div class="snad-id-row">
+            <span class="snad-id">${item.nasaId}</span>
+            <span class="snad-date">${item.dateStr || ''}</span>
+          </div>
+          <div class="snad-title">${item.title}</div>
+          <button type="button" class="snad-load-btn">
+            <i class="fa-solid fa-vr-cardboard"></i> CARGAR EN 360°
+          </button>
+        </div>
+      `;
+
+      card.addEventListener('click', () => {
+        applySelectedPanoramaToViewer(item);
+      });
+
+      nasaApiResultsGrid.appendChild(card);
+    });
+  }
+
+  async function fetchNasaLivePanoramas(queryText) {
+    if (!nasaApiResultsGrid) return;
+    const rawQuery = (queryText || '__LOCAL__').trim();
+
+    if (rawQuery === '__LOCAL__') {
+      renderPanoramaCardsInDrawer(LOCAL_CURATED_PANORAMAS);
+      return;
+    }
+
+    const cleanQuery = rawQuery.toLowerCase().includes('mars')
+      ? rawQuery
+      : `${rawQuery} Mars`;
+
+    nasaApiResultsGrid.innerHTML = `
+      <div class="snad-loading">
+        <i class="fa-solid fa-satellite-dish fa-spin"></i>
+        <span>BUSCANDO EN NASA: "${cleanQuery.toUpperCase()}"...</span>
+      </div>
+    `;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    try {
+      const endpoint = `https://images-api.nasa.gov/search?q=${encodeURIComponent(cleanQuery)}&media_type=image`;
+      const res = await fetch(endpoint, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      const items = (json?.collection?.items || []).slice(0, 12);
+
+      if (!items.length) {
+        renderPanoramaCardsInDrawer(LOCAL_CURATED_PANORAMAS);
+        return;
+      }
+
+      const mapped = [];
+      items.forEach((item) => {
+        const meta = item.data?.[0];
+        const thumbLink = item.links?.find((l) => l.render === 'image')?.href;
+        if (!meta || !thumbLink) return;
+
+        const nasaId = meta.nasa_id || 'NASA-IMG';
+        const title = meta.title || 'Fotografía Planetaria NASA';
+        const dateStr = (meta.date_created || '').slice(0, 10);
+        // Usamos ~medium.jpg para carga ultrarrápida sin congelar el navegador
+        const fastHiResUrl = thumbLink.replace('~thumb.jpg', '~medium.jpg');
+
+        mapped.push({
+          nasaId,
+          title,
+          dateStr,
+          thumbUrl: thumbLink,
+          hiResUrl: fastHiResUrl,
+          jplUrl: `https://images.nasa.gov/details/${encodeURIComponent(nasaId)}`,
+          credit: `NASA/JPL-Caltech — ${title}`
+        });
+      });
+
+      renderPanoramaCardsInDrawer(mapped.length ? mapped : LOCAL_CURATED_PANORAMAS);
+    } catch {
+      clearTimeout(timeoutId);
+      renderPanoramaCardsInDrawer(LOCAL_CURATED_PANORAMAS);
+    }
+  }
+
+  if (btnSvNasaApi && svNasaApiDrawer) {
+    btnSvNasaApi.addEventListener('click', () => {
+      const isHidden = svNasaApiDrawer.classList.toggle('is-hidden');
+      btnSvNasaApi.classList.toggle('is-active', !isHidden);
+      if (!isHidden && nasaApiResultsGrid && nasaApiResultsGrid.children.length === 0) {
+        renderPanoramaCardsInDrawer(LOCAL_CURATED_PANORAMAS);
       }
     });
   }
+
+  // Soporte tanto para #btn-close-nasa-drawer como #btn-close-nasa-api y tecla Escape
+  const btnCloseNasaApiLegacy = document.getElementById('btn-close-nasa-api');
+  [btnCloseNasaDrawer, btnCloseNasaApiLegacy].forEach((btn) => {
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeNasaPhotoDrawer();
+      });
+    }
+  });
+
+  if (btnNasaApiSearch && nasaApiSearchInput) {
+    btnNasaApiSearch.addEventListener('click', () => {
+      fetchNasaLivePanoramas(nasaApiSearchInput.value);
+    });
+    nasaApiSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        fetchNasaLivePanoramas(nasaApiSearchInput.value);
+      }
+    });
+  }
+
+  document.querySelectorAll('.snad-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.snad-chip').forEach((c) => c.classList.remove('is-active'));
+      chip.classList.add('is-active');
+      const q = chip.getAttribute('data-nasa-query');
+      if (nasaApiSearchInput && q && q !== '__LOCAL__') {
+        nasaApiSearchInput.value = q;
+      }
+      if (q) fetchNasaLivePanoramas(q);
+    });
+  });
 
   // Eventos de interacción de cámara 360° (Arrastrar para mirar, Rueda de ratón para Zoom y Botones)
   if (pannellumMountEl) {
@@ -2314,7 +3230,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const dy = e.clientY - dragStartY;
       const sensitivity = camFov / 480;
       camYaw = ((dragStartYaw - dx * sensitivity) % 360 + 360) % 360;
-      camPitch = Math.max(-38, Math.min(38, dragStartPitch + dy * sensitivity));
+      camPitch = Math.max(-34, Math.min(34, dragStartPitch + dy * sensitivity));
+      needs360Redraw = true;
     });
 
     const endDrag360 = () => {
@@ -2329,6 +3246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         targetYaw = null;
         camFov = Math.max(45, Math.min(115, camFov + (e.deltaY > 0 ? 5 : -5)));
+        needs360Redraw = true;
       },
       { passive: false }
     );
@@ -2338,12 +3256,14 @@ document.addEventListener('DOMContentLoaded', () => {
     btn360ZoomIn.addEventListener('click', () => {
       targetYaw = null;
       camFov = Math.max(45, camFov - 10);
+      needs360Redraw = true;
     });
   }
   if (btn360ZoomOut) {
     btn360ZoomOut.addEventListener('click', () => {
       targetYaw = null;
       camFov = Math.min(115, camFov + 10);
+      needs360Redraw = true;
     });
   }
   if (btn360ResetCam) {
@@ -2396,12 +3316,18 @@ document.addEventListener('DOMContentLoaded', () => {
     currentStationId = station.id;
 
     if (svStationTitleEl) {
-      svStationTitleEl.textContent = `MARTIAN STREET VIEW 360° // ${station.title}`;
+      svStationTitleEl.textContent = `360° MARTE // ${station.title}`;
     }
 
-    getOrGeneratePanoramaCanvas(station);
+    sync360ViewportSize();
+    const realEntry = getOrComposeRealPanoramaCanvas(station);
+    if (render360Mode === 'sim2d') {
+      getOrGeneratePanoramaCanvas(station);
+    }
+    updateRealPhotoBadge(station, realEntry);
     buildStationHotspotElements(station);
     animateCameraTo(station.initialYaw, station.initialPitch, 90);
+    needs360Redraw = true;
 
     updateInspectorCard(station.defaultInspect);
     renderStreetViewStepPills();
@@ -2426,6 +3352,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let roverVisionCone = null;
   let lastKnownYaw = 14;
   let lastKnownHfov = 90;
+  let lastRenderedConeYaw = -999;
+  let lastRenderedConeFov = -999;
   let isInternalStationSync = false;
 
   // Calcula un punto (lat, lng) proyectado desde un origen dado un rumbo (bearingDeg) y radio en km
@@ -2443,7 +3371,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lastKnownHfov = hfovDeg;
 
     const pos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
-    const coneRadiusKm = 1.15;
+    const coneRadiusKm = 6.5;
     const halfFov = Math.max(20, Math.min(65, hfovDeg / 2));
 
     const pts = [[pos.lat, pos.lng]];
@@ -2494,27 +3422,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Bucle de telemetría de orientación 360° (Brújula, Pitch, FOV y Cono de Visión en Mapa 2D)
+  // Bucle de telemetría de orientación 360° (Brújula, Pitch, FOV y Cono de Visión en Mapa 2D sin sobrecargar el DOM)
   setInterval(() => {
     if (streetContainer.classList.contains('is-hidden')) return;
     const normYaw = Math.round(((camYaw % 360) + 360) % 360);
-    const pitch = camPitch.toFixed(1);
     const fov = Math.round(camFov);
 
-    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
-    const dirLabel = dirs[Math.round(normYaw / 45) % 8];
+    if (Math.abs(normYaw - lastRenderedConeYaw) >= 2 || Math.abs(fov - lastRenderedConeFov) >= 2) {
+      lastRenderedConeYaw = normYaw;
+      lastRenderedConeFov = fov;
+      const pitch = camPitch.toFixed(1);
+      const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+      const dirLabel = dirs[Math.round(normYaw / 45) % 8];
 
-    if (svCompassHeadingEl) {
-      svCompassHeadingEl.textContent = `AZIMUT: ${String(normYaw).padStart(3, '0')}° ${dirLabel}`;
-    }
-    const activeStation = STREETVIEW_STATIONS.find((s) => s.id === currentStationId);
-    if (svCameraAnglesEl && activeStation) {
-      svCameraAnglesEl.textContent = `PITCH: ${pitch}° | FOV: ${fov}° | SENSOR: ${activeStation.sensor}`;
-    }
+      if (svCompassHeadingEl) {
+        svCompassHeadingEl.textContent = `AZIMUT: ${String(normYaw).padStart(3, '0')}° ${dirLabel}`;
+      }
+      const activeStation = STREETVIEW_STATIONS.find((s) => s.id === currentStationId);
+      if (svCameraAnglesEl && activeStation) {
+        svCameraAnglesEl.textContent = `PITCH: ${pitch}° | FOV: ${fov}° | SENSOR: ${activeStation.sensor}`;
+      }
 
-    // Actualizar en tiempo real el cono de visión radar sobre el Mapa 2D
-    updateRoverVisionConeOnMap(normYaw, fov);
-  }, 160);
+      if (!isDragging360) {
+        updateRoverVisionConeOnMap(normYaw, fov);
+      }
+    }
+  }, 200);
 
   // Botones de Navegación Paso a Paso (Anterior / Siguiente)
   if (btnSvPrev) {
@@ -2565,10 +3498,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Cerrar la ventana emergente de inspección con la tecla Escape
+  // Cerrar el archivo fotográfico de la NASA o la ventana de inspección con la tecla Escape
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && svInspectorCard && !svInspectorCard.classList.contains('is-closed')) {
-      if (!dossierDialog?.open) {
+    if (e.key === 'Escape') {
+      if (svNasaApiDrawer && !svNasaApiDrawer.classList.contains('is-hidden')) {
+        closeNasaPhotoDrawer();
+        return;
+      }
+      if (svInspectorCard && !svInspectorCard.classList.contains('is-closed') && !dossierDialog?.open) {
         svInspectorCard.classList.add('is-closed');
       }
     }
@@ -2676,8 +3613,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnToggleStreet.classList.add('is-active');
       btnToggleStreet.setAttribute('aria-pressed', 'true');
       btnSplitView.classList.remove('is-active');
-      streetBtnLabel.textContent = 'VOLVER AL MAPA 2D';
-      // Despejar automáticamente los paneles laterales al entrar a 360° para vista inmersiva limpia
+      streetBtnLabel.textContent = 'MAPA 2D';
       setPanelOpen('left', false);
       setPanelOpen('right', false);
       setPanelOpen('bottom', false);
@@ -2686,8 +3622,7 @@ document.addEventListener('DOMContentLoaded', () => {
       streetContainer.classList.remove('is-hidden');
       btnToggleStreet.classList.add('is-active');
       btnSplitView.classList.add('is-active');
-      streetBtnLabel.textContent = '360° ACTIVO (DIVIDIDO)';
-      // En pantalla dividida, ocultar automáticamente los sidebars para que el Mapa y el 360° tengan toda la pantalla
+      streetBtnLabel.textContent = '360° ACTIVO';
       setPanelOpen('left', false);
       setPanelOpen('right', false);
       setPanelOpen('bottom', false);
@@ -2697,7 +3632,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnToggleStreet.classList.remove('is-active');
       btnToggleStreet.setAttribute('aria-pressed', 'false');
       btnSplitView.classList.remove('is-active');
-      streetBtnLabel.textContent = 'ACTIVATE 360° STREET VIEW';
+      streetBtnLabel.textContent = 'VISTA 360°';
     }
 
     if (mode === 'streetview' || mode === 'split') {
@@ -3143,7 +4078,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (routeSelector) routeSelector.value = m.routeKey;
         loadRoute(m.routeKey, false);
       }
-      marsMap.flyTo(m.coords, 11, { duration: 1.4 });
+      marsMap.flyTo(m.coords, 8, { duration: 1.2 });
     });
   }
 
