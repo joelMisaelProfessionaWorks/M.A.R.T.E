@@ -67,18 +67,6 @@
         </button>
       </div>
 
-      <!-- Telemetría de Enlace Orbital Central -->
-      <div class="header-telemetry">
-        <div class="telemetry-pill">
-          <span class="tp-label">COORDENADAS</span>
-          <span class="tp-value" id="hud-header-coords">18.38°N &bull; 77.58°E</span>
-        </div>
-        <div class="telemetry-pill">
-          <span class="tp-label">TIEMPO MARCIANO</span>
-          <span class="tp-value text-orange" id="hud-header-clock">SOL 1420 &bull; 14:32:08 MTC</span>
-        </div>
-      </div>
-
       <!-- Acciones de Vista: Audio HUD, Dossier Misiones NASA, Pantalla Dividida y Street View 360° -->
       <div class="header-actions">
         <button id="btn-hud-audio" class="hud-btn-icon" type="button" aria-pressed="true" title="Activar/Silenciar Audio HUD">
@@ -457,20 +445,17 @@
               </div>
             </aside>
 
-            <!-- Controles Flotantes de Zoom y Horizonte en el Visor 360° -->
+            <!-- Controles Flotantes de Zoom y Horizonte en el Visor 360° (lado derecho, centrados verticalmente) -->
             <div class="sv-floating-controls">
-              <button id="btn-360-zoom-in" class="map-tool-btn" type="button" title="Acercar Zoom 360°"><i class="fa-solid fa-plus"></i></button>
-              <button id="btn-360-zoom-out" class="map-tool-btn" type="button" title="Alejar Zoom 360°"><i class="fa-solid fa-minus"></i></button>
+              <button id="btn-360-zoom-in" class="map-tool-btn" type="button" title="Acercar (rueda del ratón)"><i class="fa-solid fa-plus"></i></button>
+              <button id="btn-360-zoom-out" class="map-tool-btn" type="button" title="Alejar (rueda del ratón)"><i class="fa-solid fa-minus"></i></button>
+              <button id="btn-360-fit" class="map-tool-btn" type="button" title="Ver toda la imagen (alejar al máximo)"><i class="fa-solid fa-expand text-orange"></i></button>
               <button id="btn-360-reset-cam" class="map-tool-btn" type="button" title="Centrar Horizonte"><i class="fa-solid fa-compass text-cyan"></i></button>
-            </div>
-
-            <div class="sv-drag-hint">
-              <i class="fa-solid fa-arrows-left-right text-orange"></i> ARRASTRA PARA EXPLORAR EN 360° &bull; ALTERNA ENTRE FOTO REAL NASA Y VISTA 2D ARRIBA
             </div>
           </div>
 
-          <!-- Tarjeta Holográfica de Inspección Científica (Con botón X para cerrar completamente) -->
-          <aside class="sv-inspector-card" id="sv-inspector-card" aria-live="polite">
+          <!-- Tarjeta Holográfica de Inspección Científica (cerrada por defecto; se abre al tocar un punto o INFO) -->
+          <aside class="sv-inspector-card is-closed" id="sv-inspector-card" aria-live="polite">
             <div class="svi-header">
               <span class="svi-kicker" id="svi-kicker"><i class="fa-solid fa-microscope"></i> ESPECTRÓMETRO PIXL / SUPERCAM</span>
               <div class="svi-header-actions">
@@ -491,6 +476,11 @@
               <span id="svi-comp"><i class="fa-solid fa-atom text-cyan"></i> SiO₂ / Filosilicatos</span>
             </div>
           </aside>
+
+          <!-- Mini-mapa del panorama completo: muestra TODA la imagen 360° y el área que estás viendo (clic para saltar) -->
+          <div class="sv-pano-overview" id="sv-pano-overview" title="Panorama completo: haz clic o arrastra para moverte">
+            <canvas id="sv-overview-canvas" width="520" height="64" aria-label="Vista general del panorama completo"></canvas>
+          </div>
 
           <!-- Consola Inferior de Navegación Paso a Paso (Step-by-Step Rover Traverse) -->
           <div class="sv-step-navigator" id="sv-step-navigator">
@@ -915,6 +905,6 @@
   <!-- Motores Cartográfico (Leaflet.js) y Esférico WebGL 360° (Pannellum.js) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js" crossorigin=""></script>
-  <script src="app.js?v=8"></script>
+  <script type="module" src="/app.js"></script>
 </body>
 </html>

@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Constantes Planetarias Marcianas (Zoom calibrado a resolución nativa orbital para nitidez total)
   const MARS_RADIUS_KM = 3396.2; // Radio ecuatorial de Marte en km
   const JEZERO_CENTER = [18.45, 77.42];
-  const DEFAULT_ZOOM = 8;
+  const DEFAULT_ZOOM = 6; // Nivel de zoom óptimo nativo (evita pixelado y sobre-zoom)
 
   // ==========================================================================
   // 1. CATÁLOGO CIENTÍFICO DE RUTAS MARCIANAS (ETAPA 3 — ESCALA TÁCTICA NÍTIDA)
@@ -1255,7 +1255,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ? Math.round((wp.km / activeRouteData.totalDistKm) * 100)
             : 0;
         updateRoverProgress(targetPct);
-        marsMap.flyTo(wp.coords, 8, { duration: 0.85 });
+        marsMap.flyTo(wp.coords, 6, { duration: 0.85 });
       });
 
       waypointsListEl.appendChild(li);
@@ -1785,7 +1785,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnCenterRover) {
     btnCenterRover.addEventListener('click', () => {
       if (liveRoverMarker) {
-        marsMap.flyTo(liveRoverMarker.getLatLng(), 8, { duration: 1.0 });
+        marsMap.flyTo(liveRoverMarker.getLatLng(), 6, { duration: 1.0 });
         setTimeout(() => liveRoverMarker.openPopup(), 1050);
       } else {
         marsMap.flyTo(JEZERO_CENTER, DEFAULT_ZOOM, { duration: 1.0 });
@@ -1888,11 +1888,11 @@ document.addEventListener('DOMContentLoaded', () => {
       coords: [18.28, 77.68],
       elev: -2540,
       initialYaw: 18,
-      initialPitch: -2,
+      initialPitch: 0,
       realPano: {
         piaId: 'PIA24264',
         sol: 'SOL 3 (MARS 2020)',
-        localUrl: 'public/panoramas/PIA24264-landing.jpg',
+        localUrl: 'panoramas/PIA24264-landing.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA24264/PIA24264~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24264',
         credit: 'NASA/JPL-Caltech/ASU/MSSS — Primer Panorama 360° Mastcam-Z en Octavia E. Butler Landing (142 imágenes cosidas)'
@@ -1916,7 +1916,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       hotspots: [
         {
-          pitch: -6,
+          pitch: 0,
           yaw: 22,
           kind: 'nav',
           icon: 'fa-circle-arrow-up',
@@ -1924,7 +1924,7 @@ document.addEventListener('DOMContentLoaded', () => {
           targetScene: 'scene-kodiak'
         },
         {
-          pitch: -12,
+          pitch: 2,
           yaw: -42,
           kind: 'science',
           icon: 'fa-helicopter',
@@ -1935,7 +1935,7 @@ document.addEventListener('DOMContentLoaded', () => {
           comp: 'Regolito Firme (0% Riesgo)'
         },
         {
-          pitch: -18,
+          pitch: -2,
           yaw: 78,
           kind: 'science',
           icon: 'fa-microscope',
@@ -1958,11 +1958,11 @@ document.addEventListener('DOMContentLoaded', () => {
       coords: [18.38, 77.49],
       elev: -2490,
       initialYaw: 10,
-      initialPitch: 2,
+      initialPitch: 0,
       realPano: {
         piaId: 'PIA24921',
         sol: 'SOL 466 (MARS 2020)',
-        localUrl: 'public/panoramas/PIA24921-kodiak-delta.jpg',
+        localUrl: 'panoramas/PIA24921-kodiak-delta.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA24921/PIA24921~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24921',
         credit: 'NASA/JPL-Caltech/ASU/MSSS — Mosaico Real 2.5-Gigapíxeles del Frente Deltaico de Jezero y Butte Kodiak (1,118 cuadros)'
@@ -1986,7 +1986,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       hotspots: [
         {
-          pitch: -5,
+          pitch: 0,
           yaw: 35,
           kind: 'nav',
           icon: 'fa-circle-arrow-up',
@@ -1994,7 +1994,7 @@ document.addEventListener('DOMContentLoaded', () => {
           targetScene: 'scene-ice'
         },
         {
-          pitch: -8,
+          pitch: -1,
           yaw: -155,
           kind: 'nav',
           icon: 'fa-circle-arrow-left',
@@ -2002,7 +2002,7 @@ document.addEventListener('DOMContentLoaded', () => {
           targetScene: 'scene-landing'
         },
         {
-          pitch: 6,
+          pitch: 4,
           yaw: -8,
           kind: 'science',
           icon: 'fa-layer-group',
@@ -2013,7 +2013,7 @@ document.addEventListener('DOMContentLoaded', () => {
           comp: 'Arcillas Esmectitas / Carbonatos'
         },
         {
-          pitch: -20,
+          pitch: -2,
           yaw: 65,
           kind: 'science',
           icon: 'fa-vial',
@@ -2036,11 +2036,11 @@ document.addEventListener('DOMContentLoaded', () => {
       coords: [18.52, 77.33],
       elev: -2435,
       initialYaw: 0,
-      initialPitch: -4,
+      initialPitch: 0,
       realPano: {
         piaId: 'PIA26369',
         sol: 'SOL 1178 (NERETVA VALLIS)',
-        localUrl: 'public/panoramas/PIA26369-bright-angel.jpg',
+        localUrl: 'panoramas/PIA26369-bright-angel.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA26369/PIA26369~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26369',
         credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° de "Bright Angel" y Canal Fluvial Neretva Vallis (Cheyava Falls)'
@@ -2064,7 +2064,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       hotspots: [
         {
-          pitch: -4,
+          pitch: 0,
           yaw: 28,
           kind: 'nav',
           icon: 'fa-circle-arrow-up',
@@ -2072,7 +2072,7 @@ document.addEventListener('DOMContentLoaded', () => {
           targetScene: 'scene-base'
         },
         {
-          pitch: -8,
+          pitch: -1,
           yaw: -160,
           kind: 'nav',
           icon: 'fa-circle-arrow-left',
@@ -2080,7 +2080,7 @@ document.addEventListener('DOMContentLoaded', () => {
           targetScene: 'scene-kodiak'
         },
         {
-          pitch: -14,
+          pitch: -1,
           yaw: -15,
           kind: 'ice',
           icon: 'fa-snowflake',
@@ -2091,7 +2091,7 @@ document.addEventListener('DOMContentLoaded', () => {
           comp: 'H₂O Sólido (-64°C)'
         },
         {
-          pitch: -10,
+          pitch: 3,
           yaw: 55,
           kind: 'ice',
           icon: 'fa-lungs',
@@ -2118,7 +2118,7 @@ document.addEventListener('DOMContentLoaded', () => {
       realPano: {
         piaId: 'PIA26474',
         sol: 'SOL 1337 (CUMBRE BORDE JEZERO)',
-        localUrl: 'public/panoramas/PIA26474-rio-chiquito.jpg',
+        localUrl: 'panoramas/PIA26474-rio-chiquito.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA26474/PIA26474~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26474',
         credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° en "Rio Chiquito" (Mirador de la Cumbre del Borde Occidental de Jezero)'
@@ -2142,7 +2142,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       hotspots: [
         {
-          pitch: -7,
+          pitch: -1,
           yaw: -145,
           kind: 'nav',
           icon: 'fa-circle-arrow-left',
@@ -2150,7 +2150,7 @@ document.addEventListener('DOMContentLoaded', () => {
           targetScene: 'scene-ice'
         },
         {
-          pitch: -2,
+          pitch: 1,
           yaw: 95,
           kind: 'nav',
           icon: 'fa-rocket',
@@ -2158,7 +2158,7 @@ document.addEventListener('DOMContentLoaded', () => {
           targetScene: 'scene-gale'
         },
         {
-          pitch: 2,
+          pitch: 3,
           yaw: -18,
           kind: 'science',
           icon: 'fa-campground',
@@ -2169,7 +2169,7 @@ document.addEventListener('DOMContentLoaded', () => {
           comp: 'Blindaje: 0.02 mSv/h'
         },
         {
-          pitch: 8,
+          pitch: 6,
           yaw: -85,
           kind: 'science',
           icon: 'fa-triangle-exclamation',
@@ -2192,11 +2192,11 @@ document.addEventListener('DOMContentLoaded', () => {
       coords: [-4.68, 137.38],
       elev: -4310,
       initialYaw: 5,
-      initialPitch: 4,
+      initialPitch: 1,
       realPano: {
         piaId: 'PIA22545',
         sol: 'SOL 2137 / 4220 (CURIOSITY MSL)',
-        localUrl: 'public/panoramas/PIA22545-gale-curiosity.jpg',
+        localUrl: 'panoramas/PIA22545-gale-curiosity.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA22545/PIA22545~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA22545',
         credit: 'NASA/JPL-Caltech/MSSS — Panorama 360° Real de Curiosity Mastcam en Cresta Vera Rubin y Aeolis Mons (Monte Sharp)'
@@ -2220,7 +2220,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       hotspots: [
         {
-          pitch: -5,
+          pitch: 0,
           yaw: 50,
           kind: 'nav',
           icon: 'fa-circle-arrow-up',
@@ -2228,7 +2228,7 @@ document.addEventListener('DOMContentLoaded', () => {
           targetScene: 'scene-valles'
         },
         {
-          pitch: -6,
+          pitch: -1,
           yaw: -130,
           kind: 'nav',
           icon: 'fa-circle-arrow-left',
@@ -2236,7 +2236,7 @@ document.addEventListener('DOMContentLoaded', () => {
           targetScene: 'scene-base'
         },
         {
-          pitch: 11,
+          pitch: 6,
           yaw: 4,
           kind: 'science',
           icon: 'fa-mountain',
@@ -2259,11 +2259,11 @@ document.addEventListener('DOMContentLoaded', () => {
       coords: [-13.8900, -59.1800],
       elev: -3790,
       initialYaw: 0,
-      initialPitch: 6,
+      initialPitch: 1,
       realPano: {
         piaId: 'PIA13077',
         sol: 'MRO HiRISE + GEDIZ VALLIS',
-        localUrl: 'public/panoramas/PIA26363-gediz-vallis.jpg',
+        localUrl: 'panoramas/PIA26363-gediz-vallis.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA26363/PIA26363~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26363',
         credit: 'NASA/JPL-Caltech/MSSS/UArizona — Garganta Tectónica y Canal de Escombros Sulfatados (Mosaico 360° Real)'
@@ -2287,7 +2287,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       hotspots: [
         {
-          pitch: -6,
+          pitch: 0,
           yaw: 0,
           kind: 'nav',
           icon: 'fa-circle-arrow-up',
@@ -2295,7 +2295,7 @@ document.addEventListener('DOMContentLoaded', () => {
           targetScene: 'scene-landing'
         },
         {
-          pitch: 14,
+          pitch: 5,
           yaw: -32,
           kind: 'science',
           icon: 'fa-person-falling-burst',
@@ -2324,7 +2324,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnReopenInspector = document.getElementById('btn-sv-reopen-inspector');
   const btn360ZoomIn = document.getElementById('btn-360-zoom-in');
   const btn360ZoomOut = document.getElementById('btn-360-zoom-out');
+  const btn360Fit = document.getElementById('btn-360-fit');
   const btn360ResetCam = document.getElementById('btn-360-reset-cam');
+  const svOverviewCanvas = document.getElementById('sv-overview-canvas');
+  let svOverviewCtx = svOverviewCanvas ? svOverviewCanvas.getContext('2d') : null;
 
   let camYaw = 10;       // 0° a 360°
   let camPitch = 2;      // -42° a +42°
@@ -2580,10 +2583,21 @@ document.addEventListener('DOMContentLoaded', () => {
     return canvas;
   }
 
+  // Resuelve rutas de panoramas locales de forma universal (Vite root, relative, public o remote)
+  function resolvePanoPath(path) {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+      return path;
+    }
+    const fileName = path.split('/').pop();
+    return `panoramas/${fileName}`;
+  }
+
   // Compone un lienzo equirectangular 360° (2048x1024) a partir de fotografía real de NASA JPL-Caltech (Mastcam-Z / Mastcam / HiRISE)
   function getOrComposeRealPanoramaCanvas(station) {
     if (!station || !station.realPano) return null;
-    const cacheKey = `${station.id}::${station.realPano.localUrl || station.realPano.remoteUrl}`;
+    const fileName = (station.realPano.localUrl || '').split('/').pop();
+    const cacheKey = `${station.id}::${station.realPano.piaId || fileName || station.realPano.remoteUrl}`;
     if (realPanoCanvasCache[cacheKey]) {
       return realPanoCanvasCache[cacheKey];
     }
@@ -2606,23 +2620,37 @@ document.addEventListener('DOMContentLoaded', () => {
       const ctx = canvas.getContext('2d', { alpha: false });
       const p = station.palette;
 
-      // 1. Proyección equirectangular a cuadro completo (100% del alto y ancho del lienzo 360°)
-      //    Las 6 imágenes locales de public/panoramas/ ya están restauradas fotogramétricamente de borde a borde
+      // 1. Proyección equirectangular a escala angular natural (sin estiramiento vertical forzado)
       const imgAspect = img.naturalWidth / Math.max(1, img.naturalHeight);
-      const topY = Math.floor(height * 0.03);
-      const botY = Math.floor(height * 0.97);
-      const bandH = botY - topY;
 
-      ctx.fillStyle = p.skyMid;
+      // Fondo ambiental de Marte en el cénit y el suelo
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.5);
+      skyGrad.addColorStop(0.0, p.skyZenith);
+      skyGrad.addColorStop(0.55, p.skyMid);
+      skyGrad.addColorStop(1.0, p.skyHorizon);
+      ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, width, height / 2);
-      ctx.fillStyle = p.groundNear;
+
+      const groundGrad = ctx.createLinearGradient(0, height * 0.5, 0, height);
+      groundGrad.addColorStop(0.0, p.groundFar);
+      groundGrad.addColorStop(0.45, p.groundMid);
+      groundGrad.addColorStop(1.0, p.groundNear);
+      ctx.fillStyle = groundGrad;
       ctx.fillRect(0, height / 2, width, height / 2);
 
+      let topY = 0;
+      let bandH = height;
+
       if (imgAspect >= 1.8) {
+        // Panorama continuo de rover: altura angular proporcional al aspect ratio real
+        bandH = Math.min(height, Math.round(width / Math.max(1.8, Math.min(5.2, imgAspect))));
+        topY = Math.max(0, Math.min(height - bandH, Math.round(height * 0.5 - bandH * 0.42)));
         ctx.drawImage(img, 0, topY, width, bandH);
       } else {
-        // Fotografía orbital o de cámara estrecha (de la API en vivo de la NASA): mosaico continuo con espejo horizontal
+        // Mosaico para imágenes de aspecto estrecho
         const tileW = width / 2;
+        bandH = Math.min(height, Math.round(tileW / Math.max(0.6, imgAspect)));
+        topY = Math.max(0, Math.round(height * 0.5 - bandH * 0.45));
         ctx.drawImage(img, 0, topY, tileW, bandH);
         ctx.save();
         ctx.translate(width, 0);
@@ -2631,20 +2659,25 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore();
       }
 
-      // 2. Transición suave únicamente en el extremo cenital (3% superior) y nadir (3% inferior)
-      const topGrad = ctx.createLinearGradient(0, 0, 0, topY + 28);
-      topGrad.addColorStop(0.0, p.skyMid);
-      topGrad.addColorStop(0.45, p.skyHorizon);
-      topGrad.addColorStop(1.0, 'rgba(0,0,0,0)');
-      ctx.fillStyle = topGrad;
-      ctx.fillRect(0, 0, width, topY + 28);
+      // Transición suave en el horizonte superior e inferior para máxima inmersión
+      const topEdgeH = Math.min(36, Math.round(bandH * 0.08));
+      if (topEdgeH > 2 && topY > 0) {
+        const topGrad = ctx.createLinearGradient(0, topY - 2, 0, topY + topEdgeH);
+        topGrad.addColorStop(0.0, p.skyHorizon);
+        topGrad.addColorStop(1.0, 'rgba(0,0,0,0)');
+        ctx.fillStyle = topGrad;
+        ctx.fillRect(0, topY - 2, width, topEdgeH + 2);
+      }
 
-      const botGrad = ctx.createLinearGradient(0, botY - 28, 0, height);
-      botGrad.addColorStop(0.0, 'rgba(0,0,0,0)');
-      botGrad.addColorStop(0.65, p.groundMid);
-      botGrad.addColorStop(1.0, p.groundNear);
-      ctx.fillStyle = botGrad;
-      ctx.fillRect(0, botY - 28, width, height - (botY - 28));
+      const botEdgeH = Math.min(40, Math.round(bandH * 0.08));
+      const botY = topY + bandH;
+      if (botEdgeH > 2 && botY < height) {
+        const botGrad = ctx.createLinearGradient(0, botY - botEdgeH, 0, botY + 2);
+        botGrad.addColorStop(0.0, 'rgba(0,0,0,0)');
+        botGrad.addColorStop(1.0, p.groundFar);
+        ctx.fillStyle = botGrad;
+        ctx.fillRect(0, botY - botEdgeH, width, botEdgeH + 2);
+      }
 
       entry.loaded = true;
       entry.sourceUsed = sourceLabel;
@@ -2654,35 +2687,58 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    const loadAndDecode = (url, label, onFail) => {
+    // Lista de candidatos ordenada para que SIEMPRE cargue sin importar el entorno
+    const candidateUrls = [
+      fileName ? `panoramas/${fileName}` : null,
+      fileName ? `./panoramas/${fileName}` : null,
+      fileName ? `/panoramas/${fileName}` : null,
+      fileName ? `public/panoramas/${fileName}` : null,
+      station.realPano.localUrl,
+      station.realPano.remoteUrl
+    ].filter(Boolean);
+    const uniqueCandidates = [...new Set(candidateUrls)];
+
+    let attemptIndex = 0;
+    const tryNext = () => {
+      if (attemptIndex >= uniqueCandidates.length) {
+        entry.error = true;
+        needs360Redraw = true;
+        if (station.id === currentStationId) updateRealPhotoBadge(station, entry);
+        return;
+      }
+      const url = uniqueCandidates[attemptIndex++];
+      const isRemote = url.startsWith('http://') || url.startsWith('https://');
       const img = new Image();
       img.decoding = 'async';
+      if (isRemote) img.crossOrigin = 'anonymous';
+
+      let timedOut = false;
+      const timer = setTimeout(() => {
+        timedOut = true;
+        tryNext();
+      }, 5000);
+
       img.onload = () => {
+        if (timedOut) return;
+        clearTimeout(timer);
+        const label = isRemote ? 'SERVIDOR REMOTO NASA IMAGES API' : 'ARCHIVO OFICIAL NASA JPL (ALTA VELOCIDAD)';
         if (typeof img.decode === 'function') {
           img.decode().then(() => buildFromImage(img, label)).catch(() => buildFromImage(img, label));
         } else {
           buildFromImage(img, label);
         }
       };
-      img.onerror = onFail;
+
+      img.onerror = () => {
+        if (timedOut) return;
+        clearTimeout(timer);
+        tryNext();
+      };
+
       img.src = url;
     };
 
-    const primaryUrl = station.realPano.localUrl || station.realPano.remoteUrl;
-    loadAndDecode(primaryUrl, 'ARCHIVO OFICIAL NASA JPL (ALTA VELOCIDAD)', () => {
-      if (station.realPano.remoteUrl && station.realPano.remoteUrl !== primaryUrl) {
-        loadAndDecode(station.realPano.remoteUrl, 'SERVIDOR REMOTO NASA IMAGES API', () => {
-          entry.error = true;
-          needs360Redraw = true;
-          if (station.id === currentStationId) updateRealPhotoBadge(station, entry);
-        });
-      } else {
-        entry.error = true;
-        needs360Redraw = true;
-        if (station.id === currentStationId) updateRealPhotoBadge(station, entry);
-      }
-    });
-
+    tryNext();
     return entry;
   }
 
@@ -2769,8 +2825,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Animación suave de la cámara esférica 360° hacia un objetivo (yaw, pitch, fov)
   function animateCameraTo(yaw, pitch, fov = camFov) {
     targetYaw = ((yaw % 360) + 360) % 360;
-    targetPitch = Math.max(-34, Math.min(34, pitch));
-    targetFov = Math.max(45, Math.min(115, fov));
+    targetPitch = Math.max(-80, Math.min(80, pitch));
+    targetFov = Math.max(30, Math.min(125, fov));
     needs360Redraw = true;
   }
 
@@ -2899,6 +2955,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dibujar únicamente la capa seleccionada (0% superposición, máxima fluidez GPU)
     drawEquirectangularLayer(mars360Ctx, activeSourceCanvas, sx, sy, cropW, cropH, sw, cw, ch);
 
+    // Dibujar miniatura de todo el panorama en el overview strip para que el usuario pueda ver todo
+    if (svOverviewCanvas && svOverviewCtx) {
+      const ovW = svOverviewCanvas.width;
+      const ovH = svOverviewCanvas.height;
+      svOverviewCtx.drawImage(activeSourceCanvas, 0, 0, ovW, ovH);
+
+      // Franja de horizonte
+      svOverviewCtx.strokeStyle = 'rgba(255, 107, 43, 0.4)';
+      svOverviewCtx.lineWidth = 1;
+      svOverviewCtx.beginPath();
+      svOverviewCtx.moveTo(0, ovH * 0.5);
+      svOverviewCtx.lineTo(ovW, ovH * 0.5);
+      svOverviewCtx.stroke();
+
+      // Recuadro del cono de visión actual (FOV x Pitch)
+      const boxW = Math.max(28, (camFov / 360) * ovW);
+      const boxH = Math.max(16, (vFov / 180) * ovH);
+      const boxX = ((normYaw / 360) * ovW - boxW * 0.5 + ovW) % ovW;
+      const boxY = Math.max(2, Math.min(ovH - boxH - 2, ((90 - camPitch) / 180) * ovH - boxH * 0.5));
+
+      svOverviewCtx.strokeStyle = '#00e5ff';
+      svOverviewCtx.lineWidth = 2;
+      svOverviewCtx.fillStyle = 'rgba(0, 229, 255, 0.18)';
+      svOverviewCtx.fillRect(boxX, boxY, boxW, boxH);
+      svOverviewCtx.strokeRect(boxX, boxY, boxW, boxH);
+
+      if (boxX + boxW > ovW) {
+        const wrapW = boxX + boxW - ovW;
+        svOverviewCtx.fillRect(0, boxY, wrapW, boxH);
+        svOverviewCtx.strokeRect(0, boxY, wrapW, boxH);
+      }
+    }
+
     // En modo VISTA 2D, mostrar la línea de horizonte artificial táctica
     if (render360Mode === 'sim2d') {
       const horizonScreenY = (0.5 - (0 - camPitch) / vFov) * ch;
@@ -2917,7 +3006,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Proyectar cada Hotspot 3D usando transformaciones GPU (translate3d) sin recalcular layout DOM
     const maxYawVis = camFov * 0.58;
-    const maxPitchVis = vFov * 0.58;
+    const maxPitchVis = vFov * 0.65;
     for (let i = 0; i < activeHotspotNodes.length; i++) {
       const node = activeHotspotNodes[i];
       const data = node.data;
@@ -2976,8 +3065,8 @@ document.addEventListener('DOMContentLoaded', () => {
       nasaId: 'PIA24264',
       title: 'Perseverance 360° — Octavia E. Butler Landing (Sol 3)',
       dateStr: 'MARS 2020',
-      thumbUrl: 'public/panoramas/PIA24264-landing.jpg',
-      hiResUrl: 'public/panoramas/PIA24264-landing.jpg',
+      thumbUrl: 'panoramas/PIA24264-landing.jpg',
+      hiResUrl: 'panoramas/PIA24264-landing.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24264',
       credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° Mastcam-Z en Octavia E. Butler Landing'
     },
@@ -2985,8 +3074,8 @@ document.addEventListener('DOMContentLoaded', () => {
       nasaId: 'PIA24921',
       title: 'Perseverance 360° — Frente del Delta Jezero y Mesa Kodiak',
       dateStr: 'SOL 466',
-      thumbUrl: 'public/panoramas/PIA24921-kodiak-delta.jpg',
-      hiResUrl: 'public/panoramas/PIA24921-kodiak-delta.jpg',
+      thumbUrl: 'panoramas/PIA24921-kodiak-delta.jpg',
+      hiResUrl: 'panoramas/PIA24921-kodiak-delta.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24921',
       credit: 'NASA/JPL-Caltech/ASU/MSSS — Mosaico Real 2.5-Gigapíxeles del Frente Deltaico y Mesa Kodiak'
     },
@@ -2994,8 +3083,8 @@ document.addEventListener('DOMContentLoaded', () => {
       nasaId: 'PIA26369',
       title: 'Perseverance 360° — Bright Angel y Canal Neretva Vallis',
       dateStr: 'SOL 1178',
-      thumbUrl: 'public/panoramas/PIA26369-bright-angel.jpg',
-      hiResUrl: 'public/panoramas/PIA26369-bright-angel.jpg',
+      thumbUrl: 'panoramas/PIA26369-bright-angel.jpg',
+      hiResUrl: 'panoramas/PIA26369-bright-angel.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26369',
       credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° en Bright Angel (Neretva Vallis)'
     },
@@ -3003,8 +3092,8 @@ document.addEventListener('DOMContentLoaded', () => {
       nasaId: 'PIA26474',
       title: 'Perseverance 360° — Cumbre del Borde Occidental (Rio Chiquito)',
       dateStr: 'SOL 1337',
-      thumbUrl: 'public/panoramas/PIA26474-rio-chiquito.jpg',
-      hiResUrl: 'public/panoramas/PIA26474-rio-chiquito.jpg',
+      thumbUrl: 'panoramas/PIA26474-rio-chiquito.jpg',
+      hiResUrl: 'panoramas/PIA26474-rio-chiquito.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26474',
       credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° en Mirador Rio Chiquito (Cumbre de Jezero)'
     },
@@ -3012,8 +3101,8 @@ document.addEventListener('DOMContentLoaded', () => {
       nasaId: 'PIA22545',
       title: 'Curiosity 360° — Cresta Vera Rubin y Monte Sharp (Cráter Gale)',
       dateStr: 'MSL CURIOSITY',
-      thumbUrl: 'public/panoramas/PIA22545-gale-curiosity.jpg',
-      hiResUrl: 'public/panoramas/PIA22545-gale-curiosity.jpg',
+      thumbUrl: 'panoramas/PIA22545-gale-curiosity.jpg',
+      hiResUrl: 'panoramas/PIA22545-gale-curiosity.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA22545',
       credit: 'NASA/JPL-Caltech/MSSS — Panorama 360° Mastcam en Cresta Vera Rubin (Cráter Gale)'
     },
@@ -3021,8 +3110,8 @@ document.addEventListener('DOMContentLoaded', () => {
       nasaId: 'PIA26363',
       title: 'Curiosity 360° — Canal Gediz Vallis y Rocas de Azufre Elemental',
       dateStr: 'SOL 4208',
-      thumbUrl: 'public/panoramas/PIA26363-gediz-vallis.jpg',
-      hiResUrl: 'public/panoramas/PIA26363-gediz-vallis.jpg',
+      thumbUrl: 'panoramas/PIA26363-gediz-vallis.jpg',
+      hiResUrl: 'panoramas/PIA26363-gediz-vallis.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26363',
       credit: 'NASA/JPL-Caltech/MSSS — Panorama 360° Mastcam en Canal Gediz Vallis (Monte Sharp)'
     },
@@ -3030,8 +3119,8 @@ document.addEventListener('DOMContentLoaded', () => {
       nasaId: 'PIA13077',
       title: 'MRO HiRISE + Viking — Cañón Coprates (Valles Marineris)',
       dateStr: 'MRO / VIKING',
-      thumbUrl: 'public/panoramas/PIA13077-valles-marineris.jpg',
-      hiResUrl: 'public/panoramas/PIA13077-valles-marineris.jpg',
+      thumbUrl: 'panoramas/PIA13077-valles-marineris.jpg',
+      hiResUrl: 'panoramas/PIA13077-valles-marineris.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA13077',
       credit: 'NASA/JPL-Caltech/Univ. of Arizona — Mosaico Real de Valles Marineris'
     }
@@ -3041,6 +3130,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (svNasaApiDrawer) svNasaApiDrawer.classList.add('is-hidden');
     if (btnSvNasaApi) btnSvNasaApi.classList.remove('is-active');
   }
+
+  // Cerrar gaveta de fotos con Escape o haciendo clic fuera
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && svNasaApiDrawer && !svNasaApiDrawer.classList.contains('is-hidden')) {
+      closeNasaPhotoDrawer();
+    }
+  });
+
+  document.addEventListener('pointerdown', (e) => {
+    if (svNasaApiDrawer && !svNasaApiDrawer.classList.contains('is-hidden')) {
+      if (!svNasaApiDrawer.contains(e.target) && !btnSvNasaApi?.contains(e.target)) {
+        closeNasaPhotoDrawer();
+      }
+    }
+  });
 
   function applySelectedPanoramaToViewer(panoItem) {
     const st =
@@ -3076,8 +3180,12 @@ document.addEventListener('DOMContentLoaded', () => {
     list.forEach((item) => {
       const card = document.createElement('div');
       card.className = 'snad-card';
+      const imgSrc = resolvePanoPath(item.thumbUrl);
+      const fallbackSrc = item.thumbUrl?.startsWith('http')
+        ? item.thumbUrl
+        : `public/panoramas/${(item.thumbUrl || '').split('/').pop()}`;
       card.innerHTML = `
-        <img class="snad-thumb" src="${item.thumbUrl}" alt="${item.title.replace(/"/g, '&quot;')}" loading="lazy">
+        <img class="snad-thumb" src="${imgSrc}" alt="${item.title.replace(/"/g, '&quot;')}" loading="lazy" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='${fallbackSrc}';}">
         <div class="snad-body">
           <div class="snad-id-row">
             <span class="snad-id">${item.nasaId}</span>
@@ -3230,7 +3338,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const dy = e.clientY - dragStartY;
       const sensitivity = camFov / 480;
       camYaw = ((dragStartYaw - dx * sensitivity) % 360 + 360) % 360;
-      camPitch = Math.max(-34, Math.min(34, dragStartPitch + dy * sensitivity));
+      camPitch = Math.max(-80, Math.min(80, dragStartPitch + dy * sensitivity));
       needs360Redraw = true;
     });
 
@@ -3245,7 +3353,7 @@ document.addEventListener('DOMContentLoaded', () => {
       (e) => {
         e.preventDefault();
         targetYaw = null;
-        camFov = Math.max(45, Math.min(115, camFov + (e.deltaY > 0 ? 5 : -5)));
+        camFov = Math.max(30, Math.min(125, camFov + (e.deltaY > 0 ? 5 : -5)));
         needs360Redraw = true;
       },
       { passive: false }
@@ -3255,15 +3363,23 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btn360ZoomIn) {
     btn360ZoomIn.addEventListener('click', () => {
       targetYaw = null;
-      camFov = Math.max(45, camFov - 10);
+      camFov = Math.max(30, camFov - 10);
       needs360Redraw = true;
     });
   }
   if (btn360ZoomOut) {
     btn360ZoomOut.addEventListener('click', () => {
       targetYaw = null;
-      camFov = Math.min(115, camFov + 10);
+      camFov = Math.min(125, camFov + 10);
       needs360Redraw = true;
+    });
+  }
+  if (btn360Fit) {
+    btn360Fit.addEventListener('click', () => {
+      targetFov = 125;
+      targetPitch = 0;
+      needs360Redraw = true;
+      if (typeof playHudTone === 'function') playHudTone(720, 0.06, 'sine');
     });
   }
   if (btn360ResetCam) {
@@ -3271,6 +3387,35 @@ document.addEventListener('DOMContentLoaded', () => {
       const st = STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
       animateCameraTo(st.initialYaw, st.initialPitch, 90);
     });
+  }
+
+  // Interacción táctil y de ratón con la miniatura completa del panorama 360° (#sv-overview-canvas)
+  if (svOverviewCanvas) {
+    const handleOverviewSeek = (e) => {
+      const rect = svOverviewCanvas.getBoundingClientRect();
+      const clickX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+      const clickY = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
+      const normRatioX = clickX / rect.width;
+      const normRatioY = clickY / rect.height;
+      camYaw = Math.round(normRatioX * 360);
+      camPitch = Math.round(70 - normRatioY * 140);
+      targetYaw = null;
+      targetPitch = null;
+      needs360Redraw = true;
+    };
+
+    let isSeekingOverview = false;
+    svOverviewCanvas.addEventListener('pointerdown', (e) => {
+      isSeekingOverview = true;
+      svOverviewCanvas.setPointerCapture?.(e.pointerId);
+      handleOverviewSeek(e);
+    });
+    svOverviewCanvas.addEventListener('pointermove', (e) => {
+      if (isSeekingOverview) handleOverviewSeek(e);
+    });
+    const stopSeek = () => { isSeekingOverview = false; };
+    svOverviewCanvas.addEventListener('pointerup', stopSeek);
+    svOverviewCanvas.addEventListener('pointercancel', stopSeek);
   }
 
   // Arrancar el bucle gráfico 60FPS del visor 360°
@@ -3659,7 +3804,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (btnCloseStreet) btnCloseStreet.addEventListener('click', () => setViewportMode('map'));
-  if (btnQuick360) btnQuick360.addEventListener('click', () => setViewportMode('split'));
+  if (btnQuick360) {
+    btnQuick360.addEventListener('click', () => {
+      const currentMode = viewportStage.getAttribute('data-view-mode');
+      setViewportMode(currentMode === 'streetview' ? 'map' : 'streetview');
+      if (typeof playHudTone === 'function') playHudTone(680, 0.06, 'triangle');
+    });
+  }
 
   // ==========================================================================
   // 12. CLIMA DINÁMICO POR REGIÓN PLANETARIA (ETAPA 5)
@@ -4078,7 +4229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (routeSelector) routeSelector.value = m.routeKey;
         loadRoute(m.routeKey, false);
       }
-      marsMap.flyTo(m.coords, 8, { duration: 1.2 });
+      marsMap.flyTo(m.coords, 6, { duration: 1.2 });
     });
   }
 
