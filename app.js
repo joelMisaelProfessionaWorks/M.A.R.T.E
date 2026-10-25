@@ -3464,6 +3464,19 @@ function initMarsDashboard() {
       svStationTitleEl.textContent = `360° MARTE // ${station.title}`;
     }
 
+    if (Array.isArray(station.coords) && station.coords.length >= 2) {
+      const [sLat, sLng] = station.coords;
+      const latDir = sLat >= 0 ? 'N' : 'S';
+      const lngDir = sLng >= 0 ? 'E' : 'O';
+      if (headerCoords) {
+        headerCoords.textContent = `${Math.abs(sLat).toFixed(2)}°${latDir} • ${Math.abs(sLng).toFixed(2)}°${lngDir}`;
+      }
+      if (cursorReadout && typeof station.elev === 'number') {
+        const altStr = `${station.elev > 0 ? '+' : ''}${station.elev.toLocaleString('en-US')}m`;
+        cursorReadout.textContent = `LAT: ${Math.abs(sLat).toFixed(4)}° ${latDir} | LON: ${Math.abs(sLng).toFixed(4)}° ${lngDir} | ALT: ${altStr}`;
+      }
+    }
+
     sync360ViewportSize();
     const realEntry = getOrComposeRealPanoramaCanvas(station);
     if (render360Mode === 'sim2d') {
@@ -3704,9 +3717,19 @@ function initMarsDashboard() {
     }
 
     syncZenButtonState();
+    requestAnimationFrame(() => {
+      marsMap.invalidateSize({ pan: false });
+    });
     setTimeout(() => {
-      marsMap.invalidateSize();
-    }, 330);
+      marsMap.invalidateSize({ pan: false });
+    }, 180);
+  }
+
+  if (typeof ResizeObserver !== 'undefined' && mapContainer) {
+    const mapRo = new ResizeObserver(() => {
+      marsMap.invalidateSize({ pan: false });
+    });
+    mapRo.observe(mapContainer);
   }
 
   if (btnToggleLeft) btnToggleLeft.addEventListener('click', () => setPanelOpen('left'));

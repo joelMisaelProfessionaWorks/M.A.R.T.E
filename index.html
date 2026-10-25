@@ -14,8 +14,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <!-- Motor Esférico WebGL Pannellum.js (Etapa 4: Martian Street View 360°) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" crossorigin="">
-  <!-- Hoja de Estilos Principal HUD (v9 Fullscreen + Vista Real / Vista 2D Separadas) -->
-  <link rel="stylesheet" href="styles.css?v=9">
+  <!-- Hoja de Estilos Principal HUD (v10 Sin Superposiciones + Telemetría Superior Central) -->
+  <link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body class="nasa-hud-theme">
 
@@ -47,17 +47,17 @@
         </div>
       </div>
 
-      <!-- Controles Rápidos de Paneles Desplegables (Toggle Sidebars & HUD) -->
+      <!-- Controles Rápidos de Paneles Desplegables (Extremo Izquierdo/Central del Header) -->
       <div class="header-panel-toggles" role="toolbar" aria-label="Mostrar u ocultar paneles de información">
-        <button id="btn-toggle-left-panel" class="hud-panel-toggle is-open" type="button" title="Mostrar/Ocultar Planificador de Ruta (Izquierda)">
+        <button id="btn-toggle-left-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Mostrar/Ocultar Planificador de Ruta (Izquierda)">
           <i class="fa-solid fa-route text-orange"></i>
           <span>RUTAS</span>
         </button>
-        <button id="btn-toggle-right-panel" class="hud-panel-toggle is-open" type="button" title="Mostrar/Ocultar Capas NASA y Clima (Derecha)">
+        <button id="btn-toggle-right-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Mostrar/Ocultar Capas NASA y Clima (Derecha)">
           <i class="fa-solid fa-layer-group text-cyan"></i>
           <span>CAPAS Y CLIMA</span>
         </button>
-        <button id="btn-toggle-bottom-panel" class="hud-panel-toggle is-open" type="button" title="Mostrar/Ocultar Telemetría de Supervivencia (Inferior)">
+        <button id="btn-toggle-bottom-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Mostrar/Ocultar Telemetría de Supervivencia (Inferior)">
           <i class="fa-solid fa-heart-pulse text-orange"></i>
           <span>TELEMETRÍA</span>
         </button>
@@ -67,19 +67,7 @@
         </button>
       </div>
 
-      <!-- Telemetría de Enlace Orbital Central (Reloj Marciano MTC y Coordenadas) -->
-      <div class="header-telemetry">
-        <div class="telemetry-pill">
-          <span class="tp-label">COORDENADAS</span>
-          <span class="tp-value" id="hud-header-coords">18.38°N &bull; 77.58°E</span>
-        </div>
-        <div class="telemetry-pill">
-          <span class="tp-label">TIEMPO MARCIANO</span>
-          <span class="tp-value text-orange" id="hud-header-clock">SOL 1420 &bull; 14:32:08 MTC</span>
-        </div>
-      </div>
-
-      <!-- Acciones de Vista: Audio HUD, Dossier Misiones NASA, Pantalla Dividida y Street View 360° -->
+      <!-- Acciones de Vista en el Extremo Derecho: Audio HUD, Dossier Misiones NASA, Pantalla Dividida y Street View 360° -->
       <div class="header-actions">
         <button id="btn-hud-audio" class="hud-btn-icon" type="button" aria-pressed="true" title="Activar/Silenciar Audio HUD">
           <i class="fa-solid fa-volume-high" id="hud-audio-icon"></i>
@@ -288,19 +276,47 @@
          ==================================================================== -->
     <main class="hud-center-stage" id="viewport-stage" data-view-mode="map">
 
-      <!-- CONTENEDOR 1: MAPA ORBITAL 2D (#map-container) -->
-      <section id="map-container" class="viewport-panel glass-panel" aria-label="Mapa Orbital Interactivo de Marte">
-        <!-- Cabecera superpuesta del Mapa -->
-        <div class="viewport-top-bar">
-          <div class="vtb-left">
-            <span class="live-indicator"></span>
-            <span class="vtb-title">MAPA TÁCTICO ORBITAL 2D // PROYECCIÓN MOLA + CTX</span>
+      <!-- BARRA SUPERIOR DEL MAPA: Extremo Izquierdo (Título), Centro (Hora Marciana + Coordenadas), Extremo Derecho (Modelo de Mapa) -->
+      <div class="viewport-top-bar stage-top-bar" id="stage-top-bar">
+        <div class="vtb-left">
+          <span class="live-indicator"></span>
+          <span class="vtb-title">MAPA TÁCTICO ORBITAL 2D // MOLA + CTX</span>
+        </div>
+
+        <!-- Telemetría de Enlace Orbital en la Parte Superior Central del Mapa (Horario Marciano MTC + Coordenadas) -->
+        <div class="header-telemetry map-center-telemetry" aria-label="Horario Marciano y Coordenadas">
+          <div class="telemetry-pill">
+            <span class="tp-label"><i class="fa-regular fa-clock text-orange"></i> HORARIO MARCIANO</span>
+            <span class="tp-value text-orange" id="hud-header-clock">SOL 1420 &bull; 14:32:08 MTC</span>
           </div>
-          <div class="vtb-right">
-            <span class="vtb-coord-readout" id="map-cursor-readout">LAT: 18.4210° N | LON: 77.4201° E | ALT: -2,490m</span>
+          <div class="telemetry-pill">
+            <span class="tp-label"><i class="fa-solid fa-location-crosshairs text-cyan"></i> COORDENADAS</span>
+            <span class="tp-value" id="hud-header-coords">18.38°N &bull; 77.58°E</span>
+          </div>
+          <div class="telemetry-pill cursor-telemetry-pill">
+            <span class="tp-label"><i class="fa-solid fa-compass text-cyan"></i> CURSOR / ALTITUD</span>
+            <span class="tp-value text-cyan" id="map-cursor-readout">LAT: 18.4210° N | LON: 77.4201° E | ALT: -2,490m</span>
           </div>
         </div>
 
+        <div class="vtb-right">
+          <!-- Selector de Mosaico Base Orbital en el Extremo Derecho Superior del Mapa -->
+          <div class="map-baselayer-Floating">
+            <label for="map-baselayer-select"><i class="fa-solid fa-satellite text-orange"></i> MODELO DE MAPA:</label>
+            <select id="map-baselayer-select" class="hud-mini-select">
+              <option value="opm-hybrid" selected>VIKING + MOLA HÍBRIDO (CARGA RÁPIDA)</option>
+              <option value="mola-color">NASA MOLA ALTIMETRÍA COLOR (RÁPIDO)</option>
+              <option value="shaded">CELESTIA 16K RELIEVE TÁCTICO (RÁPIDO)</option>
+              <option value="themis-ir">ODYSSEY THEMIS IR ESPECTRAL (RÁPIDO)</option>
+              <option value="usgs-blend">USGS MOLA + THEMIS 100m (WMS OFICIAL)</option>
+              <option value="usgs-hrsc">ESA/NASA HRSC HILLSHADE (WMS OFICIAL)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENEDOR 1: MAPA ORBITAL 2D (#map-container) -->
+      <section id="map-container" class="viewport-panel glass-panel" aria-label="Mapa Orbital Interactivo de Marte">
         <!-- Marco Reticular Cyberpunk / NASA HUD -->
         <div class="hud-reticle-overlay" aria-hidden="true">
           <span class="corner-mark tl"></span>
@@ -314,20 +330,7 @@
         <div class="mars-tactical-canvas">
           <div id="mars-leaflet-map" class="leaflet-hud-instance" aria-label="Mapa Planetario Interactivo de Marte"></div>
 
-          <!-- Selector Flotante de Mosaico Base Orbital (Carga Instantánea CDN + NASA/USGS) -->
-          <div class="map-baselayer-Floating">
-            <label for="map-baselayer-select"><i class="fa-solid fa-satellite text-orange"></i> MODELO DE MAPA:</label>
-            <select id="map-baselayer-select" class="hud-mini-select">
-              <option value="opm-hybrid" selected>VIKING + MOLA HÍBRIDO (CARGA RÁPIDA)</option>
-              <option value="mola-color">NASA MOLA ALTIMETRÍA COLOR (RÁPIDO)</option>
-              <option value="shaded">CELESTIA 16K RELIEVE TÁCTICO (RÁPIDO)</option>
-              <option value="themis-ir">ODYSSEY THEMIS IR ESPECTRAL (RÁPIDO)</option>
-              <option value="usgs-blend">USGS MOLA + THEMIS 100m (WMS OFICIAL)</option>
-              <option value="usgs-hrsc">ESA/NASA HRSC HILLSHADE (WMS OFICIAL)</option>
-            </select>
-          </div>
-
-          <!-- Controles Flotantes del Mapa -->
+          <!-- Controles de Herramientas del Mapa en el Extremo Superior Derecho -->
           <div class="map-floating-toolbar">
             <button id="btn-map-zoom-in" class="map-tool-btn" type="button" title="Acercar Zoom"><i class="fa-solid fa-plus"></i></button>
             <button id="btn-map-center-rover" class="map-tool-btn" type="button" title="Centrar en Cráter Jezero / Rover"><i class="fa-solid fa-location-crosshairs"></i></button>
@@ -338,7 +341,7 @@
             </button>
           </div>
 
-          <!-- Leyenda Inferior del Mapa -->
+          <!-- Leyenda Inferior del Mapa en el Extremo Inferior Izquierdo -->
           <div class="map-bottom-badge">
             <span><i class="fa-solid fa-satellite text-orange"></i> USGS ASTROGEOLOGY WMS / NASA MRO / MGS MOLA</span>
             <span class="divider">|</span>
@@ -917,6 +920,6 @@
   <!-- Motores Cartográfico (Leaflet.js) y Esférico WebGL 360° (Pannellum.js) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js" crossorigin=""></script>
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>
