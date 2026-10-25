@@ -3689,6 +3689,8 @@ function initMarsDashboard() {
   const btnEdgeRight = document.getElementById('btn-edge-right');
   const btnEdgeBottom = document.getElementById('btn-edge-bottom');
 
+  const mobileMediaQuery = window.matchMedia('(max-width: 820px)');
+
   function syncZenButtonState() {
     if (!btnZenMode) return;
     const allHidden =
@@ -3698,7 +3700,7 @@ function initMarsDashboard() {
     btnZenMode.classList.toggle('is-active', Boolean(allHidden));
   }
 
-  function setPanelOpen(which, shouldOpen) {
+  function setPanelOpen(which, shouldOpen, skipMobileExclusive = false) {
     const map = {
       left: { panel: sidebarLeftEl, btn: btnToggleLeft, edge: btnEdgeLeft },
       right: { panel: sidebarRightEl, btn: btnToggleRight, edge: btnEdgeRight },
@@ -3710,9 +3712,20 @@ function initMarsDashboard() {
     const openState =
       typeof shouldOpen === 'boolean' ? shouldOpen : item.panel.classList.contains('is-collapsed');
 
+    // En modo teléfono (estilo Google Maps / Waze), abrir una gaveta inferior cierra automáticamente las otras dos
+    if (openState && mobileMediaQuery.matches && !skipMobileExclusive) {
+      ['left', 'right', 'bottom'].forEach((otherKey) => {
+        if (otherKey !== which) {
+          setPanelOpen(otherKey, false, true);
+        }
+      });
+    }
+
     item.panel.classList.toggle('is-collapsed', !openState);
     if (item.edge) {
       item.edge.classList.toggle('is-visible', !openState);
+      item.edge.classList.toggle('is-sheet-open', openState);
+      item.edge.setAttribute('aria-expanded', String(openState));
     }
     if (item.btn) {
       item.btn.classList.toggle('is-active', openState);
@@ -3737,15 +3750,15 @@ function initMarsDashboard() {
 
   if (btnToggleLeft) btnToggleLeft.addEventListener('click', () => setPanelOpen('left'));
   if (btnCloseLeftSidebar) btnCloseLeftSidebar.addEventListener('click', () => setPanelOpen('left', false));
-  if (btnEdgeLeft) btnEdgeLeft.addEventListener('click', () => setPanelOpen('left', true));
+  if (btnEdgeLeft) btnEdgeLeft.addEventListener('click', () => setPanelOpen('left'));
 
   if (btnToggleRight) btnToggleRight.addEventListener('click', () => setPanelOpen('right'));
   if (btnCloseRightSidebar) btnCloseRightSidebar.addEventListener('click', () => setPanelOpen('right', false));
-  if (btnEdgeRight) btnEdgeRight.addEventListener('click', () => setPanelOpen('right', true));
+  if (btnEdgeRight) btnEdgeRight.addEventListener('click', () => setPanelOpen('right'));
 
   if (btnToggleBottom) btnToggleBottom.addEventListener('click', () => setPanelOpen('bottom'));
   if (btnCloseBottomHud) btnCloseBottomHud.addEventListener('click', () => setPanelOpen('bottom', false));
-  if (btnEdgeBottom) btnEdgeBottom.addEventListener('click', () => setPanelOpen('bottom', true));
+  if (btnEdgeBottom) btnEdgeBottom.addEventListener('click', () => setPanelOpen('bottom'));
 
   if (btnZenMode) {
     btnZenMode.addEventListener('click', () => {
@@ -3755,22 +3768,71 @@ function initMarsDashboard() {
         !hudFooterEl?.classList.contains('is-collapsed');
 
       if (anyOpen) {
-        setPanelOpen('left', false);
-        setPanelOpen('right', false);
-        setPanelOpen('bottom', false);
-      } else {
+        setPanelOpen('left', false, true);
+        setPanelOpen('right', false, true);
+        setPanelOpen('bottom', false, true);
+      } else if (mobileMediaQuery.matches) {
         setPanelOpen('left', true);
-        setPanelOpen('right', true);
-        setPanelOpen('bottom', true);
+      } else {
+        setPanelOpen('left', true, true);
+        setPanelOpen('right', true, true);
+        setPanelOpen('bottom', true, true);
       }
       if (typeof playHudTone === 'function') playHudTone(680, 0.07, 'triangle');
     });
   }
 
-  // Garantizar que las barras laterales y el HUD inferior inicien visibles en los extremos
-  setPanelOpen('left', true);
-  setPanelOpen('right', true);
-  setPanelOpen('bottom', true);
+  function applyResponsivePanelDefaults(isMobile) {
+    if (isMobile) {
+      // En teléfono (estilo Google Maps / Waze): mapa 100% despejado al iniciar con barra inferior de pestañas lista
+      setPanelOpen('left', false, true);
+      setPanelOpen('right', false, true);
+      setPanelOpen('bottom', false, true);
+    } else {
+      // En escritorio: mostrar las barras laterales y el HUD inferior en sus extremos
+      setPanelOpen('left', true, true);
+      setPanelOpen('right', true, true);
+      setPanelOpen('bottom', true, true);
+    }
+  }
+
+  applyResponsivePanelDefaults(mobileMediaQuery.matches);
+  if (typeof mobileMediaQuery.addEventListener === 'function') {
+    mobileMediaQuery.addEventListener('change', (e) => applyResponsivePanelDefaults(e.matches));
+  }
+
+  // Gesto táctil de deslizar hacia abajo (swipe-down) sobre el encabezado de cada gaveta inferior en móvil
+  [
+    { el: sidebarLeftEl, key: 'left' },
+    { el: sidebarRightEl, key: 'right' },
+    { el: hudFooterEl, key: 'bottom' }
+  ].forEach(({ el, key }) => {
+    if (!el) return;
+    let touchStartY = null;
+    el.addEventListener(
+      'touchstart',
+      (e) => {
+        if (!mobileMediaQuery.matches || el.scrollTop > 8) {
+          touchStartY = null;
+          return;
+        }
+        touchStartY = e.touches[0].clientY;
+      },
+      { passive: true }
+    );
+    el.addEventListener(
+      'touchend',
+      (e) => {
+        if (touchStartY === null || !mobileMediaQuery.matches) return;
+        const deltaY = e.changedTouches[0].clientY - touchStartY;
+        if (deltaY > 55) {
+          setPanelOpen(key, false);
+        }
+        touchStartY = null;
+      },
+      { passive: true }
+    );
+  });
 
   // ==========================================================================
   // 11. CONMUTACIÓN DE VISTAS (MAPA 2D / STREET VIEW 360° / PANTALLA DIVIDIDA)

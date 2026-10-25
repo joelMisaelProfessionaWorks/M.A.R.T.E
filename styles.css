@@ -3956,5 +3956,478 @@ body {
   gap: 0.5rem;
 }
 
+/* ==========================================================================
+   ETAPA 8: DISEÑO MÓVIL PARA TELÉFONO ESTILO GOOGLE MAPS / WAZE (@media)
+   Mapa 100% Pantalla Completa + Chips Superiores + Botones Flotantes (FAB)
+   + Barra de Navegación Inferior + Gavetas Deslizables (Bottom Sheets)
+   ========================================================================== */
+@media (max-width: 820px) {
+  html,
+  body {
+    inline-size: 100% !important;
+    block-size: 100dvh !important;
+    min-block-size: 100dvh !important;
+    overflow: clip !important;
+  }
+
+  .dashboard-shell {
+    display: grid !important;
+    inline-size: 100% !important;
+    block-size: 100dvh !important;
+    padding: 0 0 54px 0 !important;
+    gap: 0 !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    grid-template-areas:
+      "header"
+      "center-stage" !important;
+    overflow: clip !important;
+  }
+
+  /* 1. Barra Superior Compacta estilo Google Maps / Waze (Marca + Acciones en 1 fila, Chips de Filtro debajo) */
+  .hud-header {
+    grid-area: header;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    block-size: auto !important;
+    min-block-size: 0 !important;
+    padding: 0.28rem 0.45rem !important;
+    gap: 0.24rem 0.35rem !important;
+    background: rgba(7, 10, 18, 0.96) !important;
+    border-bottom: 1px solid rgba(255, 107, 43, 0.4) !important;
+    z-index: 650 !important;
+  }
+
+  .header-brand {
+    flex: 0 1 auto !important;
+    min-inline-size: 0 !important;
+    gap: 0.35rem !important;
+  }
+
+  .nasa-badge {
+    inline-size: 24px !important;
+    block-size: 24px !important;
+    font-size: 0.72rem !important;
+  }
+
+  .brand-titles .challenge-kicker {
+    display: none !important;
+  }
+
+  .project-title {
+    font-size: 0 !important;
+    letter-spacing: 0.05em !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.22rem !important;
+  }
+
+  .project-title::before {
+    content: "M.A.R.T.E";
+    font-size: 0.74rem;
+    font-weight: 900;
+    color: var(--mars-orange);
+  }
+
+  .project-title .text-mars {
+    display: none !important;
+  }
+
+  .header-actions {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.24rem !important;
+  }
+
+  .header-actions .hud-btn-icon {
+    inline-size: 26px !important;
+    block-size: 26px !important;
+    font-size: 0.7rem !important;
+    flex: 0 0 auto !important;
+  }
+
+  .header-actions .hud-btn-secondary,
+  .header-actions .hud-btn-cta {
+    flex: 0 0 auto !important;
+    padding: 0.22rem 0.45rem !important;
+    font-size: 0.54rem !important;
+    gap: 0.22rem !important;
+    border-radius: 999px !important;
+  }
+
+  /* Chips Superiores Deslizables estilo Google Maps ("Rutas", "Capas y Clima", "Telemetría", "Mapa Completo") */
+  .header-panel-toggles {
+    order: 3 !important;
+    inline-size: 100% !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    gap: 0.28rem !important;
+    padding: 0.12rem 0 !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .header-panel-toggles::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hud-panel-toggle {
+    flex: 1 0 auto !important;
+    justify-content: center !important;
+    border-radius: 999px !important;
+    padding: 0.22rem 0.52rem !important;
+    font-size: 0.54rem !important;
+    background: rgba(16, 24, 38, 0.92);
+  }
+
+  .hud-panel-toggle.is-active {
+    background: rgba(255, 107, 43, 0.28) !important;
+    color: #ffffff !important;
+    border-color: var(--mars-orange) !important;
+  }
+
+  .hud-panel-toggle.zen-btn.is-active {
+    background: var(--telemetry-cyan) !important;
+    color: #07090e !important;
+    border-color: var(--telemetry-cyan) !important;
+  }
+
+  /* 2. Escenario Central: Mapa 100% Pantalla Completa + Cápsula Flotante de Hora, Coordenadas y Selector de Mapa */
+  .hud-center-stage {
+    grid-area: center-stage !important;
+    inline-size: 100% !important;
+    block-size: 100% !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+  }
+
+  /* En modo 2D + 360° en teléfono: división vertical arriba/abajo igual que Street View en Google Maps móvil */
+  .hud-center-stage[data-view-mode="split"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr) !important;
+    row-gap: 3px !important;
+    column-gap: 0 !important;
+  }
+
+  .stage-top-bar {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.28rem !important;
+    padding: 0.18rem 0.45rem !important;
+    min-block-size: 28px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+  }
+
+  .stage-top-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .stage-top-bar .vtb-left,
+  .stage-top-bar .cursor-telemetry-pill {
+    display: none !important;
+  }
+
+  .stage-top-bar .map-center-telemetry {
+    justify-content: flex-start !important;
+    gap: 0.24rem !important;
+    flex: 1 1 auto !important;
+  }
+
+  .stage-top-bar .telemetry-pill {
+    padding: 0.1rem 0.34rem !important;
+    border-radius: 999px !important;
+    gap: 0.2rem !important;
+  }
+
+  .stage-top-bar .tp-label {
+    font-size: 0.48rem !important;
+  }
+
+  .stage-top-bar .tp-value {
+    font-size: 0.58rem !important;
+  }
+
+  .stage-top-bar .map-baselayer-Floating {
+    padding: 0.08rem 0.32rem !important;
+    border-radius: 999px !important;
+    font-size: 0.5rem !important;
+    gap: 0.2rem !important;
+  }
+
+  .stage-top-bar .map-baselayer-Floating > span {
+    display: none !important;
+  }
+
+  .stage-top-bar .hud-mini-select {
+    max-inline-size: 118px !important;
+    font-size: 0.54rem !important;
+    padding: 0.06rem 0.22rem !important;
+  }
+
+  /* 3. Botones Flotantes Redondos (FABs) en el Extremo Derecho del Mapa estilo Google Maps / Waze */
+  .map-floating-toolbar {
+    top: 0.65rem !important;
+    right: 0.55rem !important;
+    left: auto !important;
+    gap: 0.38rem !important;
+  }
+
+  .map-tool-btn {
+    inline-size: 38px !important;
+    block-size: 38px !important;
+    border-radius: 50% !important;
+    background: rgba(10, 15, 25, 0.94) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8) !important;
+    font-size: 0.85rem !important;
+  }
+
+  .hud-reticle-overlay {
+    display: none !important;
+  }
+
+  .map-bottom-badge {
+    bottom: 1.25rem !important;
+    left: 0.45rem !important;
+    right: 0.45rem !important;
+    max-inline-size: calc(100% - 0.9rem) !important;
+    padding: 0.16rem 0.45rem !important;
+    font-size: 0.5rem !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+    overflow: clip !important;
+    text-overflow: ellipsis !important;
+    justify-content: center !important;
+  }
+
+  .map-bottom-badge .divider {
+    display: none !important;
+  }
+
+  .map-bottom-badge span:first-of-type {
+    display: none !important;
+  }
+
+  /* 4. Barra de Navegación Inferior Fija estilo Google Maps / Waze (3 Pestañas al alcance del pulgar) */
+  .hud-edge-tab.edge-left,
+  .hud-edge-tab.edge-right,
+  .hud-edge-tab.edge-bottom {
+    position: fixed !important;
+    bottom: 0 !important;
+    top: auto !important;
+    height: 54px !important;
+    min-height: 54px !important;
+    max-height: 54px !important;
+    width: 33.34% !important;
+    min-width: 0 !important;
+    max-width: 33.34% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.2rem !important;
+    padding: 0.25rem 0.2rem !important;
+    background: rgba(8, 12, 20, 0.98) !important;
+    border: none !important;
+    border-top: 2px solid rgba(255, 255, 255, 0.12) !important;
+    border-inline-end: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 0 !important;
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.8) !important;
+    z-index: 630 !important;
+    writing-mode: horizontal-tb !important;
+  }
+
+  .hud-edge-tab.edge-left {
+    left: 0 !important;
+  }
+
+  .hud-edge-tab.edge-right {
+    left: 33.33% !important;
+  }
+
+  .hud-edge-tab.edge-bottom {
+    left: 66.66% !important;
+    border-inline-end: none !important;
+  }
+
+  .hud-edge-tab.is-sheet-open {
+    background: linear-gradient(180deg, rgba(255, 107, 43, 0.25) 0%, rgba(10, 15, 25, 0.98) 100%) !important;
+    border-top: 2.5px solid var(--mars-orange) !important;
+    color: #ffffff !important;
+  }
+
+  .hud-edge-tab.edge-right.is-sheet-open {
+    background: linear-gradient(180deg, rgba(0, 229, 255, 0.24) 0%, rgba(10, 15, 25, 0.98) 100%) !important;
+    border-top-color: var(--telemetry-cyan) !important;
+  }
+
+  .hud-edge-tab .edge-tab-action,
+  .hud-edge-tab .edge-tab-hint {
+    display: none !important;
+  }
+
+  .hud-edge-tab .edge-tab-icon {
+    font-size: 0.96rem !important;
+  }
+
+  .hud-edge-tab .edge-tab-label,
+  .hud-edge-tab .edge-tab-label-horizontal {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    font-family: var(--font-display) !important;
+    font-size: 0.5rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    padding: 0 !important;
+    max-inline-size: 100% !important;
+    white-space: nowrap !important;
+    overflow: clip !important;
+    text-overflow: ellipsis !important;
+    text-align: center !important;
+  }
+
+  /* 5. Gavetas Deslizables Inferiores (Bottom Sheets) estilo Google Maps / Waze para Rutas, Capas y Supervivencia */
+  .hud-sidebar-left,
+  .hud-sidebar-right,
+  .hud-footer {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 54px !important;
+    top: auto !important;
+    inline-size: 100% !important;
+    max-inline-size: 100% !important;
+    block-size: auto !important;
+    max-block-size: 56dvh !important;
+    z-index: 620 !important;
+    background: rgba(9, 13, 22, 0.98) !important;
+    backdrop-filter: blur(22px) !important;
+    -webkit-backdrop-filter: blur(22px) !important;
+    border-radius: 18px 18px 0 0 !important;
+    border: 1px solid rgba(255, 107, 43, 0.55) !important;
+    border-bottom: none !important;
+    box-shadow: 0 -14px 38px rgba(0, 0, 0, 0.92) !important;
+    padding: 0.45rem 0.75rem 0.85rem !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+  }
+
+  .hud-sidebar-right {
+    border-color: rgba(0, 229, 255, 0.55) !important;
+  }
+
+  /* Píldora Indicadora de Arrastre (Drag Handle) en la parte superior de cada Bottom Sheet */
+  .hud-sidebar-left::before,
+  .hud-sidebar-right::before,
+  .hud-footer::before {
+    content: "";
+    display: block;
+    inline-size: 40px;
+    block-size: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.28);
+    margin: 0.1rem auto 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .hud-sidebar-left .panel-heading,
+  .hud-sidebar-right .panel-heading {
+    position: sticky;
+    top: 0;
+    background: rgba(9, 13, 22, 0.98);
+    z-index: 5;
+    padding-block: 0.25rem 0.45rem;
+  }
+
+  .hud-footer {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.55rem !important;
+  }
+
+  .hud-footer .footer-elevation-module {
+    inline-size: 100% !important;
+    min-block-size: 92px !important;
+  }
+
+  .hud-footer .footer-telemetry-metrics {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.42rem !important;
+    inline-size: 100% !important;
+  }
+
+  /* 6. Ajustes del Visor 360° en Teléfono */
+  .streetview-bar {
+    padding: 0.22rem 0.45rem !important;
+    gap: 0.25rem !important;
+  }
+
+  .streetview-bar .vtb-title {
+    font-size: 0.56rem !important;
+  }
+
+  .sv-mode-btn,
+  .sv-tool-pill {
+    padding: 0.2rem 0.42rem !important;
+    font-size: 0.52rem !important;
+  }
+
+  .sv-real-photo-badge {
+    top: 0.45rem !important;
+    left: 0.45rem !important;
+    max-inline-size: calc(100% - 3.6rem) !important;
+    padding: 0.3rem 0.45rem !important;
+  }
+
+  .srpb-credit {
+    font-size: 0.62rem !important;
+  }
+
+  .sv-floating-controls {
+    top: 0.45rem !important;
+    right: 0.45rem !important;
+  }
+
+  .sv-pano-overview {
+    bottom: 2.95rem !important;
+  }
+
+  #sv-overview-canvas {
+    inline-size: min(260px, calc(100vw - 1.5rem)) !important;
+    block-size: 34px !important;
+  }
+
+  .sv-step-navigator {
+    bottom: 0.38rem !important;
+    left: 0.38rem !important;
+    right: 0.38rem !important;
+    padding: 0.28rem 0.4rem !important;
+    gap: 0.3rem !important;
+  }
+
+  .sv-nav-btn span {
+    display: none !important;
+  }
+
+  .sv-nav-btn {
+    padding: 0.35rem 0.5rem !important;
+  }
+
+  .sv-step-pill {
+    padding: 0.22rem 0.42rem !important;
+    font-size: 0.56rem !important;
+  }
+}
+
 
 
