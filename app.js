@@ -3764,10 +3764,10 @@ function initMarsDashboard() {
     });
   }
 
-  // Iniciar con el HUD inferior oculto en pantallas compactas para dar máxima amplitud al mapa
-  if (window.innerHeight < 860) {
-    setPanelOpen('bottom', false);
-  }
+  // Garantizar que las barras laterales y el HUD inferior inicien visibles en los extremos
+  setPanelOpen('left', true);
+  setPanelOpen('right', true);
+  setPanelOpen('bottom', true);
 
   // ==========================================================================
   // 11. CONMUTACIÓN DE VISTAS (MAPA 2D / STREET VIEW 360° / PANTALLA DIVIDIDA)
@@ -3782,18 +3782,12 @@ function initMarsDashboard() {
       btnToggleStreet.setAttribute('aria-pressed', 'true');
       btnSplitView.classList.remove('is-active');
       streetBtnLabel.textContent = 'MAPA 2D';
-      setPanelOpen('left', false);
-      setPanelOpen('right', false);
-      setPanelOpen('bottom', false);
     } else if (mode === 'split') {
       mapContainer.classList.remove('is-hidden');
       streetContainer.classList.remove('is-hidden');
       btnToggleStreet.classList.add('is-active');
       btnSplitView.classList.add('is-active');
       streetBtnLabel.textContent = '360° ACTIVO';
-      setPanelOpen('left', false);
-      setPanelOpen('right', false);
-      setPanelOpen('bottom', false);
     } else {
       mapContainer.classList.remove('is-hidden');
       streetContainer.classList.add('is-hidden');
@@ -3807,8 +3801,13 @@ function initMarsDashboard() {
       loadStreetViewStation(targetStationId || currentStationId, false);
     }
 
+    requestAnimationFrame(() => {
+      marsMap.invalidateSize({ pan: false });
+      sync360ViewportSize();
+    });
     setTimeout(() => {
-      marsMap.invalidateSize();
+      marsMap.invalidateSize({ pan: false });
+      sync360ViewportSize();
     }, 220);
   }
 
