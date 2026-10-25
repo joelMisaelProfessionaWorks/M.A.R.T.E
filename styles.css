@@ -104,9 +104,9 @@ body {
   grid-template-columns: 315px minmax(0, 1fr) 330px;
   grid-template-rows: auto minmax(0, 1fr) 128px;
   grid-template-areas:
-    "header       header       header"
-    "sidebar-left center-stage sidebar-right"
-    "footer       footer       footer";
+    "header    header       header"
+    "left-slot center-stage right-slot"
+    "footer    footer       footer";
   position: relative;
   z-index: 10;
 }
@@ -383,7 +383,7 @@ body {
    PANELES LATERALES (ESTRUCTURA COMÚN)
    ========================================================================== */
 .hud-sidebar-left {
-  grid-area: sidebar-left;
+  grid-area: left-slot;
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
@@ -391,7 +391,7 @@ body {
 }
 
 .hud-sidebar-right {
-  grid-area: sidebar-right;
+  grid-area: right-slot;
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
@@ -1496,7 +1496,7 @@ body {
     grid-template-areas:
       "header       header"
       "center-stage center-stage"
-      "sidebar-left sidebar-right"
+      "left-slot    right-slot"
       "footer       footer";
   }
 
@@ -1516,8 +1516,8 @@ body {
     grid-template-areas:
       "header"
       "center-stage"
-      "sidebar-left"
-      "sidebar-right"
+      "left-slot"
+      "right-slot"
       "footer";
   }
 
@@ -3263,77 +3263,171 @@ body {
   box-shadow: 0 0 10px rgba(255, 107, 43, 0.5);
 }
 
-/* 4. Pestañas en los Bordes Extremos (Edge Tabs): ocupan su carril propio sin sobreponerse al Mapa ni a los botones */
+/* 4. Barras Laterales Colapsadas en los Extremos (Edge Tabs): ocupan el 100% de la altura bajo el Header sin meterse detrás de él */
 .hud-edge-tab {
   position: relative;
   inset: auto;
   transform: none;
   z-index: 42;
-  background: rgba(10, 15, 25, 0.96);
-  color: var(--mars-orange);
+  background: linear-gradient(180deg, rgba(14, 21, 35, 0.98) 0%, rgba(8, 12, 20, 0.98) 100%);
+  color: var(--text-primary);
   border: 1px solid rgba(255, 107, 43, 0.55);
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.64rem;
   font-weight: 700;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   cursor: pointer;
   display: none;
   align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  justify-content: flex-start;
+  gap: 0.55rem;
+  overflow: hidden;
+  writing-mode: horizontal-tb;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .hud-edge-tab:hover {
-  background: var(--mars-orange);
-  color: #07090e;
+  background: linear-gradient(180deg, rgba(255, 107, 43, 0.28) 0%, rgba(16, 24, 38, 0.98) 100%);
+  border-color: var(--mars-orange);
+  box-shadow: inset 0 0 14px rgba(255, 107, 43, 0.35);
+}
+
+.hud-edge-tab.edge-right:hover {
+  background: linear-gradient(180deg, rgba(0, 229, 255, 0.24) 0%, rgba(16, 24, 38, 0.98) 100%);
+  border-color: var(--telemetry-cyan);
+  box-shadow: inset 0 0 14px rgba(0, 229, 255, 0.35);
 }
 
 .hud-edge-tab.edge-left {
   grid-area: left-slot;
-  inline-size: 28px;
-  block-size: 100%;
-  padding: 0.5rem 0.25rem;
+  flex-direction: column;
+  width: 36px;
+  min-width: 36px;
+  max-width: 36px;
+  height: 100%;
+  min-height: 0;
+  align-self: stretch;
+  padding: 0.6rem 0.2rem;
   border-block: none;
   border-inline-start: none;
+  border-inline-end: 2px solid var(--mars-orange);
   border-radius: 0;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
+  box-shadow: 4px 0 18px rgba(0, 0, 0, 0.65);
 }
 
 .hud-edge-tab.edge-right {
   grid-area: right-slot;
-  inline-size: 28px;
-  block-size: 100%;
-  padding: 0.5rem 0.25rem;
+  flex-direction: column;
+  width: 36px;
+  min-width: 36px;
+  max-width: 36px;
+  height: 100%;
+  min-height: 0;
+  align-self: stretch;
+  padding: 0.6rem 0.2rem;
   border-block: none;
   border-inline-end: none;
+  border-inline-start: 2px solid var(--telemetry-cyan);
   border-radius: 0;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
+  box-shadow: -4px 0 18px rgba(0, 0, 0, 0.65);
 }
 
 .hud-edge-tab.edge-bottom {
   grid-area: footer;
-  inline-size: 100%;
-  block-size: 28px;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  height: 30px;
+  min-height: 30px;
   padding: 0.2rem 1rem;
   border-inline: none;
   border-bottom: none;
+  border-top: 2px solid var(--mars-orange);
   border-radius: 0;
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.65);
 }
 
-/* Mostrar pestaña en el extremo únicamente cuando su panel correspondiente está cerrado */
-.dashboard-shell:has(#sidebar-left.is-collapsed) .hud-edge-tab.edge-left {
-  display: inline-flex;
+.edge-tab-action {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: rgba(255, 107, 43, 0.2);
+  border: 1px solid var(--mars-orange);
+  color: var(--mars-orange);
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
 }
 
-.dashboard-shell:has(#sidebar-right.is-collapsed) .hud-edge-tab.edge-right {
-  display: inline-flex;
+.edge-tab-action.cyan {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: var(--telemetry-cyan);
+  color: var(--telemetry-cyan);
 }
 
+.hud-edge-tab:hover .edge-tab-action {
+  background: var(--mars-orange);
+  color: #07090e;
+}
+
+.hud-edge-tab.edge-right:hover .edge-tab-action.cyan {
+  background: var(--telemetry-cyan);
+  color: #07090e;
+}
+
+.edge-tab-icon {
+  font-size: 0.86rem;
+  flex-shrink: 0;
+}
+
+.edge-tab-label {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+  padding: 0.25rem 0;
+}
+
+.edge-tab-hint {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--mars-orange);
+  margin-top: auto;
+  padding: 0.35rem 0.1rem;
+  border-top: 1px dashed rgba(255, 107, 43, 0.4);
+}
+
+.edge-tab-hint.cyan {
+  color: var(--telemetry-cyan);
+  border-top-color: rgba(0, 229, 255, 0.4);
+}
+
+.edge-tab-label-horizontal {
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+}
+
+/* Mostrar barra colapsada en el extremo únicamente cuando su panel correspondiente está oculto */
+.hud-edge-tab.is-visible,
+.dashboard-shell:has(#sidebar-left.is-collapsed) .hud-edge-tab.edge-left,
+.dashboard-shell:has(#sidebar-right.is-collapsed) .hud-edge-tab.edge-right,
 .dashboard-shell:has(#hud-footer.is-collapsed) .hud-edge-tab.edge-bottom {
-  display: inline-flex;
+  display: flex !important;
 }
 
 /* 5. Motor Esférico 360° Interactivo en <canvas> + Capa de Hotspots 3D */

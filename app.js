@@ -3700,9 +3700,9 @@ function initMarsDashboard() {
 
   function setPanelOpen(which, shouldOpen) {
     const map = {
-      left: { panel: sidebarLeftEl, btn: btnToggleLeft },
-      right: { panel: sidebarRightEl, btn: btnToggleRight },
-      bottom: { panel: hudFooterEl, btn: btnToggleBottom }
+      left: { panel: sidebarLeftEl, btn: btnToggleLeft, edge: btnEdgeLeft },
+      right: { panel: sidebarRightEl, btn: btnToggleRight, edge: btnEdgeRight },
+      bottom: { panel: hudFooterEl, btn: btnToggleBottom, edge: btnEdgeBottom }
     };
     const item = map[which];
     if (!item || !item.panel) return;
@@ -3711,6 +3711,9 @@ function initMarsDashboard() {
       typeof shouldOpen === 'boolean' ? shouldOpen : item.panel.classList.contains('is-collapsed');
 
     item.panel.classList.toggle('is-collapsed', !openState);
+    if (item.edge) {
+      item.edge.classList.toggle('is-visible', !openState);
+    }
     if (item.btn) {
       item.btn.classList.toggle('is-active', openState);
       item.btn.setAttribute('aria-expanded', String(openState));

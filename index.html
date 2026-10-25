@@ -14,8 +14,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <!-- Motor Esférico WebGL Pannellum.js (Etapa 4: Martian Street View 360°) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" crossorigin="">
-  <!-- Hoja de Estilos Principal HUD (v11 Compacto + Sidebars Visibles + Telemetría Central) -->
-  <link rel="stylesheet" href="styles.css?v=11">
+  <!-- Hoja de Estilos Principal HUD (v12 Barras Laterales Colapsables + Telemetría Central) -->
+  <link rel="stylesheet" href="styles.css?v=12">
 </head>
 <body class="nasa-hud-theme">
 
@@ -92,23 +92,26 @@
       </div>
     </header>
 
-    <!-- PESTAÑAS FLOTANTES EN LOS BORDES PARA ABRIR/CERRAR SIDEBARS EN CUALQUIER MOMENTO -->
-    <button id="btn-edge-left" class="hud-edge-tab edge-left" type="button" title="Abrir/Cerrar Panel de Rutas y Misión">
-      <i class="fa-solid fa-route text-orange"></i>
-      <span>RUTAS Y MISIÓN</span>
-      <i class="fa-solid fa-chevron-left edge-chevron" id="edge-left-icon"></i>
+    <!-- BARRAS LATERALES COLAPSADAS EN LOS EXTREMOS PARA REABRIR EN CUALQUIER MOMENTO -->
+    <button id="btn-edge-left" class="hud-edge-tab edge-left" type="button" title="Mostrar Planificador de Expedición">
+      <span class="edge-tab-action"><i class="fa-solid fa-angles-right"></i></span>
+      <i class="fa-solid fa-route text-orange edge-tab-icon"></i>
+      <span class="edge-tab-label">PLANIFICADOR DE EXPEDICIÓN</span>
+      <span class="edge-tab-hint">MOSTRAR</span>
     </button>
 
-    <button id="btn-edge-right" class="hud-edge-tab edge-right" type="button" title="Abrir/Cerrar Panel de Capas NASA y Clima">
-      <i class="fa-solid fa-chevron-right edge-chevron" id="edge-right-icon"></i>
-      <span>CAPAS Y CLIMA</span>
-      <i class="fa-solid fa-layer-group text-cyan"></i>
+    <button id="btn-edge-right" class="hud-edge-tab edge-right" type="button" title="Mostrar Capas NASA y Clima">
+      <span class="edge-tab-action cyan"><i class="fa-solid fa-angles-left"></i></span>
+      <i class="fa-solid fa-layer-group text-cyan edge-tab-icon"></i>
+      <span class="edge-tab-label">CAPAS NASA &amp; CLIMA</span>
+      <span class="edge-tab-hint cyan">MOSTRAR</span>
     </button>
 
-    <button id="btn-edge-bottom" class="hud-edge-tab edge-bottom" type="button" title="Abrir/Cerrar HUD de Supervivencia y Elevación">
-      <i class="fa-solid fa-heart-pulse text-orange"></i>
-      <span>HUD SUPERVIVENCIA Y ELEVACIÓN</span>
-      <i class="fa-solid fa-chevron-down edge-chevron" id="edge-bottom-icon"></i>
+    <button id="btn-edge-bottom" class="hud-edge-tab edge-bottom" type="button" title="Mostrar HUD de Supervivencia y Elevación">
+      <span class="edge-tab-action"><i class="fa-solid fa-angles-up"></i></span>
+      <i class="fa-solid fa-heart-pulse text-orange edge-tab-icon"></i>
+      <span class="edge-tab-label-horizontal">HUD SUPERVIVENCIA Y PERFIL DE ELEVACIÓN — MOSTRAR</span>
+      <span class="edge-tab-action"><i class="fa-solid fa-angles-up"></i></span>
     </button>
 
     <!-- ====================================================================
@@ -920,6 +923,6 @@
   <!-- Motores Cartográfico (Leaflet.js) y Esférico WebGL 360° (Pannellum.js) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js" crossorigin=""></script>
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>
