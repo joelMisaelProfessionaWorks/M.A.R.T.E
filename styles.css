@@ -4429,5 +4429,36 @@ body {
   }
 }
 
+/* Mantiene las 3 columnas del grid original, pero colapsa la primera (izquierda) a 0px */
+[data-view-mode="split"],
+[data-view-mode="streetview"] {
+    grid-template-columns: 0px 1fr auto !important;
+}
 
+/* Oculta el contenido del panel izquierdo para que no desborde ni interfiera */
+[data-view-mode="split"] .left-slot,
+[data-view-mode="streetview"] .left-slot {
+    visibility: hidden !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
 
+/* Opcional: Si quieres que en el modo inmersivo total TAMBIÉN se oculte el panel derecho */
+[data-view-mode="streetview"] {
+    grid-template-columns: 0px 1fr 0px !important;
+}
+[data-view-mode="streetview"] .right-slot {
+    visibility: hidden !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
+
+.snad-load-btn {
+    position: relative !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}

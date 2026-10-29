@@ -2593,7 +2593,7 @@ function initMarsDashboard() {
     return `panoramas/${fileName}`;
   }
 
-  // Compone un lienzo equirectangular 360° (2048x1024) a partir de fotografía real de NASA JPL-Caltech (Mastcam-Z / Mastcam / HiRISE)
+  // Compone un lienzo equirectangular 360° (4096x2048) a partir de fotografía real de NASA JPL-Caltech (Mastcam-Z / Mastcam / HiRISE)
   function getOrComposeRealPanoramaCanvas(station) {
     if (!station || !station.realPano) return null;
     const fileName = (station.realPano.localUrl || '').split('/').pop();
@@ -2602,8 +2602,8 @@ function initMarsDashboard() {
       return realPanoCanvasCache[cacheKey];
     }
 
-    const width = 2048;
-    const height = 1024;
+    const width = 4096;
+    const height = 2048;
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -2709,6 +2709,7 @@ function initMarsDashboard() {
       const url = uniqueCandidates[attemptIndex++];
       const isRemote = url.startsWith('http://') || url.startsWith('https://');
       const img = new Image();
+      img.crossOrigin = "anonymous";
       img.decoding = 'async';
       if (isRemote) img.crossOrigin = 'anonymous';
 
@@ -2845,7 +2846,7 @@ function initMarsDashboard() {
         mars360Canvas.width = cached360Width;
         mars360Canvas.height = cached360Height;
         mars360Ctx = mars360Canvas.getContext('2d', { alpha: false });
-        if (mars360Ctx) mars360Ctx.imageSmoothingQuality = 'medium';
+        if (mars360Ctx) mars360Ctx.imageSmoothingQuality = 'high';
         needs360Redraw = true;
       }
     }
@@ -3180,10 +3181,13 @@ function initMarsDashboard() {
     list.forEach((item) => {
       const card = document.createElement('div');
       card.className = 'snad-card';
+      
       const imgSrc = resolvePanoPath(item.thumbUrl);
       const fallbackSrc = item.thumbUrl?.startsWith('http')
         ? item.thumbUrl
         : `public/panoramas/${(item.thumbUrl || '').split('/').pop()}`;
+
+      // 1. Generamos el HTML (El botón vuelve a estar limpio, sin onclick inline)
       card.innerHTML = `
         <img class="snad-thumb" src="${imgSrc}" alt="${item.title.replace(/"/g, '&quot;')}" loading="lazy" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='${fallbackSrc}';}">
         <div class="snad-body">
@@ -3197,6 +3201,31 @@ function initMarsDashboard() {
           </button>
         </div>
       `;
+
+      // 2. ASIGNACIÓN A PRUEBA DE FALLOS: Capturamos el botón recién creado
+      const btn = card.querySelector('.snad-load-btn');
+      
+      btn.onpointerdown = (e) => {
+          e.preventDefault();
+          e.stopPropagation(); // Detiene cualquier bloqueo
+          
+          console.log("¡Cargando panorama nativo!", item.hiResUrl);
+
+          // Llamamos a TU función que prepara la UI y carga la imagen correctamente
+          applySelectedPanoramaToViewer(item);
+
+          if (window.marsViewer) {
+              window.marsViewer.destroy();
+          }
+
+          // Recuerda usar el ID REAL de tu contenedor aquí (ej. 'mars-viewer' o el que tengas)
+          window.marsViewer = pannellum.viewer('nasa-api-search-input', {
+              "type": "equirectangular",
+              "panorama": item.hiResUrl,
+              "autoLoad": true,
+              "crossOrigin": "anonymous"
+          });
+      };
 
       card.addEventListener('click', () => {
         applySelectedPanoramaToViewer(item);
@@ -3847,6 +3876,8 @@ function initMarsDashboard() {
       btnToggleStreet.setAttribute('aria-pressed', 'true');
       btnSplitView.classList.remove('is-active');
       streetBtnLabel.textContent = 'MAPA 2D';
+      setPanelOpen('left', false);
+      setPanelOpen('right', false);
     } else if (mode === 'split') {
       mapContainer.classList.remove('is-hidden');
       streetContainer.classList.remove('is-hidden');
