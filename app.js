@@ -2688,11 +2688,10 @@ function initMarsDashboard() {
     };
 
     // Lista de candidatos ordenada para que SIEMPRE cargue sin importar el entorno
-    const candidateUrls = [
-      fileName ? `panoramas/${fileName}` : null,
-      fileName ? `./panoramas/${fileName}` : null,
-      fileName ? `/panoramas/${fileName}` : null,
-      fileName ? `public/panoramas/${fileName}` : null,
+    const isRemoteSource = /^https?:\/\//.test(station.realPano.localUrl || '');
+      const candidateUrls = [
+      !isRemoteSource && fileName ? `panoramas/${fileName}` : null,
+      !isRemoteSource && fileName ? `/panoramas/${fileName}` : null,
       station.realPano.localUrl,
       station.realPano.remoteUrl
     ].filter(Boolean);
@@ -3052,8 +3051,7 @@ function initMarsDashboard() {
 
       const st =
         STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
-      const cacheKey = `${st.id}::${st.realPano?.localUrl || st.realPano?.remoteUrl}`;
-      updateRealPhotoBadge(st, realPanoCanvasCache[cacheKey]);
+      updateRealPhotoBadge(st, getOrComposeRealPanoramaCanvas(st));
       if (typeof playHudTone === 'function') playHudTone(680, 0.05, 'sine');
     });
   }
@@ -3153,7 +3151,7 @@ function initMarsDashboard() {
     st.realPano = {
       piaId: panoItem.nasaId,
       sol: panoItem.dateStr || 'ARCHIVO NASA',
-      localUrl: panoItem.thumbUrl,
+      localUrl: panoItem.hiResUrl,
       remoteUrl: panoItem.hiResUrl,
       jplUrl: panoItem.jplUrl,
       credit: panoItem.credit
@@ -3203,30 +3201,35 @@ function initMarsDashboard() {
       `;
 
       // 2. ASIGNACIÓN A PRUEBA DE FALLOS: Capturamos el botón recién creado
-      const btn = card.querySelector('.snad-load-btn');
+      //const btn = card.querySelector('.snad-load-btn');
       
-      btn.onpointerdown = (e) => {
-          e.preventDefault();
-          e.stopPropagation(); // Detiene cualquier bloqueo
+      //btn.onpointerdown = (e) => {
+          //e.preventDefault();
+          //e.stopPropagation(); // Detiene cualquier bloqueo
           
-          console.log("¡Cargando panorama nativo!", item.hiResUrl);
+          //console.log("¡Cargando panorama nativo!", item.hiResUrl);
 
           // Llamamos a TU función que prepara la UI y carga la imagen correctamente
-          applySelectedPanoramaToViewer(item);
+          //applySelectedPanoramaToViewer(item);
 
-          if (window.marsViewer) {
-              window.marsViewer.destroy();
-          }
+         // if (window.marsViewer) {
+             // window.marsViewer.destroy();
+          //}
 
           // Recuerda usar el ID REAL de tu contenedor aquí (ej. 'mars-viewer' o el que tengas)
-          window.marsViewer = pannellum.viewer('nasa-api-search-input', {
-              "type": "equirectangular",
-              "panorama": item.hiResUrl,
-              "autoLoad": true,
-              "crossOrigin": "anonymous"
-          });
-      };
+          //window.marsViewer = pannellum.viewer('nasa-api-search-input', {
+              //"type": "equirectangular",
+              //"panorama": item.hiResUrl,
+             // "autoLoad": true,
+              //"crossOrigin": "anonymous"
+         // });
+      //};
 
+      //card.addEventListener('click', () => {
+        //applySelectedPanoramaToViewer(item);
+      //});
+
+      // el boton esta debtro de la tarjeta un unico click cubre ambos clicks
       card.addEventListener('click', () => {
         applySelectedPanoramaToViewer(item);
       });
@@ -3884,6 +3887,7 @@ function initMarsDashboard() {
       btnToggleStreet.classList.add('is-active');
       btnSplitView.classList.add('is-active');
       streetBtnLabel.textContent = '360° ACTIVO';
+      setPanelOpen('left', false);
     } else {
       mapContainer.classList.remove('is-hidden');
       streetContainer.classList.add('is-hidden');
@@ -4425,7 +4429,7 @@ function initMarsDashboard() {
   // ==========================================================================
   // 14. RELOJ MARCIANO MTC EN TIEMPO REAL Y SINTETIZADOR DE AUDIO SCI-FI HUD
   // ==========================================================================
-  const hudClockEl = document.getElementById('hud-header-clock');
+   const hudClockEl = document.getElementById('hud-header-clock');
   let mtcTotalSeconds = 14 * 3600 + 32 * 60 + 8;
 
   const updateHudClock = () => {
@@ -4467,8 +4471,8 @@ function initMarsDashboard() {
       gain.connect(audioCtx.destination);
       osc.start();
       osc.stop(audioCtx.currentTime + duration);
-    } catch {
-      // Ignorar si el navegador aún no ha registrado interacción de usuario
+    } catch (e) {
+      // Ignorar si el navegador bloquea autoplay de audio antes de interacción
     }
   }
 
