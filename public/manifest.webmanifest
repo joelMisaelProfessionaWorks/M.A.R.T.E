@@ -1,0 +1,20 @@
+{
+  "name": "M.A.R.T.E — Interplanetary Survival Guide: Martian Map",
+  "short_name": "M.A.R.T.E HUD",
+  "description": "Guía de Supervivencia Interplanetaria y Planificador EVA Marciano con Cartografía NASA y Street View 360°.",
+  "lang": "es",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07090e",
+  "theme_color": "#FF6B2B",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%2307090e'/%3E%3Ccircle cx='96' cy='96' r='62' fill='%23FF6B2B'/%3E%3Ccircle cx='76' cy='78' r='12' fill='%2307090e' fill-opacity='0.35'/%3E%3Ccircle cx='118' cy='112' r='18' fill='%2307090e' fill-opacity='0.35'/%3E%3Ccircle cx='96' cy='96' r='74' fill='none' stroke='%2300e5ff' stroke-width='4' stroke-dasharray='12 8'/%3E%3C/svg%3E",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

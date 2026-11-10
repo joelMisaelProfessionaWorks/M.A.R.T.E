@@ -4429,36 +4429,95 @@ body {
   }
 }
 
-/* Mantiene las 3 columnas del grid original, pero colapsa la primera (izquierda) a 0px */
-[data-view-mode="split"],
-[data-view-mode="streetview"] {
-    grid-template-columns: 0px 1fr auto !important;
+/* ==========================================================================
+   ETAPA 9: EDICIÓN DE RUTAS, PARÁMETROS EVA, ISRU Y ESTADO METEOROLÓGICO EN VIVO
+   ========================================================================== */
+.planner-action-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
 }
 
-/* Oculta el contenido del panel izquierdo para que no desborde ni interfiera */
-[data-view-mode="split"] .left-slot,
-[data-view-mode="streetview"] .left-slot {
-    visibility: hidden !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
+.planner-action-row-3 .planner-btn {
+  padding-inline: 0.35rem;
+  font-size: 0.62rem;
 }
 
-/* Opcional: Si quieres que en el modo inmersivo total TAMBIÉN se oculte el panel derecho */
-[data-view-mode="streetview"] {
-    grid-template-columns: 0px 1fr 0px !important;
-}
-[data-view-mode="streetview"] .right-slot {
-    visibility: hidden !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
+.eva-config-panel {
+  margin-top: 0.45rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid rgba(255, 107, 43, 0.22);
 }
 
-.snad-load-btn {
-    position: relative !important;
-    z-index: 9999 !important;
-    pointer-events: auto !important;
+.eva-config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.38rem;
+}
+
+.eva-cfg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.eva-cfg-field.full {
+  grid-column: 1 / -1;
+}
+
+.eva-cfg-field > span {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+}
+
+.cyber-select.compact {
+  padding: 0.28rem 0.45rem;
+  font-size: 0.66rem;
+}
+
+.wp-actions-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.wp-delete-btn {
+  inline-size: 20px;
+  block-size: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(239, 83, 80, 0.45);
+  background: rgba(239, 83, 80, 0.14);
+  color: #ff8a80;
+  font-size: 0.65rem;
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  transition: all 0.16s ease;
+}
+
+.wp-delete-btn:hover {
+  background: #ef5350;
+  color: #07090e;
+}
+
+.wc-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  margin-top: 0.18rem;
+  padding: 0.1rem 0.42rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  background: rgba(0, 230, 118, 0.14);
+  border: 1px solid rgba(0, 230, 118, 0.45);
+  color: var(--status-green);
+}
+
+.wc-live-badge.is-fallback {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: rgba(0, 229, 255, 0.4);
+  color: var(--telemetry-cyan);
 }

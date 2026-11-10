@@ -12,10 +12,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <!-- Motor Cartográfico Leaflet.js (Etapa 2) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <!-- Motor Esférico WebGL Pannellum.js (Etapa 4: Martian Street View 360°) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" crossorigin="">
   <!-- Hoja de Estilos Principal HUD (v13 Modo Teléfono Google Maps / Waze + Barras Laterales) -->
   <link rel="stylesheet" href="styles.css?v=13">
+  <!-- Soporte Offline / PWA -->
+  <meta name="theme-color" content="#07090e">
+  <link rel="manifest" href="manifest.webmanifest">
 </head>
 <body class="nasa-hud-theme">
 
@@ -155,14 +156,50 @@
           </div>
         </div>
 
-        <!-- Herramientas de Trazado Táctico en el Mapa -->
-        <div class="planner-action-row">
-          <button id="btn-custom-draw" class="planner-btn" type="button" title="Haz clic en el mapa para añadir puntos a la ruta">
-            <i class="fa-solid fa-pen-ruler"></i> <span>+ TRAZAR EN MAPA</span>
+        <!-- Herramientas de Trazado y Edición Táctica en el Mapa -->
+        <div class="planner-action-row planner-action-row-3">
+          <button id="btn-custom-draw" class="planner-btn" type="button" title="Haz clic en el mapa para añadir puntos y arrastra los marcadores para ajustar">
+            <i class="fa-solid fa-pen-ruler"></i> <span>+ TRAZAR</span>
+          </button>
+          <button id="btn-undo-point" class="planner-btn secondary" type="button" title="Deshacer último punto (Ctrl+Z)">
+            <i class="fa-solid fa-backward-step"></i> <span>DESHACER</span>
           </button>
           <button id="btn-reset-route" class="planner-btn secondary" type="button" title="Restaurar ruta original">
             <i class="fa-solid fa-rotate-left"></i> <span>REINICIAR</span>
           </button>
+        </div>
+
+        <!-- Parámetros Configurables de Misión y Tripulación EVA -->
+        <div class="eva-config-panel">
+          <div class="card-section-title" style="margin-bottom: 0.35rem;">
+            <i class="fa-solid fa-user-astronaut text-cyan"></i> PARÁMETROS DE MISIÓN EVA
+          </div>
+          <div class="eva-config-grid">
+            <label class="eva-cfg-field">
+              <span>TRIPULACIÓN</span>
+              <select id="eva-crew-size" class="cyber-select compact">
+                <option value="2" selected>2 Astronautas</option>
+                <option value="3">3 Astronautas</option>
+                <option value="4">4 Astronautas</option>
+                <option value="6">6 Astronautas</option>
+              </select>
+            </label>
+            <label class="eva-cfg-field">
+              <span>MODALIDAD</span>
+              <select id="eva-transport-mode" class="cyber-select compact">
+                <option value="rover" selected>Rover Presurizado</option>
+                <option value="foot">Caminata EVA a Pie</option>
+              </select>
+            </label>
+            <label class="eva-cfg-field full">
+              <span>HORA DE SALIDA MARCIANA (IMPACTO SOLAR Y TÉRMICO)</span>
+              <select id="eva-departure-window" class="cyber-select compact">
+                <option value="morning" selected>08:00 MTC — Máxima Captación Solar (+12%)</option>
+                <option value="afternoon">14:00 MTC — Tarde Nominal (Estándar)</option>
+                <option value="night">19:30 MTC — Nocturna / Calefacción Crítica (-84°C)</option>
+              </select>
+            </label>
+          </div>
         </div>
 
         <!-- Control Deslizante de Progreso de Travesía (Telemetría Reactiva) -->
@@ -910,6 +947,11 @@
               <i class="fa-solid fa-download"></i>
               <span>DESCARGAR REPORTE EVA (.JSON)</span>
             </button>
+            <button id="btn-import-json" class="planner-btn full-width" type="button">
+              <i class="fa-solid fa-file-import text-cyan"></i>
+              <span>IMPORTAR PLAN EVA (.JSON)</span>
+            </button>
+            <input id="input-import-json" type="file" accept=".json,application/json" hidden>
             <button id="btn-copy-manifest" class="planner-btn secondary full-width" type="button">
               <i class="fa-solid fa-copy"></i>
               <span id="copy-manifest-label">COPIAR TELEMETRÍA AL PORTAPAPELES</span>
@@ -920,9 +962,8 @@
     </div>
   </dialog>
 
-  <!-- Motores Cartográfico (Leaflet.js) y Esférico WebGL 360° (Pannellum.js) -->
+  <!-- Motor Cartográfico (Leaflet.js) y Lógica Principal HUD -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js" crossorigin=""></script>
   <script src="app.js?v=13"></script>
 </body>
 </html>
