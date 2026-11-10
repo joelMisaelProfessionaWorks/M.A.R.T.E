@@ -1064,52 +1064,275 @@ function initMarsDashboard() {
     return MARS_RADIUS_KM * c;
   }
 
-  // Estima la altitud MOLA numérica (en metros) para cualquier coordenada marciana
-  function estimateNumericAltitude(lat, lng) {
-    const distFromJezero = Math.hypot(lat - 18.448, lng - 77.432);
-    if (distFromJezero < 0.35) {
-      const deltaSlope = (77.48 - lng) * 1900;
-      return Math.round(-2560 + deltaSlope);
+  // Parámetros configurables de la misión EVA y clave de persistencia local
+  const STORAGE_KEY_EVA = 'MARTE_MISSION_STATE_V1';
+  const btnUndoPoint = document.getElementById('btn-undo-point');
+  const evaCrewSelect = document.getElementById('eva-crew-size');
+  const evaModeSelect = document.getElementById('eva-transport-mode');
+  const evaWindowSelect = document.getElementById('eva-departure-window');
+
+  let evaConfig = {
+    crewSize: 2,
+    transportMode: 'rover', // 'rover' | 'foot'
+    departureWindow: 'morning' // 'morning' | 'afternoon' | 'night'
+  };
+
+  function saveMissionStateToStorage() {
+    try {
+      const payload = {
+        routeKey: currentRouteKey,
+        roverProgress,
+        evaConfig,
+        customRouteData: activeRouteData.id === 'custom' ? activeRouteData : null
+      };
+      localStorage.setItem(STORAGE_KEY_EVA, JSON.stringify(payload));
+    } catch {
+      // Ignorar si el almacenamiento está restringido en modo privado
     }
-    return Math.round(-1800 + Math.sin(lat * 0.1) * 1400 - Math.cos(lng * 0.08) * 1200);
   }
 
-  // Interpola la posición (lat, lng, elev) del Rover según el % de avance (0 a 100)
+  // Modelo hipsométrico MOLA regional (calibra cuencas reales: Jezero, Gale/Sharp, Valles Marineris, Olympus, Hellas y dicotomía global)
+  function estimateNumericAltitude(lat, lng) {
+    // 1. Cuenca del Cráter Jezero y Canal Neretva Vallis
+    const dJezero = Math.hypot(lat - 18.45, lng - 77.42);
+    if (dJezero < 1.2) {
+      const rimRise = dJezero > 0.36 ? (dJezero - 0.36) * 1450 : 0;
+      const westSlope = (77.52 - lng) * 1650;
+      return Math.round(-2555 + westSlope + rimRise);
+    }
+
+    // 2. Cráter Gale y ascenso central de Aeolis Mons (Monte Sharp: hasta +950 m sobre datum, piso -4500 m)
+    const dGale = Math.hypot(lat - -5.08, lng - 137.85);
+    if (dGale < 1.4) {
+      const sharpPeak = Math.max(0, 1 - dGale / 0.42) * 5150;
+      const craterFloor = -4520 + Math.max(0, dGale - 0.65) * 2600;
+      return Math.round(craterFloor + sharpPeak);
+    }
+
+    // 3. Sistema de cañones Valles Marineris (Coprates Chasma: trinchera axial de -4200 m a meseta de +1800 m)
+    if (lat >= -18 && lat <= -9 && lng >= -68 && lng <= -52) {
+      const canyonAxisLat = -13.85 + (lng + 60) * 0.12;
+      const distToAxis = Math.abs(lat - canyonAxisLat);
+      const trenchDepth = distToAxis < 0.45
+        ? -4150 + distToAxis * 2200
+        : Math.min(1850, -3160 + (distToAxis - 0.45) * 6800);
+      return Math.round(trenchDepth);
+    }
+
+    // 4. Escudo volcánico de Olympus Mons (+21,229 m)
+    const dOlympus = Math.hypot(lat - 18.65, lng - -133.8);
+    if (dOlympus < 4.0) {
+      return Math.round(1800 + Math.max(0, 1 - dOlympus / 3.8) * 19400);
+    }
+
+    // 5. Cuenca de impacto Hellas Planitia (-7,150 m)
+    const dHellas = Math.hypot(lat - -42.4, lng - 70.5);
+    if (dHellas < 12) {
+      return Math.round(-7150 + (dHellas / 12) * 5800);
+    }
+
+    // 6. Dicotomía cortical global marciana (Tierras bajas boreales vs. Tierras altas australes)
+    const dichotomyBase = -1450 - Math.tanh(lat / 22) * 2350;
+    const tharsisBulge = Math.exp(-(((lat - 2) ** 2) / 900 + ((lng + 108) ** 2) / 1600)) * 4600;
+    const mesoRelief = Math.sin(lat * 0.24) * 380 + Math.cos(lng * 0.19) * 340;
+    return Math.round(dichotomyBase + tharsisBulge + mesoRelief);
+  }
+
+  // Interpola la posición (lat, lng, elev) del Rover por DISTANCIA GEODÉSICA ACUMULADA REAL (km)
   function interpolateRoverPosition(pathCoords, pct) {
     if (!pathCoords || pathCoords.length === 0) {
-      return { lat: JEZERO_CENTER[0], lng: JEZERO_CENTER[1], elev: -2490 };
+      return { lat: JEZERO_CENTER[0], lng: JEZERO_CENTER[1], elev: -2490, segIndex: 0 };
     }
     if (pathCoords.length === 1 || pct <= 0) {
-      return { lat: pathCoords[0][0], lng: pathCoords[0][1], elev: pathCoords[0][2] };
+      return { lat: pathCoords[0][0], lng: pathCoords[0][1], elev: pathCoords[0][2], segIndex: 0 };
     }
     if (pct >= 100) {
       const last = pathCoords[pathCoords.length - 1];
-      return { lat: last[0], lng: last[1], elev: last[2] };
+      return { lat: last[0], lng: last[1], elev: last[2], segIndex: pathCoords.length - 2 };
     }
 
-    const totalSegments = pathCoords.length - 1;
-    const exactIndex = (pct / 100) * totalSegments;
-    const idx = Math.min(Math.floor(exactIndex), totalSegments - 1);
-    const t = exactIndex - idx;
+    const cumKm = [0];
+    for (let i = 1; i < pathCoords.length; i++) {
+      const d = computeMarsDistanceKm(pathCoords[i - 1], pathCoords[i]);
+      cumKm.push(cumKm[i - 1] + d);
+    }
+    const totalKm = cumKm[cumKm.length - 1];
+    if (totalKm <= 0.0001) {
+      return { lat: pathCoords[0][0], lng: pathCoords[0][1], elev: pathCoords[0][2], segIndex: 0 };
+    }
 
+    const targetKm = (pct / 100) * totalKm;
+    let idx = 0;
+    for (let i = 0; i < cumKm.length - 1; i++) {
+      if (targetKm >= cumKm[i] && targetKm <= cumKm[i + 1]) {
+        idx = i;
+        break;
+      }
+    }
+
+    const segLen = Math.max(1e-6, cumKm[idx + 1] - cumKm[idx]);
+    const t = Math.max(0, Math.min(1, (targetKm - cumKm[idx]) / segLen));
     const p1 = pathCoords[idx];
     const p2 = pathCoords[idx + 1];
 
     return {
       lat: p1[0] + (p2[0] - p1[0]) * t,
       lng: p1[1] + (p2[1] - p1[1]) * t,
-      elev: Math.round(p1[2] + (p2[2] - p1[2]) * t)
+      elev: Math.round(p1[2] + (p2[2] - p1[2]) * t),
+      segIndex: idx
     };
   }
 
-  // Dibuja la ruta activa y sus waypoints en el mapa de Leaflet
+  // Convierte cualquier ruta editada (arrastrar/borrar) en ruta personalizada y recalcula distancias, alturas y pendientes
+  function recalculateRouteMetricsFromWaypoints(convertToCustom = false) {
+    if (convertToCustom && activeRouteData.id !== 'custom') {
+      activeRouteData.id = 'custom';
+      activeRouteData.code = 'CUSTOM-EVA';
+      activeRouteData.title = 'Exploración Táctica Personalizada';
+      activeRouteData.sector = 'Sector: Ruta Ajustada por Comandante de Misión';
+      activeRouteData.difficulty = 'PERSONALIZADA';
+      currentRouteKey = 'custom';
+      if (routeSelector) routeSelector.value = 'custom';
+    }
+
+    let cumDist = 0;
+    let maxSlope = 4.0;
+    const newPathCoords = [];
+
+    activeRouteData.waypoints.forEach((wp, i) => {
+      const lat = Number(wp.coords[0]);
+      const lng = Number(wp.coords[1]);
+      const elev = typeof wp.elev === 'number' ? wp.elev : estimateNumericAltitude(lat, lng);
+      wp.coords = [lat, lng];
+      wp.elev = elev;
+
+      if (i > 0) {
+        const prev = activeRouteData.waypoints[i - 1];
+        const segKm = computeMarsDistanceKm(prev.coords, wp.coords);
+        cumDist += segKm;
+        const dElev = Math.abs(elev - prev.elev);
+        const segMeters = Math.max(segKm * 1000, 1);
+        const localSlope = Math.min(35, ((Math.atan(dElev / segMeters) * 180) / Math.PI) * 2.2 + 3.2);
+        maxSlope = Math.max(maxSlope, localSlope);
+      }
+      wp.km = cumDist;
+      newPathCoords.push([lat, lng, elev]);
+    });
+
+    activeRouteData.pathCoords = newPathCoords;
+    activeRouteData.totalDistKm = cumDist;
+    activeRouteData.maxSlopeDeg = Number(maxSlope.toFixed(1));
+    activeRouteData.slopeStatus =
+      maxSlope > 24 ? 'CRÍTICA' : maxSlope > 16 ? 'PRECAUCIÓN' : 'SEGURA';
+
+    if (newPathCoords.length > 0) {
+      const mid = newPathCoords[Math.floor(newPathCoords.length / 2)];
+      activeRouteData.center = [mid[0], mid[1]];
+    }
+
+    if (routeDifficultyEl) routeDifficultyEl.textContent = activeRouteData.difficulty;
+    if (routeMaxSlopeEl) {
+      routeMaxSlopeEl.textContent = `${activeRouteData.maxSlopeDeg.toFixed(1)}° (${activeRouteData.slopeStatus})`;
+    }
+    if (missionTitleEl) missionTitleEl.textContent = activeRouteData.title;
+    if (missionSectorEl) missionSectorEl.textContent = activeRouteData.sector;
+    if (missionDescEl) missionDescEl.textContent = activeRouteData.desc;
+
+    saveMissionStateToStorage();
+  }
+
+  function removeWaypointAtIndex(index) {
+    if (!activeRouteData.waypoints || activeRouteData.waypoints.length <= 2) return;
+    stopRoverSimulation();
+    activeRouteData.waypoints.splice(index, 1);
+    recalculateRouteMetricsFromWaypoints(true);
+    renderRouteOnMap(false);
+    updateRoverProgress(roverProgress);
+    if (typeof playHudTone === 'function') playHudTone(440, 0.06, 'triangle');
+  }
+
+  // Algoritmo Ray-Casting (Point-in-Polygon) para detectar cruce con polígonos geológicos NASA
+  function isPointInPolygon(point, polygonCoords) {
+    const [lat, lng] = point;
+    let inside = false;
+    for (let i = 0, j = polygonCoords.length - 1; i < polygonCoords.length; j = i++) {
+      const [latI, lngI] = polygonCoords[i];
+      const [latJ, lngJ] = polygonCoords[j];
+      const intersect =
+        lngI > lng !== lngJ > lng &&
+        lat < ((latJ - latI) * (lng - lngI)) / (lngJ - lngI + 1e-12) + latI;
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  }
+
+  // Evalúa intersecciones reales de la ruta activa contra Tormentas, Riesgo Geológico y Depósitos de Hielo ISRU
+  function evaluateRouteEnvironmentalHazards() {
+    const center = activeRouteData?.center || JEZERO_CENTER;
+    const regionKey = REGIONAL_LAYERS_DB[currentRouteKey] ? currentRouteKey : 'jezero-alpha';
+    const regionData =
+      currentRouteKey === 'custom' && !REGIONAL_LAYERS_DB[currentRouteKey]
+        ? buildProceduralSectorLayers(center[0], center[1])
+        : REGIONAL_LAYERS_DB[regionKey];
+
+    const isWeatherOn = document.getElementById('toggle-weather')?.checked ?? true;
+    const isGeolOn = document.getElementById('toggle-geol')?.checked ?? true;
+    const isResOn = document.getElementById('toggle-res')?.checked ?? true;
+
+    let crossesStormCore = false;
+    let crossesStormOuter = false;
+    let crossesHazardGeol = null;
+    let reachedIsruDepot = null;
+
+    // Muestrear puntos a lo largo del porcentaje recorrido actual (0% -> roverProgress%)
+    const steps = Math.max(4, Math.ceil(roverProgress / 5));
+    for (let s = 0; s <= steps; s++) {
+      const samplePct = (s / steps) * roverProgress;
+      const pt = interpolateRoverPosition(activeRouteData.pathCoords, samplePct);
+      const coord = [pt.lat, pt.lng];
+
+      if (isWeatherOn && regionData.weather) {
+        const dStormMeters = computeMarsDistanceKm(coord, regionData.weather.coords) * 1000;
+        if (dStormMeters <= regionData.weather.innerRadius) crossesStormCore = true;
+        else if (dStormMeters <= regionData.weather.outerRadius) crossesStormOuter = true;
+      }
+
+      if (isGeolOn && Array.isArray(regionData.geology)) {
+        for (const unit of regionData.geology) {
+          const isHighRisk =
+            unit.color === '#ef5350' || /precauci|riesgo|duna|escarpe|falla/i.test(unit.desc);
+          if (isHighRisk && isPointInPolygon(coord, unit.coords)) {
+            crossesHazardGeol = unit.name;
+          }
+        }
+      }
+
+      if (isResOn && Array.isArray(regionData.resources)) {
+        for (const res of regionData.resources) {
+          const dResMeters = computeMarsDistanceKm(coord, res.coords) * 1000;
+          if (dResMeters <= res.radius) {
+            reachedIsruDepot = res.name;
+          }
+        }
+      }
+    }
+
+    return {
+      isWeatherOn,
+      crossesStormCore,
+      crossesStormOuter,
+      crossesHazardGeol,
+      reachedIsruDepot
+    };
+  }
+
+  // Dibuja la ruta activa y sus waypoints ARRASTRABLES (draggable: true) en el mapa de Leaflet
   function renderRouteOnMap(flyToRoute = false) {
     dynamicRouteLayerGroup.clearLayers();
 
     const latLngs = activeRouteData.pathCoords.map((p) => [p[0], p[1]]);
 
     if (latLngs.length >= 2) {
-      // Halo exterior naranja
       L.polyline(latLngs, {
         color: '#FF6B2B',
         weight: 9,
@@ -1117,7 +1340,6 @@ function initMarsDashboard() {
         lineCap: 'round'
       }).addTo(dynamicRouteLayerGroup);
 
-      // Línea principal punteada (Ruta completa)
       L.polyline(latLngs, {
         color: '#FF6B2B',
         weight: 3.5,
@@ -1130,7 +1352,6 @@ function initMarsDashboard() {
         })
         .addTo(dynamicRouteLayerGroup);
 
-      // Línea de progreso ya recorrido en color cian
       routeTraveledLine = L.polyline([], {
         color: '#00e5ff',
         weight: 4,
@@ -1138,7 +1359,8 @@ function initMarsDashboard() {
       }).addTo(dynamicRouteLayerGroup);
     }
 
-    // Marcadores de Waypoints de la ruta
+    const canDeleteWp = activeRouteData.waypoints.length > 2;
+
     activeRouteData.waypoints.forEach((wp, index) => {
       const isStart = index === 0;
       const isEnd = index === activeRouteData.waypoints.length - 1 && activeRouteData.waypoints.length > 1;
@@ -1146,10 +1368,11 @@ function initMarsDashboard() {
       const iconClass = isStart ? 'fa-rocket' : isEnd ? 'fa-campground' : 'fa-flask';
 
       const wpMarker = L.marker(wp.coords, {
+        draggable: true,
         icon: L.divIcon({
           className: 'hud-custom-div-icon',
           html: `
-            <div class="hud-site-marker marker-${markerType}">
+            <div class="hud-site-marker marker-${markerType}" title="Arrastra para reajustar este punto en vivo">
               <div class="hsm-ring"></div>
               <div class="hsm-core"><i class="fa-solid ${iconClass}"></i></div>
               <span class="hsm-label">${wp.name}</span>
@@ -1160,7 +1383,7 @@ function initMarsDashboard() {
         })
       }).bindPopup(`
         <div class="hud-popup-card">
-          <div class="hp-kicker">WAYPOINT 0${index + 1} // RUTA ${activeRouteData.code}</div>
+          <div class="hp-kicker">WAYPOINT 0${index + 1} // ARRASTRABLE EN MAPA</div>
           <h4 class="hp-title">${wp.name}</h4>
           <p class="hp-desc">${wp.sub}</p>
           <div class="hp-meta">
@@ -1170,13 +1393,31 @@ function initMarsDashboard() {
           <button type="button" class="hp-action-btn" data-open-360="wp-${index}">
             <i class="fa-solid fa-vr-cardboard"></i> EXPLORAR EN 360° STREET VIEW
           </button>
+          ${
+            canDeleteWp
+              ? `<button type="button" class="hp-action-btn secondary" data-delete-wp="${index}">
+                   <i class="fa-solid fa-trash-can"></i> ELIMINAR ESTE WAYPOINT
+                 </button>`
+              : ''
+          }
         </div>
       `);
+
+      wpMarker.on('dragend', (ev) => {
+        const newPos = ev.target.getLatLng();
+        const newElev = estimateNumericAltitude(newPos.lat, newPos.lng);
+        activeRouteData.waypoints[index].coords = [newPos.lat, newPos.lng];
+        activeRouteData.waypoints[index].elev = newElev;
+        activeRouteData.waypoints[index].sub = `LAT ${newPos.lat.toFixed(3)}° LON ${newPos.lng.toFixed(3)}°`;
+        recalculateRouteMetricsFromWaypoints(true);
+        renderRouteOnMap(false);
+        updateRoverProgress(roverProgress);
+        if (typeof playHudTone === 'function') playHudTone(710, 0.06, 'sine');
+      });
 
       dynamicRouteLayerGroup.addLayer(wpMarker);
     });
 
-    // Marcador móvil en tiempo real del Rover
     const roverPos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
     liveRoverMarker = L.marker([roverPos.lat, roverPos.lng], {
       zIndexOffset: 1000,
@@ -1195,8 +1436,8 @@ function initMarsDashboard() {
     }).bindPopup(`
       <div class="hud-popup-card cyan-theme">
         <div class="hp-kicker">TELEMETRÍA DE UNIDAD MÓVIL EN VIVO</div>
-        <h4 class="hp-title">Rover Presurizado M.A.R.T.E 01</h4>
-        <p class="hp-desc">Avance actual: ${roverProgress}% de la ruta ${activeRouteData.code}. Todos los sistemas de soporte vital operando dentro de parámetros.</p>
+        <h4 class="hp-title">Unidad EVA M.A.R.T.E 01</h4>
+        <p class="hp-desc">Avance actual: ${roverProgress}% de la ruta ${activeRouteData.code}. Tripulación: ${evaConfig.crewSize} astronautas.</p>
         <button type="button" class="hp-action-btn" data-open-360="rover-live">
           <i class="fa-solid fa-vr-cardboard"></i> ABRIR CÁMARA 360° DEL ROVER
         </button>
@@ -1210,10 +1451,11 @@ function initMarsDashboard() {
     }
   }
 
-  // Renderiza la lista de Waypoints en la barra lateral izquierda y su estado según el progreso del Rover
+  // Renderiza la lista de Waypoints con botón individual de borrado (×)
   function renderWaypointsTimeline() {
     if (!waypointsListEl) return;
     const traveledKm = (roverProgress / 100) * activeRouteData.totalDistKm;
+    const canDelete = activeRouteData.waypoints.length > 2;
 
     waypointsListEl.innerHTML = '';
 
@@ -1237,17 +1479,33 @@ function initMarsDashboard() {
       li.className = `waypoint-node ${nodeStatus}`;
       li.style.cursor = 'pointer';
       li.innerHTML = `
-        <div class="wp-marker">0${idx + 1}</div>
+        <div class="wp-marker">${String(idx + 1).padStart(2, '0')}</div>
         <div class="wp-content">
           <div class="wp-row">
             <strong>${wp.name}</strong>
-            <span class="wp-badge ${badgeClass}">${badgeText}</span>
+            <span class="wp-actions-inline">
+              <span class="wp-badge ${badgeClass}">${badgeText}</span>
+              ${
+                canDelete
+                  ? `<button type="button" class="wp-delete-btn" title="Eliminar este punto" aria-label="Eliminar ${wp.name}">
+                       <i class="fa-solid fa-xmark"></i>
+                     </button>`
+                  : ''
+              }
+            </span>
           </div>
           <span class="wp-sub">${wp.sub} &bull; KM ${wp.km.toFixed(1)} (${wp.elev}m)</span>
         </div>
       `;
 
-      // Al hacer clic en un waypoint, movemos el Rover y la cámara hacia ese punto con zoom nítido (8-9)
+      const delBtn = li.querySelector('.wp-delete-btn');
+      if (delBtn) {
+        delBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          removeWaypointAtIndex(idx);
+        });
+      }
+
       li.addEventListener('click', () => {
         stopRoverSimulation();
         const targetPct =
@@ -1262,7 +1520,7 @@ function initMarsDashboard() {
     });
   }
 
-  // Renderiza el Gráfico SVG del Perfil de Elevación Topográfica y posiciona al Rover
+  // Renderiza el Gráfico SVG del Perfil de Elevación Topográfica proporcional a la distancia acumulada
   function renderElevationProfileSVG() {
     const coords = activeRouteData.pathCoords;
     if (!coords || coords.length === 0) return;
@@ -1280,14 +1538,19 @@ function initMarsDashboard() {
       elevMetaEl.innerHTML = `ALTITUD: ${minElev.toLocaleString('en-US')}m a ${maxElev.toLocaleString('en-US')}m (&Delta; ${sign}${maxElev - minElev}m)`;
     }
 
-    // Mapeamos los puntos al viewBox 600x82
     const svgWidth = 600;
     const topY = 12;
     const bottomY = 66;
     const bottomBase = 78;
 
+    const cumKm = [0];
+    for (let i = 1; i < coords.length; i++) {
+      cumKm.push(cumKm[i - 1] + computeMarsDistanceKm(coords[i - 1], coords[i]));
+    }
+    const totalPathKm = Math.max(cumKm[cumKm.length - 1], 0.001);
+
     const svgPoints = coords.map((c, idx) => {
-      const x = coords.length === 1 ? 0 : Math.round((idx / (coords.length - 1)) * svgWidth);
+      const x = coords.length === 1 ? 0 : Math.round((cumKm[idx] / totalPathKm) * svgWidth);
       const norm = (c[2] - minElev) / deltaElev;
       const y = Math.round(bottomY - norm * (bottomY - topY));
       return { x, y, elev: c[2] };
@@ -1295,13 +1558,15 @@ function initMarsDashboard() {
 
     if (svgPoints.length >= 2) {
       const pathD = svgPoints.map((pt, i) => `${i === 0 ? 'M' : 'L'} ${pt.x},${pt.y}`).join(' ');
-      const polyPts = `0,${bottomBase} ` + svgPoints.map((pt) => `${pt.x},${pt.y}`).join(' ') + ` ${svgWidth},${bottomBase}`;
+      const polyPts =
+        `0,${bottomBase} ` +
+        svgPoints.map((pt) => `${pt.x},${pt.y}`).join(' ') +
+        ` ${svgWidth},${bottomBase}`;
 
       if (elevPath) elevPath.setAttribute('d', pathD);
       if (elevPolygon) elevPolygon.setAttribute('points', polyPts);
     }
 
-    // Posición del indicador cian del Rover en el SVG (0 a 600)
     const roverX = Math.round((roverProgress / 100) * svgWidth);
     const roverPos = interpolateRoverPosition(coords, roverProgress);
     const roverNorm = (roverPos.elev - minElev) / deltaElev;
@@ -1324,72 +1589,118 @@ function initMarsDashboard() {
   }
 
   // ==========================================================================
-  // 5. MOTOR DE CÁLCULO DE TELEMETRÍA DE SUPERVIVENCIA (OXÍGENO, BATERÍA, TIEMPO)
+  // 5. MOTOR DE TELEMETRÍA CON INTERSECCIÓN DE CAPAS NASA Y PARÁMETROS EVA
   // ==========================================================================
   function updateSurvivalTelemetry() {
     const totalKm = activeRouteData.totalDistKm;
     const traveledKm = (roverProgress / 100) * totalKm;
     const remainingKm = Math.max(0, totalKm - traveledKm);
 
-    // Penalización climática si la capa de tormenta de polvo está activa
-    const weatherCheckbox = document.getElementById('toggle-weather');
-    const isStormActive = weatherCheckbox ? weatherCheckbox.checked : true;
-    const stormSolarPenalty = isStormActive ? 1.18 : 1.0;
+    const env = evaluateRouteEnvironmentalHazards();
 
-    // 1. Cálculo de Oxígeno Consumido (%)
-    // Base metabólica + esfuerzo por distancia recorrida y pendiente
-    const slopeFactor = 1 + Math.max(0, activeRouteData.maxSlopeDeg - 10) * 0.025;
-    const rawO2Consumed = 4 + traveledKm * activeRouteData.baseO2RatePerKm * slopeFactor;
-    const o2ConsumedPct = Math.min(98, Math.round(rawO2Consumed));
-    const o2ReservePct = Math.max(2, 100 - o2ConsumedPct);
-    const o2KgRate = (0.78 * slopeFactor).toFixed(2);
+    // Modificadores por Parámetros Configurables de Misión EVA
+    const crewFactor = evaConfig.crewSize / 2; // Calibrado base = 2 astronautas
+    const isFootEva = evaConfig.transportMode === 'foot';
+    const modeO2Mult = isFootEva ? 1.55 : 1.0;
+    const modeBattMult = isFootEva ? 0.65 : 1.0; // PLSS de traje vs tracción de Rover
+    const speedBase = isFootEva ? 1.45 : activeRouteData.avgSpeedKmh;
+
+    const departureSolarMult =
+      evaConfig.departureWindow === 'morning'
+        ? 0.88 // +12% eficiencia solar matutina
+        : evaConfig.departureWindow === 'night'
+        ? 1.38 // Sin sol + calefactores nocturnos a -84°C
+        : 1.0;
+
+    // Modificadores espaciales dinámicos por capas científicas NASA
+    const stormPenalty = env.crossesStormCore
+      ? 1.35
+      : env.crossesStormOuter
+      ? 1.22
+      : env.isWeatherOn
+      ? 1.12
+      : 1.0;
+    const geolTractionPenalty = env.crossesHazardGeol ? 1.15 : 1.0;
+    const isruO2BonusPct = env.reachedIsruDepot ? 16 : 0; // Recarga criogénica ISRU H₂O -> O₂
+    const isruBattBonusPct = env.reachedIsruDepot ? 8 : 0;
+
+    const effectiveSpeedKmh = Math.max(
+      0.8,
+      speedBase * (env.crossesStormCore ? 0.82 : 1.0) * (env.crossesHazardGeol ? 0.88 : 1.0)
+    );
+
+    // 1. Oxígeno Consumido (%)
+    const slopeFactor = 1 + Math.max(0, activeRouteData.maxSlopeDeg - 10) * (isFootEva ? 0.042 : 0.025);
+    const rawO2Consumed =
+      4 +
+      traveledKm * activeRouteData.baseO2RatePerKm * slopeFactor * crewFactor * modeO2Mult * geolTractionPenalty -
+      isruO2BonusPct;
+    const o2ConsumedPct = Math.max(2, Math.min(99, Math.round(rawO2Consumed)));
+    const o2ReservePct = Math.max(1, 100 - o2ConsumedPct);
+    const o2KgRate = (0.42 * evaConfig.crewSize * slopeFactor * modeO2Mult).toFixed(2);
 
     if (metricOxygen) metricOxygen.textContent = o2ConsumedPct;
-    if (metricOxygenReserve) metricOxygenReserve.textContent = `RESERVA: ${o2ReservePct}%`;
+    if (metricOxygenReserve) {
+      metricOxygenReserve.textContent = env.reachedIsruDepot
+        ? `RESERVA: ${o2ReservePct}% (+ISRU)`
+        : `RESERVA: ${o2ReservePct}%`;
+    }
     if (metricOxygenRate) {
       metricOxygenRate.textContent =
-        o2ConsumedPct > 70 ? `¡Consumo Alto! (${o2KgRate} kg/h)` : `Nominal (${o2KgRate} kg/h)`;
+        o2ConsumedPct > 72
+          ? `¡Consumo Alto! (${o2KgRate} kg/h • ${evaConfig.crewSize} PAX)`
+          : `${o2KgRate} kg/h (${evaConfig.crewSize} Astronautas)`;
     }
     if (barOxygen) barOxygen.style.width = `${o2ConsumedPct}%`;
     if (cardOxygen) cardOxygen.classList.toggle('alert-critical', o2ConsumedPct >= 75);
 
-    // 2. Cálculo de Batería del Rover (%)
-    const batteryDrain = traveledKm * activeRouteData.baseBatteryPerKm * stormSolarPenalty;
-    const batteryRemainingPct = Math.max(5, Math.round(100 - batteryDrain));
-    const remainingAutonomyKm = ((batteryRemainingPct / (activeRouteData.baseBatteryPerKm * stormSolarPenalty))).toFixed(1);
+    // 2. Batería (%)
+    const effectiveBattRate =
+      activeRouteData.baseBatteryPerKm * modeBattMult * departureSolarMult * stormPenalty * geolTractionPenalty;
+    const batteryDrain = traveledKm * effectiveBattRate - isruBattBonusPct;
+    const batteryRemainingPct = Math.max(3, Math.min(100, Math.round(100 - batteryDrain)));
+    const remainingAutonomyKm = (batteryRemainingPct / Math.max(0.25, effectiveBattRate)).toFixed(1);
 
     if (metricBattery) metricBattery.textContent = batteryRemainingPct;
     if (metricBatteryTag) {
-      metricBatteryTag.textContent = isStormActive ? 'SOLAR -18% (POLVO)' : 'MMRTG + SOLAR 100%';
+      metricBatteryTag.textContent = env.crossesStormCore
+        ? 'TORMENTA NÚCLEO (-35%)'
+        : evaConfig.departureWindow === 'night'
+        ? 'MODO NOCTURNO (MMRTG)'
+        : env.isWeatherOn
+        ? 'SOLAR ATENUADO (POLVO)'
+        : 'MMRTG + SOLAR ÓPTIMO';
     }
     if (metricBatteryRange) metricBatteryRange.textContent = `Autonomía: ${remainingAutonomyKm} km`;
     if (barBattery) barBattery.style.width = `${batteryRemainingPct}%`;
     if (cardBattery) cardBattery.classList.toggle('alert-critical', batteryRemainingPct <= 25);
 
-    // 3. Distancia de la Ruta (km)
+    // 3. Distancia (km)
     if (metricDistance) metricDistance.textContent = totalKm.toFixed(1);
     if (metricDistanceTraveled) metricDistanceTraveled.textContent = `RECORRIDO: ${traveledKm.toFixed(1)} KM`;
     if (metricDistanceRemaining) metricDistanceRemaining.textContent = `Restante: ${remainingKm.toFixed(1)} km`;
     if (barDistance) barDistance.style.width = `${roverProgress}%`;
 
-    // 4. Tiempo Estimado de Viaje Total y Restante
-    const totalHours = totalKm / activeRouteData.avgSpeedKmh;
+    // 4. Tiempo Estimado
+    const totalHours = totalKm / effectiveSpeedKmh;
     const hrs = Math.floor(totalHours);
     const mins = Math.round((totalHours - hrs) * 60);
     const formattedTime = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
 
-    const remHours = remainingKm / activeRouteData.avgSpeedKmh;
+    const remHours = remainingKm / effectiveSpeedKmh;
     const remH = Math.floor(remHours);
     const remM = Math.round((remHours - remH) * 60);
 
     if (metricTime) metricTime.textContent = formattedTime;
-    if (metricSpeedTag) metricSpeedTag.textContent = `VEL. MEDIA: ${activeRouteData.avgSpeedKmh.toFixed(1)} KM/H`;
+    if (metricSpeedTag) {
+      metricSpeedTag.textContent = `${isFootEva ? 'EVA PIE' : 'ROVER'}: ${effectiveSpeedKmh.toFixed(1)} KM/H`;
+    }
     if (metricTimeSub) {
       metricTimeSub.textContent =
         roverProgress >= 100
           ? '¡Destino alcanzado con éxito!'
-          : totalHours > 8.5
-          ? `⚠ Restan ${remH}h ${remM}m (Travesía nocturna)`
+          : totalHours > 8.5 || evaConfig.departureWindow === 'night'
+          ? `⚠ Restan ${remH}h ${remM}m (Exposición térmica nocturna)`
           : `Restan ${remH}h ${remM}m (Antes del ocaso)`;
     }
     if (barTime) {
@@ -1397,24 +1708,39 @@ function initMarsDashboard() {
       barTime.style.width = `${timeLoadPct}%`;
     }
 
-    // 5. Directriz Dinámica de Supervivencia en la Barra Izquierda
+    // 5. Directriz Dinámica inteligente según intersecciones con Capas NASA
     if (directiveBoxEl && directiveTitleEl && directiveTextEl) {
-      if (o2ConsumedPct >= 75 || batteryRemainingPct <= 25 || activeRouteData.maxSlopeDeg >= 25) {
+      const hazards = [];
+      if (env.crossesStormCore || env.crossesStormOuter) {
+        hazards.push('Cruce activo por frente de tormenta de polvo');
+      }
+      if (env.crossesHazardGeol) {
+        hazards.push(`Terreno de riesgo (${env.crossesHazardGeol})`);
+      }
+
+      if (o2ConsumedPct >= 75 || batteryRemainingPct <= 25 || activeRouteData.maxSlopeDeg >= 25 || env.crossesStormCore) {
         directiveBoxEl.classList.add('alert-mode');
-        directiveTitleEl.textContent = '⚠ ALERTA CRÍTICA DE SUPERVIVENCIA:';
+        directiveTitleEl.textContent = '⚠ ALERTA TÁCTICA DE SUPERVIVENCIA:';
         directiveTextEl.textContent =
-          `Consumo de O₂ al ${o2ConsumedPct}% | Batería al ${batteryRemainingPct}% | Pendiente máx ${activeRouteData.maxSlopeDeg.toFixed(1)}°. ` +
-          `Se recomienda parada inmediata en estación ISRU para recarga criogénica.`;
+          `${hazards.length ? hazards.join(' • ') + '. ' : ''}` +
+          `O₂ consumido: ${o2ConsumedPct}% | Batería: ${batteryRemainingPct}% | Pendiente máx: ${activeRouteData.maxSlopeDeg.toFixed(1)}°. ` +
+          `${env.reachedIsruDepot ? `Reabastecimiento ISRU activo en ${env.reachedIsruDepot}.` : 'Dirigirse a un depósito de hielo ISRU cercano.'}`;
       } else {
         directiveBoxEl.classList.remove('alert-mode');
-        directiveTitleEl.textContent = 'DIRECTRIZ DE SUPERVIVENCIA:';
-        directiveTextEl.textContent =
-          `Parámetros vitales nominales. Reserva de O₂ al ${o2ReservePct}%. Mantener distancia de seguridad de 50m respecto a escarpes >25°.`;
+        directiveTitleEl.textContent = env.reachedIsruDepot
+          ? '✓ REABASTECIMIENTO ISRU CONECTADO:'
+          : 'DIRECTRIZ DE SUPERVIVENCIA:';
+        directiveTextEl.textContent = env.reachedIsruDepot
+          ? `Extracción H₂O/O₂ validada en "${env.reachedIsruDepot}" (+16% reserva O₂). ${hazards.length ? 'Atención: ' + hazards.join(', ') + '.' : 'Sistemas nominales.'}`
+          : `${hazards.length ? 'Precaución en ruta: ' + hazards.join(' • ') + '. ' : ''}Reserva de O₂ al ${o2ReservePct}% para ${evaConfig.crewSize} astronautas.`;
       }
+    }
+
+    if (typeof refreshEvaManifestPreview === 'function' && document.getElementById('mission-dossier-dialog')?.open) {
+      refreshEvaManifestPreview();
     }
   }
 
-  // Sincroniza el valor del slider nativo con las variables CSS del estándar Modern Web
   function syncSliderCSSVariables() {
     if (!roverSlider) return;
     roverSlider.style.setProperty('--attr-min', roverSlider.min || 0);
@@ -1426,7 +1752,6 @@ function initMarsDashboard() {
     );
   }
 
-  // Actualiza toda la posición del Rover en el mapa, la polilínea recorrida, el perfil SVG y la telemetría
   function updateRoverProgress(newPct) {
     roverProgress = Math.max(0, Math.min(100, Math.round(newPct)));
 
@@ -1440,7 +1765,6 @@ function initMarsDashboard() {
 
     const pos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
 
-    // Mover el marcador en vivo del Rover en Leaflet
     if (liveRoverMarker) {
       liveRoverMarker.setLatLng([pos.lat, pos.lng]);
       const labelSpan = liveRoverMarker.getElement()?.querySelector('.hsm-label');
@@ -1449,13 +1773,9 @@ function initMarsDashboard() {
       }
     }
 
-    // Actualizar la línea cian de tramo recorrido
     if (routeTraveledLine && activeRouteData.pathCoords.length >= 2) {
-      const totalSegments = activeRouteData.pathCoords.length - 1;
-      const exactIdx = (roverProgress / 100) * totalSegments;
-      const fullPointsCount = Math.floor(exactIdx) + 1;
       const traveledLatLngs = activeRouteData.pathCoords
-        .slice(0, fullPointsCount)
+        .slice(0, pos.segIndex + 1)
         .map((c) => [c[0], c[1]]);
       traveledLatLngs.push([pos.lat, pos.lng]);
       routeTraveledLine.setLatLngs(traveledLatLngs);
@@ -1464,6 +1784,8 @@ function initMarsDashboard() {
     renderWaypointsTimeline();
     renderElevationProfileSVG();
     updateSurvivalTelemetry();
+    saveMissionStateToStorage();
+
     if (typeof updateRoverVisionConeOnMap === 'function') {
       updateRoverVisionConeOnMap();
     }
@@ -1472,7 +1794,6 @@ function initMarsDashboard() {
     }
   }
 
-  // Carga una ruta del catálogo o inicializa la ruta personalizada, actualizando todas las capas de la NASA
   function loadRoute(routeKey, flyTo = true) {
     stopRoverSimulation();
     currentRouteKey = routeKey;
@@ -1488,11 +1809,9 @@ function initMarsDashboard() {
       toggleCustomDrawingMode(false);
     }
 
-    activeRouteData = structuredClone(ROUTES_CATALOG[routeKey]);
+    activeRouteData = structuredClone(ROUTES_CATALOG[routeKey] || ROUTES_CATALOG['jezero-alpha']);
 
-    if (routeDifficultyEl) {
-      routeDifficultyEl.textContent = activeRouteData.difficulty;
-    }
+    if (routeDifficultyEl) routeDifficultyEl.textContent = activeRouteData.difficulty;
     if (routeMaxSlopeEl) {
       routeMaxSlopeEl.textContent = `${activeRouteData.maxSlopeDeg.toFixed(1)}° (${activeRouteData.slopeStatus})`;
     }
@@ -1500,7 +1819,6 @@ function initMarsDashboard() {
     if (missionSectorEl) missionSectorEl.textContent = activeRouteData.sector;
     if (missionDescEl) missionDescEl.textContent = activeRouteData.desc;
 
-    // Actualizar las 4 capas regionales de la NASA (Topography, Geology, Resources, Weather) junto con la ruta
     rebuildRegionalNasaLayers(routeKey);
     renderRouteOnMap(flyTo);
     syncLayersWithCheckboxes();
@@ -1514,13 +1832,28 @@ function initMarsDashboard() {
   }
 
   // ==========================================================================
-  // 6. EVENTOS DE CONTROL DE RUTAS, SIMULACIÓN Y TRAZADO EN EL MAPA
+  // 6. EVENTOS DE CONTROL DE RUTAS, PARÁMETROS EVA Y EDICIÓN EN EL MAPA
   // ==========================================================================
   if (routeSelector) {
     routeSelector.addEventListener('change', (e) => {
       loadRoute(e.target.value, true);
     });
   }
+
+  // Eventos de los Parámetros Configurables de Misión EVA
+  const onEvaConfigChange = () => {
+    evaConfig = {
+      crewSize: Number(evaCrewSelect?.value || 2),
+      transportMode: evaModeSelect?.value || 'rover',
+      departureWindow: evaWindowSelect?.value || 'morning'
+    };
+    updateSurvivalTelemetry();
+    saveMissionStateToStorage();
+    if (typeof playHudTone === 'function') playHudTone(660, 0.05, 'sine');
+  };
+  evaCrewSelect?.addEventListener('change', onEvaConfigChange);
+  evaModeSelect?.addEventListener('change', onEvaConfigChange);
+  evaWindowSelect?.addEventListener('change', onEvaConfigChange);
 
   if (roverSlider) {
     roverSlider.addEventListener('input', (e) => {
@@ -1529,10 +1862,8 @@ function initMarsDashboard() {
     });
   }
 
-  // Interacción directa haciendo clic o arrastrando sobre el gráfico de elevación SVG en el footer
   if (elevSvg) {
     let isScrubbingElev = false;
-
     const scrubFromPointer = (clientX) => {
       const rect = elevSvg.getBoundingClientRect();
       if (rect.width <= 0) return;
@@ -1545,19 +1876,14 @@ function initMarsDashboard() {
       isScrubbingElev = true;
       scrubFromPointer(e.clientX);
     });
-
     window.addEventListener('pointermove', (e) => {
-      if (isScrubbingElev) {
-        scrubFromPointer(e.clientX);
-      }
+      if (isScrubbingElev) scrubFromPointer(e.clientX);
     });
-
     window.addEventListener('pointerup', () => {
       isScrubbingElev = false;
     });
   }
 
-  // Simulador automático de recorrido del Rover
   function stopRoverSimulation() {
     if (simIntervalId) {
       clearInterval(simIntervalId);
@@ -1575,11 +1901,7 @@ function initMarsDashboard() {
         stopRoverSimulation();
         return;
       }
-
-      if (roverProgress >= 100) {
-        updateRoverProgress(0);
-      }
-
+      if (roverProgress >= 100) updateRoverProgress(0);
       btnPlaySim.classList.add('is-playing');
       btnPlaySim.innerHTML = '<i class="fa-solid fa-pause"></i> <span>PAUSAR</span>';
 
@@ -1593,15 +1915,14 @@ function initMarsDashboard() {
     });
   }
 
-  // Modo de Trazado Táctico Personalizado en el Mapa ("+ TRAZAR EN MAPA")
   function toggleCustomDrawingMode(forceState) {
     isCustomDrawing = typeof forceState === 'boolean' ? forceState : !isCustomDrawing;
 
     if (btnCustomDraw) {
       btnCustomDraw.classList.toggle('is-drawing', isCustomDrawing);
       btnCustomDraw.innerHTML = isCustomDrawing
-        ? '<i class="fa-solid fa-check"></i> <span>TRAZANDO (CLIC EN MAPA)</span>'
-        : '<i class="fa-solid fa-pen-ruler"></i> <span>+ TRAZAR EN MAPA</span>';
+        ? '<i class="fa-solid fa-check"></i> <span>TRAZANDO</span>'
+        : '<i class="fa-solid fa-pen-ruler"></i> <span>+ TRAZAR</span>';
     }
 
     if (isCustomDrawing) {
@@ -1613,21 +1934,46 @@ function initMarsDashboard() {
   }
 
   if (btnCustomDraw) {
-    btnCustomDraw.addEventListener('click', () => {
-      toggleCustomDrawingMode();
-    });
+    btnCustomDraw.addEventListener('click', () => toggleCustomDrawingMode());
   }
+
+  // Deshacer el último punto añadido (Botón DESHACER o Ctrl+Z)
+  function undoLastWaypoint() {
+    if (!activeRouteData.waypoints || activeRouteData.waypoints.length <= 2) return;
+    removeWaypointAtIndex(activeRouteData.waypoints.length - 1);
+  }
+
+  if (btnUndoPoint) {
+    btnUndoPoint.addEventListener('click', undoLastWaypoint);
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && activeRouteData.waypoints.length > 2) {
+      e.preventDefault();
+      undoLastWaypoint();
+    }
+  });
+
+  // Delegación para botón de eliminar waypoint dentro de los popups de Leaflet
+  document.body.addEventListener('click', (e) => {
+    const delWpBtn = e.target.closest('[data-delete-wp]');
+    if (delWpBtn) {
+      const idx = Number(delWpBtn.getAttribute('data-delete-wp'));
+      marsMap.closePopup();
+      removeWaypointAtIndex(idx);
+    }
+  });
 
   if (btnResetRoute) {
     btnResetRoute.addEventListener('click', () => {
       toggleCustomDrawingMode(false);
+      localStorage.removeItem(STORAGE_KEY_EVA);
       const restoreKey = currentRouteKey === 'custom' ? 'jezero-alpha' : currentRouteKey;
       if (routeSelector) routeSelector.value = restoreKey;
       loadRoute(restoreKey, true);
     });
   }
 
-  // Añadir nuevo Waypoint personalizado al hacer clic en el mapa cuando el modo de trazado está activo
   marsMap.on('click', (e) => {
     if (!isCustomDrawing) return;
 
@@ -1641,9 +1987,9 @@ function initMarsDashboard() {
         code: 'CUSTOM-EVA',
         title: 'Exploración Táctica Personalizada',
         sector: 'Sector: Trazado Manual por Comandante de Misión',
-        desc: 'Ruta definida manualmente sobre la cartografía orbital de la NASA. Telemetría recalculada dinámicamente mediante geodesia marciana.',
+        desc: 'Ruta definida manualmente sobre la cartografía orbital de la NASA. Arrastra cualquier marcador para ajustar la ruta en vivo.',
         difficulty: 'PERSONALIZADA',
-        maxSlopeDeg: 12.5,
+        maxSlopeDeg: 8.5,
         slopeStatus: 'CALCULADA',
         avgSpeedKmh: 2.9,
         totalDistKm: 0,
@@ -1662,45 +2008,22 @@ function initMarsDashboard() {
           }
         ]
       };
-    } else {
-      activeRouteData.center = [lat, lng];
     }
-
-    const prevCoord = activeRouteData.pathCoords[activeRouteData.pathCoords.length - 1];
-    const segDistKm = computeMarsDistanceKm([prevCoord[0], prevCoord[1]], [lat, lng]);
-    const newTotalDist = activeRouteData.totalDistKm + segDistKm;
-
-    // Cálculo de pendiente del nuevo tramo
-    const elevDiffMeters = Math.abs(elev - prevCoord[2]);
-    const segDistMeters = Math.max(segDistKm * 1000, 1);
-    const segSlopeDeg = Math.min(34, (Math.atan(elevDiffMeters / segDistMeters) * 180) / Math.PI * 4.5);
-    activeRouteData.maxSlopeDeg = Math.max(activeRouteData.maxSlopeDeg, Number(segSlopeDeg.toFixed(1)));
-    activeRouteData.slopeStatus =
-      activeRouteData.maxSlopeDeg > 24 ? 'CRÍTICA' : activeRouteData.maxSlopeDeg > 16 ? 'PRECAUCIÓN' : 'SEGURA';
-
-    activeRouteData.totalDistKm = newTotalDist;
-    activeRouteData.pathCoords.push([lat, lng, elev]);
 
     const wpNumber = activeRouteData.waypoints.length + 1;
     activeRouteData.waypoints.push({
-      name: `Punto Táctico EVA 0${wpNumber}`,
+      name: `Punto Táctico EVA ${String(wpNumber).padStart(2, '0')}`,
       sub: `LAT ${lat.toFixed(3)}° LON ${lng.toFixed(3)}°`,
-      km: newTotalDist,
+      km: 0,
       coords: [lat, lng],
       elev
     });
 
-    if (routeDifficultyEl) routeDifficultyEl.textContent = activeRouteData.difficulty;
-    if (routeMaxSlopeEl) {
-      routeMaxSlopeEl.textContent = `${activeRouteData.maxSlopeDeg.toFixed(1)}° (${activeRouteData.slopeStatus})`;
-    }
-    if (missionTitleEl) missionTitleEl.textContent = activeRouteData.title;
-    if (missionSectorEl) missionSectorEl.textContent = activeRouteData.sector;
-    if (missionDescEl) missionDescEl.textContent = activeRouteData.desc;
-
+    recalculateRouteMetricsFromWaypoints(true);
     rebuildRegionalNasaLayers('custom');
     renderRouteOnMap(false);
     updateRoverProgress(roverProgress);
+    if (typeof playHudTone === 'function') playHudTone(760, 0.05, 'sine');
   });
 
   // ==========================================================================
@@ -2262,11 +2585,11 @@ function initMarsDashboard() {
       initialPitch: 1,
       realPano: {
         piaId: 'PIA13077',
-        sol: 'MRO HiRISE + GEDIZ VALLIS',
-        localUrl: 'panoramas/PIA26363-gediz-vallis.jpg',
-        remoteUrl: 'https://images-assets.nasa.gov/image/PIA26363/PIA26363~large.jpg',
-        jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26363',
-        credit: 'NASA/JPL-Caltech/MSSS/UArizona — Garganta Tectónica y Canal de Escombros Sulfatados (Mosaico 360° Real)'
+        sol: 'MRO HiRISE + VIKING',
+        localUrl: 'panoramas/PIA13077-valles-marineris.jpg',
+        remoteUrl: 'https://images-assets.nasa.gov/image/PIA13077/PIA13077~large.jpg',
+        jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA13077',
+        credit: 'NASA/JPL-Caltech/Univ. of Arizona — Mosaico Real de Valles Marineris (Coprates Chasma)'
       },
       palette: {
         skyZenith: '#121521',
@@ -4008,27 +4331,71 @@ function initMarsDashboard() {
     }
   };
 
+  let liveMarsWeatherFeed = null;
+
+  async function fetchLiveMarsWeatherTelemetry() {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5500);
+    try {
+      const res = await fetch(
+        'https://api.nasa.gov/insight_weather/?api_key=DEMO_KEY&feedtype=json&ver=1.0',
+        { signal: controller.signal }
+      );
+      clearTimeout(timer);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const sols = Array.isArray(data.sol_keys) ? data.sol_keys : [];
+      if (sols.length > 0) {
+        const latestSol = sols[sols.length - 1];
+        const sData = data[latestSol];
+        if (sData?.AT) {
+          liveMarsWeatherFeed = {
+            sol: `SOL ${latestSol} (LIVE)`,
+            avTemp: `${Math.round(sData.AT.av)}°C`,
+            maxTemp: `${Math.round(sData.AT.mx)}°C`,
+            minTemp: `${Math.round(sData.AT.mn)}°C`,
+            windKmh: sData.HWS ? `${(sData.HWS.av * 3.6).toFixed(1)} <small>km/h</small>` : null,
+            windDir: sData.WD?.most_common?.compass_point
+              ? `Dirección: ${sData.WD.most_common.compass_point} (${sData.WD.most_common.compass_degrees}°)`
+              : null,
+            pressPa: sData.PRE ? `${Math.round(sData.PRE.av)} <small>Pa</small>` : null
+          };
+          updateRegionalWeatherPanel(currentRouteKey);
+        }
+      }
+    } catch {
+      clearTimeout(timer);
+    }
+  }
+
   function updateRegionalWeatherPanel(routeKey) {
     const w = REGIONAL_WEATHER_DATA[routeKey] || REGIONAL_WEATHER_DATA['jezero-alpha'];
     const setHtml = (id, val) => {
       const el = document.getElementById(id);
       if (el) el.innerHTML = val;
     };
-    setHtml('wc-kicker', w.kicker);
+
+    const statusBadge = liveMarsWeatherFeed
+      ? `<span class="wc-live-badge"><i class="fa-solid fa-satellite-dish"></i> TELEMETRÍA NASA LIVE</span>`
+      : `<span class="wc-live-badge is-fallback"><i class="fa-solid fa-database"></i> REFERENCIA MEDA / REMS</span>`;
+
+    setHtml('wc-kicker', `${w.kicker}<br>${statusBadge}`);
     setHtml('wc-title', w.title);
-    setHtml('wc-sol', w.sol);
-    setHtml('wc-temp-val', w.temp);
-    setHtml('wc-temp-max', w.max);
-    setHtml('wc-temp-min', w.min);
-    setHtml('wc-wind-val', w.wind);
-    setHtml('wc-wind-dir', w.windDir);
-    setHtml('wc-press-val', w.press);
+    setHtml('wc-sol', liveMarsWeatherFeed?.sol || w.sol);
+    setHtml('wc-temp-val', liveMarsWeatherFeed?.avTemp || w.temp);
+    setHtml('wc-temp-max', liveMarsWeatherFeed?.maxTemp || w.max);
+    setHtml('wc-temp-min', liveMarsWeatherFeed?.minTemp || w.min);
+    setHtml('wc-wind-val', liveMarsWeatherFeed?.windKmh || w.wind);
+    setHtml('wc-wind-dir', liveMarsWeatherFeed?.windDir || w.windDir);
+    setHtml('wc-press-val', liveMarsWeatherFeed?.pressPa || w.press);
     setHtml('wc-press-sub', w.pressSub);
     setHtml('wc-tau-val', w.tau);
     setHtml('wc-uv-val', w.uv);
     setHtml('wc-alert-title', w.alertTitle);
     setHtml('wc-alert-desc', w.alertDesc);
   }
+
+  fetchLiveMarsWeatherTelemetry();
 
   // ==========================================================================
   // 13. DOSSIER DE MISIONES DE LA NASA (<dialog closedby="any">) Y EXPORTACIÓN EVA
@@ -4237,9 +4604,13 @@ function initMarsDashboard() {
     return {
       missionProgram: 'NASA Space Apps Challenge 2026 — M.A.R.T.E',
       timestampMTC: document.getElementById('hud-header-clock')?.textContent || 'SOL 1420 MTC',
+      routeKey: currentRouteKey,
+      evaConfig: { ...evaConfig },
       activeRoute: {
         code: activeRouteData.code,
         title: activeRouteData.title,
+        sector: activeRouteData.sector,
+        desc: activeRouteData.desc,
         difficulty: activeRouteData.difficulty,
         maxSlopeDeg: activeRouteData.maxSlopeDeg,
         totalDistanceKm: Number(activeRouteData.totalDistKm.toFixed(2))
@@ -4258,11 +4629,84 @@ function initMarsDashboard() {
       waypoints: activeRouteData.waypoints.map((wp, idx) => ({
         order: idx + 1,
         name: wp.name,
+        sub: wp.sub || '',
         distanceKm: Number(wp.km.toFixed(1)),
         elevationMeters: wp.elev,
         coords: wp.coords
       }))
     };
+  }
+
+  // Importar Plan EVA desde archivo .json descargado previamente
+  const btnImportJson = document.getElementById('btn-import-json');
+  const inputImportJson = document.getElementById('input-import-json');
+
+  if (btnImportJson && inputImportJson) {
+    btnImportJson.addEventListener('click', () => inputImportJson.click());
+
+    inputImportJson.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const rawText = await file.text();
+        const parsed = JSON.parse(rawText);
+        if (!Array.isArray(parsed.waypoints) || parsed.waypoints.length < 2) {
+          throw new Error('El archivo JSON no contiene al menos 2 waypoints válidos.');
+        }
+
+        if (parsed.evaConfig) {
+          evaConfig = {
+            crewSize: Number(parsed.evaConfig.crewSize || 2),
+            transportMode: parsed.evaConfig.transportMode || 'rover',
+            departureWindow: parsed.evaConfig.departureWindow || 'morning'
+          };
+          if (evaCrewSelect) evaCrewSelect.value = String(evaConfig.crewSize);
+          if (evaModeSelect) evaModeSelect.value = evaConfig.transportMode;
+          if (evaWindowSelect) evaWindowSelect.value = evaConfig.departureWindow;
+        }
+
+        activeRouteData = {
+          id: 'custom',
+          code: parsed.activeRoute?.code || 'IMPORTED-EVA',
+          title: parsed.activeRoute?.title || 'Plan EVA Importado',
+          sector: parsed.activeRoute?.sector || 'Sector: Manifiesto Táctico Importado (.JSON)',
+          desc: parsed.activeRoute?.desc || 'Expedición restaurada desde archivo oficial de telemetría EVA.',
+          difficulty: parsed.activeRoute?.difficulty || 'PERSONALIZADA',
+          maxSlopeDeg: Number(parsed.activeRoute?.maxSlopeDeg || 12),
+          slopeStatus: 'CALCULADA',
+          avgSpeedKmh: 2.9,
+          totalDistKm: 0,
+          baseO2RatePerKm: 3.25,
+          baseBatteryPerKm: 1.85,
+          center: parsed.waypoints[0].coords,
+          zoom: 8,
+          pathCoords: [],
+          waypoints: parsed.waypoints.map((w, i) => ({
+            name: w.name || `Waypoint EVA 0${i + 1}`,
+            sub: w.sub || `LAT ${Number(w.coords[0]).toFixed(3)}° LON ${Number(w.coords[1]).toFixed(3)}°`,
+            km: Number(w.distanceKm || 0),
+            coords: [Number(w.coords[0]), Number(w.coords[1])],
+            elev: typeof w.elevationMeters === 'number'
+              ? w.elevationMeters
+              : estimateNumericAltitude(Number(w.coords[0]), Number(w.coords[1]))
+          }))
+        };
+
+        currentRouteKey = 'custom';
+        if (routeSelector) routeSelector.value = 'custom';
+        recalculateRouteMetricsFromWaypoints(false);
+        rebuildRegionalNasaLayers('custom');
+        renderRouteOnMap(true);
+        updateRoverProgress(Number(parsed.roverLiveTelemetry?.progressPercent ?? 0));
+        refreshEvaManifestPreview();
+        if (dossierDialog?.open) dossierDialog.close();
+        if (typeof playHudTone === 'function') playHudTone(940, 0.09, 'sine');
+      } catch (err) {
+        alert(`No se pudo importar el Plan EVA: ${err.message}`);
+      } finally {
+        inputImportJson.value = '';
+      }
+    });
   }
 
   function refreshEvaManifestPreview() {
@@ -4489,10 +4933,52 @@ function initMarsDashboard() {
     });
   }
 
-  // Inicializar la ruta por defecto (JEZERO-ALPHA), el cono de visión y el Street View al arrancar
+  // Inicializar Street View, restaurar sesión guardada en localStorage (si existe) y registrar PWA Offline
   loadStreetViewStation('scene-kodiak', false);
-  loadRoute('jezero-alpha', false);
+
+  let restoredFromStorage = false;
+  try {
+    const savedRaw = localStorage.getItem(STORAGE_KEY_EVA);
+    if (savedRaw) {
+      const saved = JSON.parse(savedRaw);
+      if (saved.evaConfig) {
+        evaConfig = { ...evaConfig, ...saved.evaConfig };
+        if (evaCrewSelect) evaCrewSelect.value = String(evaConfig.crewSize);
+        if (evaModeSelect) evaModeSelect.value = evaConfig.transportMode;
+        if (evaWindowSelect) evaWindowSelect.value = evaConfig.departureWindow;
+      }
+      if (saved.routeKey === 'custom' && saved.customRouteData?.waypoints?.length >= 2) {
+        activeRouteData = saved.customRouteData;
+        currentRouteKey = 'custom';
+        if (routeSelector) routeSelector.value = 'custom';
+        recalculateRouteMetricsFromWaypoints(false);
+        rebuildRegionalNasaLayers('custom');
+        renderRouteOnMap(false);
+        syncLayersWithCheckboxes();
+        updateRoverProgress(Number(saved.roverProgress ?? 33));
+        marsMap.setView(activeRouteData.center, activeRouteData.zoom || 8);
+        restoredFromStorage = true;
+      } else if (saved.routeKey && ROUTES_CATALOG[saved.routeKey]) {
+        if (routeSelector) routeSelector.value = saved.routeKey;
+        loadRoute(saved.routeKey, false);
+        updateRoverProgress(Number(saved.roverProgress ?? 33));
+        restoredFromStorage = true;
+      }
+    }
+  } catch {
+    restoredFromStorage = false;
+  }
+
+  if (!restoredFromStorage) {
+    loadRoute('jezero-alpha', false);
+  }
   updateRoverVisionConeOnMap(14, 90);
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
 }
 
 // Iniciar de inmediato si el DOM ya está listo, o al dispararse DOMContentLoaded
@@ -4501,3 +4987,5 @@ if (document.readyState === 'loading') {
 } else {
   initMarsDashboard();
 }
+ 
+// api de el clma en tiempo real de marte segun los servidoeres de la nasa
