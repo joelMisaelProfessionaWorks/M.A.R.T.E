@@ -2212,6 +2212,7 @@ function initMarsDashboard() {
       elev: -2540,
       initialYaw: 18,
       initialPitch: 0,
+      narration: "You have arrived at Octavia Butler landing site. All rover systems operational.",
       realPano: {
         piaId: 'PIA24264',
         sol: 'SOL 3 (MARS 2020)',
@@ -2282,6 +2283,7 @@ function initMarsDashboard() {
       elev: -2490,
       initialYaw: 10,
       initialPitch: 0,
+      narration: "Arrived at Kodiak Mesa science stop. Geological analysis in progress.",
       realPano: {
         piaId: 'PIA24921',
         sol: 'SOL 466 (MARS 2020)',
@@ -2360,6 +2362,7 @@ function initMarsDashboard() {
       elev: -2435,
       initialYaw: 0,
       initialPitch: 0,
+      narration: "Approaching subsurface ice deposit. Resource utilization systems ready.",
       realPano: {
         piaId: 'PIA26369',
         sol: 'SOL 1178 (NERETVA VALLIS)',
@@ -2438,6 +2441,7 @@ function initMarsDashboard() {
       elev: -2380,
       initialYaw: -10,
       initialPitch: 0,
+      narration: "Welcome to Base Camp Delta Prime. Radiation levels are stable.",
       realPano: {
         piaId: 'PIA26474',
         sol: 'SOL 1337 (CUMBRE BORDE JEZERO)',
@@ -2516,6 +2520,7 @@ function initMarsDashboard() {
       elev: -4310,
       initialYaw: 5,
       initialPitch: 1,
+      narration: "Welcome to Gale Crater. Mount Sharp is visible ahead.",
       realPano: {
         piaId: 'PIA22545',
         sol: 'SOL 2137 / 4220 (CURIOSITY MSL)',
@@ -2583,6 +2588,7 @@ function initMarsDashboard() {
       elev: -3790,
       initialYaw: 0,
       initialPitch: 1,
+      narration: "Entering Coprates Chasma. Caution, extreme depth and steep cliffs.",
       realPano: {
         piaId: 'PIA13077',
         sol: 'MRO HiRISE + VIKING',
@@ -3559,6 +3565,9 @@ function initMarsDashboard() {
 
       nasaApiResultsGrid.appendChild(card);
     });
+    if (stationData.narration) {
+        MissionControlVoice.narrate(stationData.narration);
+    }
   }
 
   async function fetchNasaLivePanoramas(queryText) {
@@ -3810,7 +3819,12 @@ function initMarsDashboard() {
   }
 
   // Inicializa o actualiza la estación activa en el motor esférico 360°
-  function loadStreetViewStation(stationId, syncWithMapAndRoute = true) {
+  function loadStreetViewStation(stationId, syncWithMapAndRoute = true, playVoice = true) {
+
+    if (typeof MissionControlVoice !== 'undefined') {
+        MissionControlVoice.stop();
+    }
+
     const station =
       STREETVIEW_STATIONS.find((s) => s.id === stationId) || STREETVIEW_STATIONS[1];
     currentStationId = station.id;
@@ -3857,6 +3871,11 @@ function initMarsDashboard() {
     if (typeof playHudTone === 'function') {
       playHudTone(740, 0.06, 'triangle');
     }
+
+    if (playVoice && station.narration && typeof MissionControlVoice !== 'undefined') {
+        MissionControlVoice.narrate(station.narration);
+    }
+
   }
 
   // ==========================================================================
@@ -4933,45 +4952,9 @@ function initMarsDashboard() {
     });
   }
 
-  // Inicializar Street View, restaurar sesión guardada en localStorage (si existe) y registrar PWA Offline
-  loadStreetViewStation('scene-kodiak', false);
-
-  let restoredFromStorage = false;
-  try {
-    const savedRaw = localStorage.getItem(STORAGE_KEY_EVA);
-    if (savedRaw) {
-      const saved = JSON.parse(savedRaw);
-      if (saved.evaConfig) {
-        evaConfig = { ...evaConfig, ...saved.evaConfig };
-        if (evaCrewSelect) evaCrewSelect.value = String(evaConfig.crewSize);
-        if (evaModeSelect) evaModeSelect.value = evaConfig.transportMode;
-        if (evaWindowSelect) evaWindowSelect.value = evaConfig.departureWindow;
-      }
-      if (saved.routeKey === 'custom' && saved.customRouteData?.waypoints?.length >= 2) {
-        activeRouteData = saved.customRouteData;
-        currentRouteKey = 'custom';
-        if (routeSelector) routeSelector.value = 'custom';
-        recalculateRouteMetricsFromWaypoints(false);
-        rebuildRegionalNasaLayers('custom');
-        renderRouteOnMap(false);
-        syncLayersWithCheckboxes();
-        updateRoverProgress(Number(saved.roverProgress ?? 33));
-        marsMap.setView(activeRouteData.center, activeRouteData.zoom || 8);
-        restoredFromStorage = true;
-      } else if (saved.routeKey && ROUTES_CATALOG[saved.routeKey]) {
-        if (routeSelector) routeSelector.value = saved.routeKey;
-        loadRoute(saved.routeKey, false);
-        updateRoverProgress(Number(saved.roverProgress ?? 33));
-        restoredFromStorage = true;
-      }
-    }
-  } catch {
-    restoredFromStorage = false;
-  }
-
-  if (!restoredFromStorage) {
-    loadRoute('jezero-alpha', false);
-  }
+  // Inicializar la ruta por defecto (JEZERO-ALPHA), el cono de visión y el Street View al arrancar
+  loadStreetViewStation('scene-kodiak', true, false);
+  loadRoute('jezero-alpha', false);
   updateRoverVisionConeOnMap(14, 90);
 
   if ('serviceWorker' in navigator) {
@@ -4980,6 +4963,66 @@ function initMarsDashboard() {
     });
   }
 }
+
+const MissionControlVoice = {
+    audioPlayer: null, 
+    apiUrl: 'http://localhost:5000/api/narrate',
+
+    narrate: async function(text) {
+        // 1. Detener audio anterior si existe
+        if (this.audioPlayer) {
+            this.audioPlayer.pause();
+            this.audioPlayer.currentTime = 0;
+        }
+
+        console.log("📡 Solicitando narración a F5-TTS local...");
+
+        try {
+            const response = await fetch(this.apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) throw new Error(`Error en respuesta HTTP: ${response.status}`);
+
+            // 2. Obtener Blob y verificar tamaño
+            const audioBlob = await response.blob();
+            console.log(`📦 Audio recibido. Tamaño: ${audioBlob.size} bytes | Tipo: ${audioBlob.type}`);
+
+            if (audioBlob.size === 0) {
+                console.error("⚠️ El servidor devolvió un archivo de audio vacío (0 bytes).");
+                return;
+            }
+
+            // 3. Crear URL y reproductor explícito con formato WAV
+            const audioUrl = URL.createObjectURL(audioBlob);
+            
+            this.audioPlayer = new Audio(audioUrl);
+            this.audioPlayer.volume = 1.0;
+
+            this.audioPlayer.onloadedmetadata = () => {
+                console.log(`⏱️ Duración del audio de Ranni: ${this.audioPlayer.duration.toFixed(2)} segundos`);
+            };
+
+            try {
+                await this.audioPlayer.play();
+                console.log("🔊 Reproduciendo narración de Ranni...");
+            } catch (playError) {
+                console.warn("⚠️ Error al reproducir audio:", playError);
+            }
+
+        } catch (error) {
+            console.error("❌ Fallo en la comunicación con la voz de Marte:", error);
+        }
+    },
+    
+    stop: function() {
+        if (this.audioPlayer) this.audioPlayer.pause();
+    }
+};
 
 // Iniciar de inmediato si el DOM ya está listo, o al dispararse DOMContentLoaded
 if (document.readyState === 'loading') {
