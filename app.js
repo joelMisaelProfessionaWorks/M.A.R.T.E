@@ -1928,6 +1928,9 @@ function initMarsDashboard() {
     if (isCustomDrawing) {
       if (routeSelector) routeSelector.value = 'custom';
       marsMap.getContainer().style.cursor = 'crosshair';
+      if (window.innerWidth <= 820 && typeof setPanelOpen === 'function') {
+        setPanelOpen('left', false);
+      }
     } else {
       marsMap.getContainer().style.cursor = '';
     }
@@ -2925,8 +2928,9 @@ function initMarsDashboard() {
       return realPanoCanvasCache[cacheKey];
     }
 
-    const width = 4096;
-    const height = 2048;
+    const isMobileDevice = window.innerWidth <= 900;
+    const width = isMobileDevice ? 2048 : 4096;
+    const height = isMobileDevice ? 1024 : 2048;
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -3065,11 +3069,16 @@ function initMarsDashboard() {
     return entry;
   }
 
-  // Precargar en segundo plano las 6 fotografías panorámicas reales de la NASA para cambio instantáneo sin tirones
+  // Precargar fotografías panorámicas reales de la NASA (en móvil solo la estación activa para ahorrar RAM)
   setTimeout(() => {
-    STREETVIEW_STATIONS.forEach((st) => {
-      getOrComposeRealPanoramaCanvas(st);
-    });
+    if (window.innerWidth <= 900) {
+      const activeStation = STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[0];
+      if (activeStation) getOrComposeRealPanoramaCanvas(activeStation);
+    } else {
+      STREETVIEW_STATIONS.forEach((st) => {
+        getOrComposeRealPanoramaCanvas(st);
+      });
+    }
   }, 120);
 
   // Actualiza la insignia inferior izquierda con los metadatos reales del catálogo NASA Photojournal (PIA)
@@ -3672,10 +3681,14 @@ function initMarsDashboard() {
     });
   });
 
-  // Eventos de interacción de cámara 360° (Arrastrar para mirar, Rueda de ratón para Zoom y Botones)
+  // Eventos de interacción de cámara 360° (Arrastrar para mirar, Pellizcar con 2 dedos en móvil, Rueda de ratón y Botones)
   if (pannellumMountEl) {
+    let pinchStartDist = null;
+    let pinchStartFov = camFov;
+
     pannellumMountEl.addEventListener('pointerdown', (e) => {
       if (e.target.closest('.hud-360-hotspot')) return;
+      if (pinchStartDist !== null) return;
       isDragging360 = true;
       targetYaw = null;
       targetPitch = null;
@@ -3688,7 +3701,7 @@ function initMarsDashboard() {
     });
 
     pannellumMountEl.addEventListener('pointermove', (e) => {
-      if (!isDragging360) return;
+      if (!isDragging360 || pinchStartDist !== null) return;
       const dx = e.clientX - dragStartX;
       const dy = e.clientY - dragStartY;
       const sensitivity = camFov / 480;
@@ -3702,6 +3715,49 @@ function initMarsDashboard() {
     };
     pannellumMountEl.addEventListener('pointerup', endDrag360);
     pannellumMountEl.addEventListener('pointercancel', endDrag360);
+
+    // Soporte táctil de pellizco con 2 dedos (Pinch-to-Zoom) en teléfonos y tablets
+    pannellumMountEl.addEventListener(
+      'touchstart',
+      (e) => {
+        if (e.touches.length === 2) {
+          isDragging360 = false;
+          targetYaw = null;
+          targetFov = null;
+          pinchStartDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          pinchStartFov = camFov;
+        }
+      },
+      { passive: true }
+    );
+
+    pannellumMountEl.addEventListener(
+      'touchmove',
+      (e) => {
+        if (e.touches.length === 2 && pinchStartDist && pinchStartDist > 10) {
+          e.preventDefault();
+          const currentDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          const scale = pinchStartDist / Math.max(10, currentDist);
+          camFov = Math.max(30, Math.min(125, pinchStartFov * scale));
+          needs360Redraw = true;
+        }
+      },
+      { passive: false }
+    );
+
+    const endPinch360 = (e) => {
+      if (!e.touches || e.touches.length < 2) {
+        pinchStartDist = null;
+      }
+    };
+    pannellumMountEl.addEventListener('touchend', endPinch360, { passive: true });
+    pannellumMountEl.addEventListener('touchcancel', endPinch360, { passive: true });
 
     pannellumMountEl.addEventListener(
       'wheel',
@@ -4143,8 +4199,13 @@ function initMarsDashboard() {
       setPanelOpen('left', false, true);
       setPanelOpen('right', false, true);
       setPanelOpen('bottom', false, true);
+    } else if (window.innerWidth <= 1080) {
+      // En tablet (821px–1080px): abrir solo el panel izquierdo y el HUD inferior para no comprimir el mapa central
+      setPanelOpen('left', true, true);
+      setPanelOpen('right', false, true);
+      setPanelOpen('bottom', true, true);
     } else {
-      // En escritorio: mostrar las barras laterales y el HUD inferior en sus extremos
+      // En escritorio amplio: mostrar las barras laterales y el HUD inferior en sus extremos
       setPanelOpen('left', true, true);
       setPanelOpen('right', true, true);
       setPanelOpen('bottom', true, true);
@@ -4155,6 +4216,13 @@ function initMarsDashboard() {
   if (typeof mobileMediaQuery.addEventListener === 'function') {
     mobileMediaQuery.addEventListener('change', (e) => applyResponsivePanelDefaults(e.matches));
   }
+
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      marsMap.invalidateSize({ pan: false });
+      sync360ViewportSize();
+    }, 240);
+  });
 
   // Gesto táctil de deslizar hacia abajo (swipe-down) sobre el encabezado de cada gaveta inferior en móvil
   [
@@ -4211,6 +4279,12 @@ function initMarsDashboard() {
       btnSplitView.classList.add('is-active');
       streetBtnLabel.textContent = '360° ACTIVO';
       setPanelOpen('left', false);
+      if (window.innerWidth <= 1150) {
+        setPanelOpen('right', false);
+      }
+      if (mobileMediaQuery.matches) {
+        setPanelOpen('bottom', false);
+      }
     } else {
       mapContainer.classList.remove('is-hidden');
       streetContainer.classList.add('is-hidden');
