@@ -70,7 +70,7 @@ CACHE_DIR = os.path.join(BASE_DIR, "audio_cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 REF_TEXT = "Hello Tarnished, my name is Rani. I am a witch in the video game Elden Ring."
-MAX_TEXT_LENGTH = 300
+MAX_TEXT_LENGTH = 1500
 
 @app.route('/', methods=['GET'])
 def health_check():
@@ -84,12 +84,6 @@ def narrate():
     if not raw_text or not isinstance(raw_text, str) or not raw_text.strip():
         return jsonify({"error": "Texto no proporcionado"}), 400
 
-    if len(raw_text) > MAX_TEXT_LENGTH:
-        return jsonify({"error": f"Texto demasiado largo (máximo {MAX_TEXT_LENGTH} caracteres)"}), 413
-
-    if not os.path.exists(REF_AUDIO_PATH):
-        return jsonify({"error": f"Falta archivo de voz base: {REF_AUDIO_PATH}"}), 404
-
     try:
         target_text = limpiar_texto_para_f5(raw_text)
         if not target_text:
@@ -101,6 +95,12 @@ def narrate():
         if os.path.exists(cached_file):
             print(f"⚡ Sirviendo desde caché: '{target_text}'")
             return send_file(cached_file, mimetype="audio/wav", as_attachment=False, download_name="narration.wav")
+
+        if len(raw_text) > MAX_TEXT_LENGTH:
+            return jsonify({"error": f"Texto demasiado largo (máximo {MAX_TEXT_LENGTH} caracteres)"}), 413
+
+        if not os.path.exists(REF_AUDIO_PATH):
+            return jsonify({"error": f"Falta archivo de voz base: {REF_AUDIO_PATH}"}), 404
 
         # 2. infer_lock + torch.inference_mode() serializan el acceso a PyTorch entre hilos
         with infer_lock, torch.inference_mode():

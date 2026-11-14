@@ -5200,6 +5200,15 @@ function initMarsDashboard() {
 
   let currentDossierMissionId = 'perseverance-m2020';
 
+  // Detener narración del Dossier al cerrar la ventana modal
+  if (dossierDialog) {
+    dossierDialog.addEventListener('close', () => {
+      if (typeof MissionControlVoice !== 'undefined') {
+        MissionControlVoice.stop();
+      }
+    });
+  }
+
   // Fallback obligatorio (Modern Web Guidance) para navegadores sin soporte nativo de <dialog closedby="any">
   if (dossierDialog && !('closedBy' in HTMLDialogElement.prototype)) {
     dossierDialog.addEventListener('click', (event) => {
@@ -5572,13 +5581,13 @@ function initMarsDashboard() {
           .keys()
           .then((keys) => {
             keys
-              .filter((k) => k !== 'marte-hud-offline-v23')
+              .filter((k) => k !== 'marte-hud-offline-v24')
               .forEach((k) => caches.delete(k));
           })
           .catch(() => {});
       }
       navigator.serviceWorker
-        .register('./sw.js?v=23')
+        .register('./sw.js?v=24')
         .then((reg) => {
           if (reg && typeof reg.update === 'function') reg.update().catch(() => {});
         })
