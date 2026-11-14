@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: './', // Garantiza que los assets funcionen en GitHub Pages (/M.A.R.T.E/), subcarpetas y localmente
+  base: './', // Ensures assets work on GitHub Pages (/M.A.R.T.E/), subfolders, and locally
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

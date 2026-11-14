@@ -35,7 +35,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  // Estrategia Stale-While-Revalidate para app local + caché de teselas orbitales y librerías CDN
+  // Stale-While-Revalidate strategy for local app + orbital tile and CDN library caching
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const networkFetch = fetch(event.request)

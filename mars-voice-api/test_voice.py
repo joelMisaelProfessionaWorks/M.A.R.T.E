@@ -5,7 +5,7 @@ import torchaudio
 import soundfile as sf
 
 # ==========================================================
-# PARCHES SOUNDFILE PARA OMITIR TORCHCODEC
+# SOUNDFILE PATCHES TO BYPASS TORCHCODEC
 # ==========================================================
 def mock_load_with_torchcodec(uri, *args, **kwargs):
     data, sr = sf.read(uri, dtype='float32')
@@ -34,15 +34,15 @@ torchaudio.save_with_torchcodec = mock_save_with_torchcodec
 
 from f5_tts.api import F5TTS
 
-print("Cargando F5-TTS...")
+print("Loading F5-TTS...")
 tts = F5TTS()
 
-# Asegúrate de que REF_TEXT coincida con la primera frase de tu AI_Ranni.wav
+# Ensure REF_TEXT matches the first sentence of your AI_Ranni.wav
 ref_audio = "AI_Ranni.wav"
 ref_text = "Hello Tarnished, my name is Rani. I am a witch in the video game Elden Ring."
 gen_text = "Testing voice synthesis for Mars navigation system."
 
-print("Sintetizando prueba corta...")
+print("Synthesizing short test...")
 wav, sr, _ = tts.infer(
     ref_file=ref_audio,
     ref_text=ref_text,
@@ -50,6 +50,6 @@ wav, sr, _ = tts.infer(
     nfe_step=32
 )
 
-# Guardar en PCM 16-bit
+# Save as 16-bit PCM WAV
 sf.write("resultado_test.wav", wav, sr, format='WAV', subtype='PCM_16')
-print("✅ Archivo 'resultado_test.wav' guardado correctamente.")
+print("✅ File 'resultado_test.wav' saved successfully.")

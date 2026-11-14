@@ -1,39 +1,39 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>M.A.R.T.E | Guía de Supervivencia Interplanetaria: Mapa Marciano — NASA Space Apps 2026</title>
-  <!-- Tipografías Técnicas Aeroespaciales -->
+  <title>M.A.R.T.E | Interplanetary Survival Guide: Martian Map — NASA Space Apps 2026</title>
+  <!-- Aerospace Technical Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <!-- Iconografía Aeroespacial y Científica -->
+  <!-- Aerospace & Scientific Iconography -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- Motor Cartográfico Leaflet.js (Etapa 2) -->
+  <!-- Leaflet.js Cartographic Engine (Stage 2) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <!-- Hoja de Estilos Principal HUD (v13 Modo Teléfono Google Maps / Waze + Barras Laterales) -->
+  <!-- Main HUD Stylesheet (v13 Mobile Google Maps / Waze Mode + Sidebars) -->
   <link rel="stylesheet" href="styles.css?v=13">
-  <!-- Soporte Offline / PWA -->
+  <!-- Offline / PWA Support -->
   <meta name="theme-color" content="#07090e">
   <link rel="manifest" href="manifest.webmanifest">
 </head>
 <body class="nasa-hud-theme">
 
-  <!-- Capas de Ambientación Visual Sci-Fi (Scanlines + Viñeta Espacial) -->
+  <!-- Sci-Fi Visual Ambient Layers (Scanlines + Space Vignette) -->
   <div class="hud-scanlines" aria-hidden="true"></div>
   <div class="hud-ambient-glow" aria-hidden="true"></div>
 
-  <!-- CONTENEDOR MAESTRO DEL DASHBOARD (100dvh Fullscreen Map + Gavetas Flotantes) -->
+  <!-- MASTER DASHBOARD CONTAINER (100dvh Fullscreen Map + Floating Drawers) -->
   <div class="dashboard-shell" id="dashboard-shell">
 
     <!-- ====================================================================
-         1. BARRA SUPERIOR COMPACTA (HEADER)
+         1. COMPACT TOP BAR (HEADER)
          ==================================================================== -->
     <header class="hud-header glass-panel">
-      <!-- Identidad NASA Space Apps & Título del Proyecto -->
+      <!-- NASA Space Apps Identity & Project Title -->
       <div class="header-brand">
         <div class="nasa-badge" title="NASA Space Apps Challenge 2026">
           <div class="badge-ring"></div>
@@ -42,7 +42,7 @@
         <div class="brand-titles">
           <div class="challenge-kicker">
             <span class="status-dot pulse-orange"></span>
-            <span>NASA SPACE APPS CHALLENGE 2026 // MAPA MARCIANO</span>
+            <span>NASA SPACE APPS CHALLENGE 2026 // MARTIAN MAP</span>
           </div>
           <h1 class="project-title">
             Interplanetary Survival Guide: <span class="text-mars">Martian Map</span>
@@ -50,38 +50,38 @@
         </div>
       </div>
 
-      <!-- Controles Rápidos de Paneles Desplegables (Extremo Izquierdo/Central del Header) -->
-      <div class="header-panel-toggles" role="toolbar" aria-label="Mostrar u ocultar paneles de información">
-        <button id="btn-toggle-left-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Mostrar/Ocultar Planificador de Ruta (Izquierda)">
+      <!-- Quick Collapsible Panel Controls (Left/Center Header) -->
+      <div class="header-panel-toggles" role="toolbar" aria-label="Show or hide information panels">
+        <button id="btn-toggle-left-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Show/Hide Route Planner (Left)">
           <i class="fa-solid fa-route text-orange"></i>
-          <span>RUTAS</span>
+          <span>ROUTES</span>
         </button>
-        <button id="btn-toggle-right-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Mostrar/Ocultar Capas NASA y Clima (Derecha)">
+        <button id="btn-toggle-right-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Show/Hide NASA Layers &amp; Weather (Right)">
           <i class="fa-solid fa-layer-group text-cyan"></i>
-          <span>CAPAS Y CLIMA</span>
+          <span>LAYERS &amp; WEATHER</span>
         </button>
-        <button id="btn-toggle-bottom-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Mostrar/Ocultar Telemetría de Supervivencia (Inferior)">
+        <button id="btn-toggle-bottom-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Show/Hide Survival Telemetry (Bottom)">
           <i class="fa-solid fa-heart-pulse text-orange"></i>
-          <span>TELEMETRÍA</span>
+          <span>TELEMETRY</span>
         </button>
-        <button id="btn-zen-mode" class="hud-panel-toggle zen-btn" type="button" title="Modo Pantalla Limpia: Ocultar o Mostrar todos los paneles laterales">
+        <button id="btn-zen-mode" class="hud-panel-toggle zen-btn" type="button" title="Clean Screen Mode: Hide or Show all side panels">
           <i class="fa-solid fa-expand"></i>
-          <span id="zen-btn-label">MAPA COMPLETO</span>
+          <span id="zen-btn-label">FULL MAP</span>
         </button>
       </div>
 
-      <!-- Acciones de Vista en el Extremo Derecho: Audio HUD, Dossier Misiones NASA, Pantalla Dividida y Street View 360° -->
+      <!-- View Actions (Right Header): HUD Audio, NASA Mission Dossier, Split Screen & 360° Street View -->
       <div class="header-actions">
-        <button id="btn-hud-audio" class="hud-btn-icon" type="button" aria-pressed="true" title="Activar/Silenciar Audio HUD">
+        <button id="btn-hud-audio" class="hud-btn-icon" type="button" aria-pressed="true" title="Mute/Unmute HUD Audio">
           <i class="fa-solid fa-volume-high" id="hud-audio-icon"></i>
         </button>
 
-        <button id="btn-open-dossier" class="hud-btn-secondary" type="button" title="Abrir Dossier Oficial de Misiones de la NASA y Bitácora EVA">
+        <button id="btn-open-dossier" class="hud-btn-secondary" type="button" title="Open Official NASA Missions Dossier &amp; EVA Logbook">
           <i class="fa-solid fa-book-journal-whills text-orange"></i>
           <span>DOSSIER</span>
         </button>
 
-        <button id="btn-split-view" class="hud-btn-secondary" type="button" title="Alternar Pantalla Dividida (Mapa 2D + Visor 360°)">
+        <button id="btn-split-view" class="hud-btn-secondary" type="button" title="Toggle Split Screen (2D Map + 360° Viewer)">
           <i class="fa-solid fa-table-columns"></i>
           <span>2D + 360°</span>
         </button>
@@ -90,128 +90,128 @@
           <span class="btn-corner top-left"></span>
           <span class="btn-corner bottom-right"></span>
           <i class="fa-solid fa-vr-cardboard btn-icon-anim"></i>
-          <span id="streetview-btn-label">VISTA 360°</span>
+          <span id="streetview-btn-label">360° VIEW</span>
         </button>
       </div>
     </header>
 
-    <!-- BARRAS LATERALES COLAPSADAS EN LOS EXTREMOS PARA REABRIR EN CUALQUIER MOMENTO -->
-    <button id="btn-edge-left" class="hud-edge-tab edge-left" type="button" title="Mostrar Planificador de Expedición">
+    <!-- COLLAPSED EDGE TABS TO REOPEN PANELS AT ANY TIME -->
+    <button id="btn-edge-left" class="hud-edge-tab edge-left" type="button" title="Show Expedition Planner">
       <span class="edge-tab-action"><i class="fa-solid fa-angles-right"></i></span>
       <i class="fa-solid fa-route text-orange edge-tab-icon"></i>
-      <span class="edge-tab-label">PLANIFICADOR DE EXPEDICIÓN</span>
-      <span class="edge-tab-hint">MOSTRAR</span>
+      <span class="edge-tab-label">EXPEDITION PLANNER</span>
+      <span class="edge-tab-hint">SHOW</span>
     </button>
 
-    <button id="btn-edge-right" class="hud-edge-tab edge-right" type="button" title="Mostrar Capas NASA y Clima">
+    <button id="btn-edge-right" class="hud-edge-tab edge-right" type="button" title="Show NASA Layers &amp; Weather">
       <span class="edge-tab-action cyan"><i class="fa-solid fa-angles-left"></i></span>
       <i class="fa-solid fa-layer-group text-cyan edge-tab-icon"></i>
-      <span class="edge-tab-label">CAPAS NASA &amp; CLIMA</span>
-      <span class="edge-tab-hint cyan">MOSTRAR</span>
+      <span class="edge-tab-label">NASA LAYERS &amp; WEATHER</span>
+      <span class="edge-tab-hint cyan">SHOW</span>
     </button>
 
-    <button id="btn-edge-bottom" class="hud-edge-tab edge-bottom" type="button" title="Mostrar HUD de Supervivencia y Elevación">
+    <button id="btn-edge-bottom" class="hud-edge-tab edge-bottom" type="button" title="Show Survival &amp; Elevation HUD">
       <span class="edge-tab-action"><i class="fa-solid fa-angles-up"></i></span>
       <i class="fa-solid fa-heart-pulse text-orange edge-tab-icon"></i>
-      <span class="edge-tab-label-horizontal">HUD SUPERVIVENCIA Y ELEVACIÓN</span>
+      <span class="edge-tab-label-horizontal">SURVIVAL &amp; ELEVATION HUD</span>
       <span class="edge-tab-action"><i class="fa-solid fa-angles-up"></i></span>
     </button>
 
     <!-- ====================================================================
-         2. BARRA LATERAL IZQUIERDA DESPLEGABLE (CONTROLES Y RUTAS)
+         2. COLLAPSIBLE LEFT SIDEBAR (CONTROLS & ROUTES)
          ==================================================================== -->
-    <aside id="sidebar-left" class="hud-sidebar-left glass-panel scroller" aria-label="Controles y Rutas de Exploración">
+    <aside id="sidebar-left" class="hud-sidebar-left glass-panel scroller" aria-label="Exploration Controls and Routes">
       <div class="panel-heading">
         <div class="heading-title">
           <i class="fa-solid fa-route text-orange"></i>
-          <h2>PLANIFICADOR DE EXPEDICIÓN</h2>
+          <h2>EXPEDITION PLANNER</h2>
         </div>
-        <button id="btn-close-left-sidebar" class="panel-collapse-btn" type="button" title="Ocultar barra lateral izquierda">
-          <i class="fa-solid fa-angles-left"></i> OCULTAR
+        <button id="btn-close-left-sidebar" class="panel-collapse-btn" type="button" title="Hide left sidebar">
+          <i class="fa-solid fa-angles-left"></i> HIDE
         </button>
       </div>
 
-      <!-- Selector de Ruta y Planificador Táctico (Etapa 3) -->
+      <!-- Route Selector & Tactical Planner (Stage 3) -->
       <section class="hud-card">
         <label for="route-selector" class="card-section-title">
-          <i class="fa-solid fa-compass"></i> SELECCIONAR RUTA DE EXPLORACIÓN
+          <i class="fa-solid fa-compass"></i> SELECT EXPLORATION ROUTE
         </label>
         <div class="select-cyber-wrapper">
           <select id="route-selector" class="cyber-select">
-            <option value="jezero-alpha" selected>RUTA SUGERIDA: JEZERO-ALPHA (DELTA)</option>
-            <option value="jezero-beta">RUTA ALTERNA: JEZERO-BETA (CRÁTER BELVA)</option>
-            <option value="gale-sharp">RUTA HISTÓRICA: GALE - MONTE SHARP</option>
-            <option value="valles-marineris">RUTA EXTREMA: VALLES MARINERIS SUR</option>
-            <option value="custom">MODO LIBRE: RUTA PERSONALIZADA</option>
+            <option value="jezero-alpha" selected>SUGGESTED ROUTE: JEZERO-ALPHA (DELTA)</option>
+            <option value="jezero-beta">ALTERNATE ROUTE: JEZERO-BETA (BELVA CRATER)</option>
+            <option value="gale-sharp">HISTORIC ROUTE: GALE - MOUNT SHARP</option>
+            <option value="valles-marineris">EXTREME ROUTE: SOUTH VALLES MARINERIS</option>
+            <option value="custom">FREE MODE: CUSTOM ROUTE</option>
           </select>
           <i class="fa-solid fa-chevron-down select-arrow"></i>
         </div>
 
         <div class="route-quick-stats">
           <div class="rq-box">
-            <span class="rq-label">DIFICULTAD</span>
-            <span class="rq-val badge-warning" id="route-difficulty">INTERMEDIA</span>
+            <span class="rq-label">DIFFICULTY</span>
+            <span class="rq-val badge-warning" id="route-difficulty">MEDIUM</span>
           </div>
           <div class="rq-box">
-            <span class="rq-label">PENDIENTE MÁX.</span>
-            <span class="rq-val text-cyan" id="route-max-slope">14.2° (SEGURA)</span>
+            <span class="rq-label">MAX SLOPE</span>
+            <span class="rq-val text-cyan" id="route-max-slope">14.2° (SAFE)</span>
           </div>
         </div>
 
-        <!-- Herramientas de Trazado y Edición Táctica en el Mapa -->
+        <!-- Tactical Map Drawing & Editing Tools -->
         <div class="planner-action-row planner-action-row-3">
-          <button id="btn-custom-draw" class="planner-btn" type="button" title="Haz clic en el mapa para añadir puntos y arrastra los marcadores para ajustar">
-            <i class="fa-solid fa-pen-ruler"></i> <span>+ TRAZAR</span>
+          <button id="btn-custom-draw" class="planner-btn" type="button" title="Click on the map to add points and drag markers to adjust">
+            <i class="fa-solid fa-pen-ruler"></i> <span>+ DRAW</span>
           </button>
-          <button id="btn-undo-point" class="planner-btn secondary" type="button" title="Deshacer último punto (Ctrl+Z)">
-            <i class="fa-solid fa-backward-step"></i> <span>DESHACER</span>
+          <button id="btn-undo-point" class="planner-btn secondary" type="button" title="Undo last point (Ctrl+Z)">
+            <i class="fa-solid fa-backward-step"></i> <span>UNDO</span>
           </button>
-          <button id="btn-reset-route" class="planner-btn secondary" type="button" title="Restaurar ruta original">
-            <i class="fa-solid fa-rotate-left"></i> <span>REINICIAR</span>
+          <button id="btn-reset-route" class="planner-btn secondary" type="button" title="Restore original route">
+            <i class="fa-solid fa-rotate-left"></i> <span>RESET</span>
           </button>
         </div>
 
-        <!-- Parámetros Configurables de Misión y Tripulación EVA -->
+        <!-- Configurable EVA Mission & Crew Parameters -->
         <div class="eva-config-panel">
           <div class="card-section-title" style="margin-bottom: 0.35rem;">
-            <i class="fa-solid fa-user-astronaut text-cyan"></i> PARÁMETROS DE MISIÓN EVA
+            <i class="fa-solid fa-user-astronaut text-cyan"></i> EVA MISSION PARAMETERS
           </div>
           <div class="eva-config-grid">
             <label class="eva-cfg-field">
-              <span>TRIPULACIÓN</span>
+              <span>CREW</span>
               <select id="eva-crew-size" class="cyber-select compact">
-                <option value="2" selected>2 Astronautas</option>
-                <option value="3">3 Astronautas</option>
-                <option value="4">4 Astronautas</option>
-                <option value="6">6 Astronautas</option>
+                <option value="2" selected>2 Astronauts</option>
+                <option value="3">3 Astronauts</option>
+                <option value="4">4 Astronauts</option>
+                <option value="6">6 Astronauts</option>
               </select>
             </label>
             <label class="eva-cfg-field">
-              <span>MODALIDAD</span>
+              <span>MODE</span>
               <select id="eva-transport-mode" class="cyber-select compact">
-                <option value="rover" selected>Rover Presurizado</option>
-                <option value="foot">Caminata EVA a Pie</option>
+                <option value="rover" selected>Pressurized Rover</option>
+                <option value="foot">Foot EVA Walk</option>
               </select>
             </label>
             <label class="eva-cfg-field full">
-              <span>HORA DE SALIDA MARCIANA (IMPACTO SOLAR Y TÉRMICO)</span>
+              <span>MARTIAN DEPARTURE WINDOW (SOLAR &amp; THERMAL IMPACT)</span>
               <select id="eva-departure-window" class="cyber-select compact">
-                <option value="morning" selected>08:00 MTC — Máxima Captación Solar (+12%)</option>
-                <option value="afternoon">14:00 MTC — Tarde Nominal (Estándar)</option>
-                <option value="night">19:30 MTC — Nocturna / Calefacción Crítica (-84°C)</option>
+                <option value="morning" selected>08:00 MTC — Peak Solar Harvesting (+12%)</option>
+                <option value="afternoon">14:00 MTC — Nominal Afternoon (Standard)</option>
+                <option value="night">19:30 MTC — Night Ops / Critical Heating (-84°C)</option>
               </select>
             </label>
           </div>
         </div>
 
-        <!-- Control Deslizante de Progreso de Travesía (Telemetría Reactiva) -->
+        <!-- Traverse Progress Slider (Reactive Telemetry) -->
         <div class="rover-sim-control">
           <div class="rsc-header">
             <label for="rover-progress-slider">
-              <i class="fa-solid fa-truck-monster text-cyan"></i> PROGRESO DEL ROVER: <strong id="rover-progress-pct" class="text-cyan">33%</strong>
+              <i class="fa-solid fa-truck-monster text-cyan"></i> ROVER PROGRESS: <strong id="rover-progress-pct" class="text-cyan">33%</strong>
             </label>
             <button id="btn-play-sim" class="sim-play-btn" type="button">
-              <i class="fa-solid fa-play"></i> <span>SIMULAR</span>
+              <i class="fa-solid fa-play"></i> <span>SIMULATE</span>
             </button>
           </div>
           <input
@@ -222,32 +222,32 @@
             max="100"
             step="1"
             value="33"
-            aria-valuetext="33 por ciento del recorrido completado"
+            aria-valuetext="33 percent of route completed"
           >
         </div>
       </section>
 
-      <!-- Información de la Misión Actual -->
+      <!-- Current Mission Briefing -->
       <section class="hud-card mission-brief-card">
         <div class="card-section-title">
-          <i class="fa-solid fa-flag"></i> INFORMACIÓN DE LA MISIÓN ACTUAL
+          <i class="fa-solid fa-flag"></i> CURRENT MISSION BRIEFING
         </div>
         <div class="mission-banner">
           <div class="mission-banner-icon">
             <i class="fa-solid fa-person-rays"></i>
           </div>
           <div class="mission-banner-text">
-            <h3 id="mission-title-text">Exploradores Humanos: Destino Jezero Crater</h3>
-            <span id="mission-sector-text">Sector: Abanico Aluvial Occidental &bull; Cuadrángulo Syrtis Major</span>
+            <h3 id="mission-title-text">Human Explorers: Destination Jezero Crater</h3>
+            <span id="mission-sector-text">Sector: Western Alluvial Fan &bull; Syrtis Major Quadrangle</span>
           </div>
         </div>
         <p class="mission-description" id="mission-desc-text">
-          Travesía planificada para astronautas y rover presurizado desde el sitio de descenso hasta el antiguo delta lacustre. Prioridad: extracción de regolito hidratado y establecimiento del Campamento Base.
+          Planned traverse for astronauts and pressurized rover from the landing site to the ancient lake delta. Priority: hydrated regolith extraction and Base Camp establishment.
         </p>
 
-        <!-- Lista de Waypoints / Puntos de Control de la Ruta -->
+        <!-- Route Waypoints / Checkpoints List -->
         <div class="card-section-title" style="margin-top: 0.5rem;">
-          <i class="fa-solid fa-location-dot"></i> PUNTOS DE CONTROL (WAYPOINTS)
+          <i class="fa-solid fa-location-dot"></i> WAYPOINTS (CHECKPOINTS)
         </div>
 
         <ul class="waypoints-timeline" id="waypoints-list">
@@ -255,8 +255,8 @@
             <div class="wp-marker">01</div>
             <div class="wp-content">
               <div class="wp-row">
-                <strong>Punto de Inicio (Start)</strong>
-                <span class="wp-badge done">COMPLETADO</span>
+                <strong>Start Point (Landing)</strong>
+                <span class="wp-badge done">COMPLETED</span>
               </div>
               <span class="wp-sub">Octavia E. Butler Landing &bull; KM 0.0</span>
             </div>
@@ -266,10 +266,10 @@
             <div class="wp-marker">02</div>
             <div class="wp-content">
               <div class="wp-row">
-                <strong>Parada Científica: Kodiak</strong>
-                <span class="wp-badge current">POSICIÓN ACTUAL</span>
+                <strong>Science Stop: Kodiak</strong>
+                <span class="wp-badge current">CURRENT POSITION</span>
               </div>
-              <span class="wp-sub">Análisis estratigráfico &bull; KM 4.8</span>
+              <span class="wp-sub">Stratigraphic analysis &bull; KM 4.8</span>
             </div>
           </li>
 
@@ -277,10 +277,10 @@
             <div class="wp-marker">03</div>
             <div class="wp-content">
               <div class="wp-row">
-                <strong>Depósito de Hielo Subterráneo</strong>
-                <span class="wp-badge next">SIGUIENTE</span>
+                <strong>Subsurface Ice Deposit</strong>
+                <span class="wp-badge next">NEXT</span>
               </div>
-              <span class="wp-sub">Extracción ISRU de H₂O &bull; KM 9.4</span>
+              <span class="wp-sub">ISRU H₂O extraction &bull; KM 9.4</span>
             </div>
           </li>
 
@@ -288,78 +288,78 @@
             <div class="wp-marker">04</div>
             <div class="wp-content">
               <div class="wp-row">
-                <strong>Campamento Base (Base Camp)</strong>
-                <span class="wp-badge target">DESTINO</span>
+                <strong>Base Camp (Habitat)</strong>
+                <span class="wp-badge target">DESTINATION</span>
               </div>
-              <span class="wp-sub">Hábitat Delta Prime &bull; KM 14.6</span>
+              <span class="wp-sub">Delta Prime Habitat &bull; KM 14.6</span>
             </div>
           </li>
         </ul>
 
-        <!-- Botón de Exportación de Plan de Supervivencia EVA (Etapa 5) -->
+        <!-- Export EVA Survival Plan Button (Stage 5) -->
         <button id="btn-export-eva" class="eva-export-btn" type="button">
           <i class="fa-solid fa-file-export"></i>
-          <span>EXPORTAR PLAN EVA &amp; TELEMETRÍA</span>
+          <span>EXPORT EVA PLAN &amp; TELEMETRY</span>
         </button>
       </section>
 
-      <!-- Directriz de Supervivencia -->
+      <!-- Survival Directive -->
       <div class="survival-directive-box" id="survival-directive-box">
         <i class="fa-solid fa-shield-halved text-orange" id="survival-directive-icon"></i>
         <div>
-          <strong id="survival-directive-title">DIRECTRIZ DE SUPERVIVENCIA:</strong>
-          <p id="survival-directive-text">Refugio más cercano a 1.8 km. En caso de tormenta solar (SPE), activar blindaje magnético del rover inmediatamente.</p>
+          <strong id="survival-directive-title">SURVIVAL DIRECTIVE:</strong>
+          <p id="survival-directive-text">Nearest shelter at 1.8 km. In case of a solar particle event (SPE), activate rover magnetic shielding immediately.</p>
         </div>
       </div>
     </aside>
 
     <!-- ====================================================================
-         4. ÁREA CENTRAL (EL MAPA 2D Y EL VISOR 360° STREET VIEW)
+         4. CENTER STAGE (2D MAP AND 360° STREET VIEWER)
          ==================================================================== -->
     <main class="hud-center-stage" id="viewport-stage" data-view-mode="map">
 
-      <!-- BARRA SUPERIOR DEL MAPA (COMPACTA 1 LÍNEA): Extremo Izquierdo (Título), Centro (Hora Marciana + Coordenadas), Extremo Derecho (Modelo de Mapa) -->
+      <!-- COMPACT MAP TOP BAR (1 LINE): Left (Title), Center (Martian Time + Coordinates), Right (Map Model) -->
       <div class="viewport-top-bar stage-top-bar" id="stage-top-bar">
         <div class="vtb-left">
           <span class="live-indicator"></span>
-          <span class="vtb-title">MAPA ORBITAL 2D</span>
+          <span class="vtb-title">2D ORBITAL MAP</span>
         </div>
 
-        <!-- Telemetría de Enlace Orbital en la Parte Superior Central del Mapa (Horario Marciano MTC + Coordenadas) -->
-        <div class="header-telemetry map-center-telemetry" aria-label="Horario Marciano y Coordenadas">
-          <div class="telemetry-pill" title="Horario Marciano Coordinado (MTC)">
-            <span class="tp-label"><i class="fa-regular fa-clock text-orange"></i> HORA:</span>
+        <!-- Orbital Link Telemetry in Top Center of Map (Coordinated Mars Time MTC + Coordinates) -->
+        <div class="header-telemetry map-center-telemetry" aria-label="Martian Time and Coordinates">
+          <div class="telemetry-pill" title="Coordinated Mars Time (MTC)">
+            <span class="tp-label"><i class="fa-regular fa-clock text-orange"></i> TIME:</span>
             <span class="tp-value text-orange" id="hud-header-clock">SOL 1420 &bull; 14:32:08 MTC</span>
           </div>
-          <div class="telemetry-pill" title="Coordenadas Planetocéntricas del Rover/Objetivo">
+          <div class="telemetry-pill" title="Rover/Target Planetocentric Coordinates">
             <span class="tp-label"><i class="fa-solid fa-location-crosshairs text-cyan"></i> COORD:</span>
             <span class="tp-value" id="hud-header-coords">18.38°N &bull; 77.58°E</span>
           </div>
-          <div class="telemetry-pill cursor-telemetry-pill" title=" Posición del Cursor y Altitud MOLA">
+          <div class="telemetry-pill cursor-telemetry-pill" title="Cursor Position and MOLA Altitude">
             <span class="tp-label"><i class="fa-solid fa-compass text-cyan"></i></span>
             <span class="tp-value text-cyan" id="map-cursor-readout">LAT: 18.4210° N | LON: 77.4201° E | ALT: -2,490m</span>
           </div>
         </div>
 
         <div class="vtb-right">
-          <!-- Selector de Mosaico Base Orbital en el Extremo Derecho Superior del Mapa -->
+          <!-- Orbital Base Mosaic Selector in Top Right of Map -->
           <div class="map-baselayer-Floating">
-            <label for="map-baselayer-select"><i class="fa-solid fa-satellite text-orange"></i> MAPA:</label>
+            <label for="map-baselayer-select"><i class="fa-solid fa-satellite text-orange"></i> MAP:</label>
             <select id="map-baselayer-select" class="hud-mini-select">
-              <option value="opm-hybrid" selected>VIKING + MOLA HÍBRIDO (CARGA RÁPIDA)</option>
-              <option value="mola-color">NASA MOLA ALTIMETRÍA COLOR (RÁPIDO)</option>
-              <option value="shaded">CELESTIA 16K RELIEVE TÁCTICO (RÁPIDO)</option>
-              <option value="themis-ir">ODYSSEY THEMIS IR ESPECTRAL (RÁPIDO)</option>
-              <option value="usgs-blend">USGS MOLA + THEMIS 100m (WMS OFICIAL)</option>
-              <option value="usgs-hrsc">ESA/NASA HRSC HILLSHADE (WMS OFICIAL)</option>
+              <option value="opm-hybrid" selected>VIKING + MOLA HYBRID (FAST LOAD)</option>
+              <option value="mola-color">NASA MOLA COLOR ALTIMETRY (FAST)</option>
+              <option value="shaded">CELESTIA 16K TACTICAL RELIEF (FAST)</option>
+              <option value="themis-ir">ODYSSEY THEMIS IR SPECTRAL (FAST)</option>
+              <option value="usgs-blend">USGS MOLA + THEMIS 100m (OFFICIAL WMS)</option>
+              <option value="usgs-hrsc">ESA/NASA HRSC HILLSHADE (OFFICIAL WMS)</option>
             </select>
           </div>
         </div>
       </div>
 
-      <!-- CONTENEDOR 1: MAPA ORBITAL 2D (#map-container) -->
-      <section id="map-container" class="viewport-panel glass-panel" aria-label="Mapa Orbital Interactivo de Marte">
-        <!-- Marco Reticular Cyberpunk / NASA HUD -->
+      <!-- CONTAINER 1: 2D ORBITAL MAP (#map-container) -->
+      <section id="map-container" class="viewport-panel glass-panel" aria-label="Interactive Mars Orbital Map">
+        <!-- Cyberpunk / NASA HUD Reticle Frame -->
         <div class="hud-reticle-overlay" aria-hidden="true">
           <span class="corner-mark tl"></span>
           <span class="corner-mark tr"></span>
@@ -368,195 +368,195 @@
           <div class="center-crosshair"></div>
         </div>
 
-        <!-- Lienzo Cartográfico Interactivo Leaflet.js (Etapa 2) -->
+        <!-- Leaflet.js Interactive Cartographic Canvas (Stage 2) -->
         <div class="mars-tactical-canvas">
-          <div id="mars-leaflet-map" class="leaflet-hud-instance" aria-label="Mapa Planetario Interactivo de Marte"></div>
+          <div id="mars-leaflet-map" class="leaflet-hud-instance" aria-label="Interactive Planetary Map of Mars"></div>
 
-          <!-- Controles de Herramientas del Mapa en el Extremo Superior Derecho -->
+          <!-- Map Tool Controls in Top Right -->
           <div class="map-floating-toolbar">
-            <button id="btn-map-zoom-in" class="map-tool-btn" type="button" title="Acercar Zoom"><i class="fa-solid fa-plus"></i></button>
-            <button id="btn-map-center-rover" class="map-tool-btn" type="button" title="Centrar en Cráter Jezero / Rover"><i class="fa-solid fa-location-crosshairs"></i></button>
-            <button id="btn-map-zoom-out" class="map-tool-btn" type="button" title="Alejar Zoom"><i class="fa-solid fa-minus"></i></button>
-            <button id="btn-map-global" class="map-tool-btn" type="button" title="Vista Planetaria Global de Marte"><i class="fa-solid fa-earth-americas text-cyan"></i></button>
-            <button class="map-tool-btn" type="button" id="btn-quick-360" title="Abrir Vista 360° en Posición del Rover">
+            <button id="btn-map-zoom-in" class="map-tool-btn" type="button" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+            <button id="btn-map-center-rover" class="map-tool-btn" type="button" title="Center on Jezero Crater / Rover"><i class="fa-solid fa-location-crosshairs"></i></button>
+            <button id="btn-map-zoom-out" class="map-tool-btn" type="button" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+            <button id="btn-map-global" class="map-tool-btn" type="button" title="Global Planetary View of Mars"><i class="fa-solid fa-earth-americas text-cyan"></i></button>
+            <button class="map-tool-btn" type="button" id="btn-quick-360" title="Open 360° View at Rover Position">
               <i class="fa-solid fa-street-view text-orange"></i>
             </button>
           </div>
 
-          <!-- Leyenda Inferior del Mapa en el Extremo Inferior Izquierdo -->
+          <!-- Bottom Map Legend in Lower Left -->
           <div class="map-bottom-badge">
             <span><i class="fa-solid fa-satellite text-orange"></i> USGS ASTROGEOLOGY WMS / NASA MRO / MGS MOLA</span>
             <span class="divider">|</span>
-            <span>PROYECCIÓN: PLANETOCÉNTRICA MARCIANA (EPSG:4326)</span>
+            <span>PROJECTION: MARS PLANETOCENTRIC (EPSG:4326)</span>
             <span class="divider">|</span>
-            <span class="text-cyan">HAZ CLIC EN CUALQUIER MARCADOR O CAPA PARA VER TELEMETRÍA</span>
+            <span class="text-cyan">CLICK ANY MARKER OR LAYER FOR TELEMETRY</span>
           </div>
         </div>
       </section>
 
-      <!-- CONTENEDOR 2: MARTIAN STREET VIEW 360° (#streetview-container - Etapa 4 + Fotografía Real NASA) -->
-      <section id="streetview-container" class="viewport-panel glass-panel is-hidden" aria-label="Visor Panorámico 360° de la Superficie de Marte">
-        <!-- Barra Superior del Visor 360 -->
+      <!-- CONTAINER 2: MARTIAN STREET VIEW 360° (#streetview-container - Stage 4 + Real NASA Photography) -->
+      <section id="streetview-container" class="viewport-panel glass-panel is-hidden" aria-label="360° Panoramic Mars Surface Viewer">
+        <!-- 360° Viewer Top Bar -->
         <div class="viewport-top-bar streetview-bar">
           <div class="vtb-left">
             <span class="live-indicator cyan"></span>
-            <span class="vtb-title" id="sv-station-title">360° MARTE // ESTACIÓN 02: MESA KODIAK</span>
+            <span class="vtb-title" id="sv-station-title">360° MARS // STATION 02: KODIAK MESA</span>
           </div>
 
-          <!-- Selector de Vista 360° Separado en Dos Botones Simples: VISTA REAL (LIFE) / VISTA 2D -->
-          <div class="sv-optical-mode-switcher" id="sv-render-mode-group" role="group" aria-label="Selector entre Vista Real y Vista 2D">
-            <button type="button" class="sv-mode-btn sv-opt-btn is-active" data-360-mode="real" title="Ver todo en Real Life (Fotografía Panorámica 360° Real de la NASA)">
+          <!-- Two-Button 360° Mode Switcher: REAL VIEW (LIFE) / 2D VIEW -->
+          <div class="sv-optical-mode-switcher" id="sv-render-mode-group" role="group" aria-label="Switch between Real View and 2D View">
+            <button type="button" class="sv-mode-btn sv-opt-btn is-active" data-360-mode="real" title="View in Real Life (Actual NASA 360° Panoramic Photography)">
               <i class="fa-solid fa-camera"></i>
-              <span>VISTA REAL (LIFE)</span>
+              <span>REAL VIEW (LIFE)</span>
             </button>
-            <button type="button" class="sv-mode-btn sv-opt-btn" data-360-mode="sim2d" title="Ver todo en 2D (Simulación Táctica 2D sin superposición)">
+            <button type="button" class="sv-mode-btn sv-opt-btn" data-360-mode="sim2d" title="View in 2D (Tactical 2D Simulation without overlay)">
               <i class="fa-solid fa-vector-square"></i>
-              <span>VISTA 2D</span>
+              <span>2D VIEW</span>
             </button>
           </div>
 
           <div class="vtb-right">
-            <button id="btn-sv-nasa-api" class="sv-tool-pill" type="button" title="Abrir Archivo Fotográfico Real de la NASA">
-              <i class="fa-solid fa-images text-orange"></i> FOTOS NASA
+            <button id="btn-sv-nasa-api" class="sv-tool-pill" type="button" title="Open Official NASA Photo Archive">
+              <i class="fa-solid fa-images text-orange"></i> NASA PHOTOS
             </button>
-            <button id="btn-sv-reopen-inspector" class="sv-tool-pill" type="button" title="Mostrar u ocultar ficha científica">
+            <button id="btn-sv-reopen-inspector" class="sv-tool-pill" type="button" title="Show or hide scientific card">
               <i class="fa-solid fa-circle-info"></i> INFO
             </button>
-            <button id="btn-sv-autorotate" class="sv-tool-pill is-active" type="button" title="Activar o pausar rotación automática">
-              <i class="fa-solid fa-rotate"></i> GIRO
+            <button id="btn-sv-autorotate" class="sv-tool-pill is-active" type="button" title="Toggle auto-rotation">
+              <i class="fa-solid fa-rotate"></i> SPIN
             </button>
             <button id="btn-close-streetview" class="sv-return-btn" type="button">
-              <i class="fa-solid fa-map"></i> MAPA 2D
+              <i class="fa-solid fa-map"></i> 2D MAP
             </button>
           </div>
         </div>
 
-        <!-- Brújula Holográfica Superior Sincronizada con el Yaw de la Cámara 360° -->
+        <!-- Top Holographic Compass Synced with 360° Camera Yaw -->
         <div class="sv-compass-strip">
           <div class="compass-scale" id="sv-compass-scale">
-            <span>270° O</span>
-            <span>315° NO</span>
-            <span class="active-heading" id="sv-compass-heading">AZIMUT: 014° N (DELTA)</span>
+            <span>270° W</span>
+            <span>315° NW</span>
+            <span class="active-heading" id="sv-compass-heading">AZIMUTH: 014° N (DELTA)</span>
             <span>45° NE</span>
             <span>90° E</span>
           </div>
 
           <div class="sv-camera-telemetry" id="sv-camera-angles">
-            PITCH: -2.0° | FOV: 95° | SENSOR: MASTCAM-Z ESTÉREO
+            PITCH: -2.0° | FOV: 95° | SENSOR: STEREO MASTCAM-Z
           </div>
         </div>
 
-        <!-- Escenario Principal Esférico 360° + Hotspots 3D + HUD Superpuesto -->
+        <!-- Main Spherical 360° Stage + 3D Hotspots + Overlaid HUD -->
         <div class="streetview-stage-wrapper">
-          <!-- Motor Esférico 360° Interactivo (Canvas 60FPS + Hotspots Proyectados) -->
+          <!-- Interactive Spherical 360° Engine (60FPS Canvas + Projected Hotspots) -->
           <div id="pannellum-viewer" class="pannellum-hud-mount">
-            <canvas id="mars-360-canvas" class="mars-360-canvas" aria-label="Panorama interactivo 360 grados de la superficie de Marte"></canvas>
+            <canvas id="mars-360-canvas" class="mars-360-canvas" aria-label="Interactive 360-degree panorama of the Martian surface"></canvas>
             <div id="mars-360-hotspots" class="mars-360-hotspots"></div>
 
-            <!-- Placa Oficial de Archivo Fotográfico Real NASA JPL Photojournal -->
+            <!-- Official NASA JPL Photojournal Real Archive Badge -->
             <div class="sv-real-photo-badge" id="sv-real-photo-badge">
               <div class="srpb-top">
                 <span class="srpb-pia" id="srpb-pia-id">NASA ID: PIA24921</span>
                 <span class="srpb-sol" id="srpb-sol-tag">SOL 466–474</span>
-                <span class="srpb-status" id="srpb-status-tag"><i class="fa-solid fa-circle-check"></i> VISTA REAL NASA ACTIVA</span>
+                <span class="srpb-status" id="srpb-status-tag"><i class="fa-solid fa-circle-check"></i> NASA REAL VIEW ACTIVE</span>
               </div>
               <div class="srpb-credit" id="srpb-credit-text">
-                NASA/JPL-Caltech/ASU/MSSS — Perseverance Mastcam-Z (1,118 cuadros reales cosidos)
+                NASA/JPL-Caltech/ASU/MSSS — Perseverance Mastcam-Z (1,118 stitched real frames)
               </div>
               <div class="srpb-links">
                 <a id="srpb-jpl-link" href="https://photojournal.jpl.nasa.gov/catalog/PIA24921" target="_blank" rel="noopener noreferrer">
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i> VER ARCHIVO OFICIAL JPL PHOTOJOURNAL
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i> VIEW OFFICIAL JPL PHOTOJOURNAL ARCHIVE
                 </a>
               </div>
             </div>
 
-            <!-- Gaveta Flotante: Archivo Fotográfico Real 360° de la NASA (Catálogo Local Instantáneo + API en Vivo) -->
-            <aside class="sv-nasa-api-drawer is-hidden" id="sv-nasa-api-drawer" aria-label="Archivo fotográfico de panoramas reales de la NASA">
+            <!-- Floating Drawer: Official NASA 360° Photo Archive (Instant Local Catalog + Live API) -->
+            <aside class="sv-nasa-api-drawer is-hidden" id="sv-nasa-api-drawer" aria-label="Official NASA real panorama archive">
               <div class="snad-header">
                 <div>
-                  <span class="snad-kicker"><i class="fa-solid fa-camera-retro text-orange"></i> CATÁLOGO INSTANTÁNEO + IMAGES-API.NASA.GOV</span>
-                  <h4>ARCHIVO FOTOGRÁFICO REAL DE LA NASA (360° &amp; ROVERS)</h4>
+                  <span class="snad-kicker"><i class="fa-solid fa-camera-retro text-orange"></i> INSTANT CATALOG + IMAGES-API.NASA.GOV</span>
+                  <h4>OFFICIAL NASA PHOTO ARCHIVE (360° &amp; ROVERS)</h4>
                 </div>
-                <button type="button" id="btn-close-nasa-drawer" class="svi-close-btn" title="Cerrar archivo fotográfico">
-                  <i class="fa-solid fa-xmark"></i> CERRAR
+                <button type="button" id="btn-close-nasa-drawer" class="svi-close-btn" title="Close photo archive">
+                  <i class="fa-solid fa-xmark"></i> CLOSE
                 </button>
               </div>
 
               <div class="snad-search-bar">
-                <input type="text" id="nasa-api-search-input" class="snad-input" value="Mars panorama rover" placeholder="Buscar en NASA (ej. Mars panorama, Curiosity Mastcam, Jezero)...">
+                <input type="text" id="nasa-api-search-input" class="snad-input" value="Mars panorama rover" placeholder="Search NASA (e.g. Mars panorama, Curiosity Mastcam, Jezero)...">
                 <button type="button" id="btn-nasa-api-search" class="planner-btn">
-                  <i class="fa-solid fa-magnifying-glass"></i> BUSCAR
+                  <i class="fa-solid fa-magnifying-glass"></i> SEARCH
                 </button>
               </div>
 
               <div class="snad-quick-chips">
-                <button type="button" class="snad-chip is-active" data-nasa-query="__LOCAL__"><i class="fa-solid fa-bolt"></i> Panoramas 360° Instantáneos</button>
+                <button type="button" class="snad-chip is-active" data-nasa-query="__LOCAL__"><i class="fa-solid fa-bolt"></i> Instant 360° Panoramas</button>
                 <button type="button" class="snad-chip" data-nasa-query="Perseverance Mars panorama">Perseverance 360°</button>
                 <button type="button" class="snad-chip" data-nasa-query="Curiosity Mastcam panorama">Curiosity 360°</button>
-                <button type="button" class="snad-chip" data-nasa-query="Jezero Crater Mars">Cráter Jezero</button>
+                <button type="button" class="snad-chip" data-nasa-query="Jezero Crater Mars">Jezero Crater</button>
                 <button type="button" class="snad-chip" data-nasa-query="Opportunity panorama Mars">Opportunity</button>
               </div>
 
               <div class="snad-results-grid scroller" id="nasa-api-results-grid">
-                <!-- Tarjetas de panoramas reales locales e inyectados desde NASA API -->
+                <!-- Local & NASA API real panorama cards injected here -->
               </div>
             </aside>
 
-            <!-- Controles Flotantes de Zoom y Horizonte en el Visor 360° (lado derecho, centrados verticalmente) -->
+            <!-- Floating Zoom & Horizon Controls in 360° Viewer (right side, vertically centered) -->
             <div class="sv-floating-controls">
-              <button id="btn-360-zoom-in" class="map-tool-btn" type="button" title="Acercar (rueda del ratón)"><i class="fa-solid fa-plus"></i></button>
-              <button id="btn-360-zoom-out" class="map-tool-btn" type="button" title="Alejar (rueda del ratón)"><i class="fa-solid fa-minus"></i></button>
-              <button id="btn-360-fit" class="map-tool-btn" type="button" title="Ver toda la imagen (alejar al máximo)"><i class="fa-solid fa-expand text-orange"></i></button>
-              <button id="btn-360-reset-cam" class="map-tool-btn" type="button" title="Centrar Horizonte"><i class="fa-solid fa-compass text-cyan"></i></button>
+              <button id="btn-360-zoom-in" class="map-tool-btn" type="button" title="Zoom In (mouse wheel)"><i class="fa-solid fa-plus"></i></button>
+              <button id="btn-360-zoom-out" class="map-tool-btn" type="button" title="Zoom Out (mouse wheel)"><i class="fa-solid fa-minus"></i></button>
+              <button id="btn-360-fit" class="map-tool-btn" type="button" title="Fit entire panorama (zoom out max)"><i class="fa-solid fa-expand text-orange"></i></button>
+              <button id="btn-360-reset-cam" class="map-tool-btn" type="button" title="Center Horizon"><i class="fa-solid fa-compass text-cyan"></i></button>
             </div>
           </div>
 
-          <!-- Tarjeta Holográfica de Inspección Científica (cerrada por defecto; se abre al tocar un punto o INFO) -->
+          <!-- Holographic Scientific Inspection Card (closed by default; opens on hotspot tap or INFO) -->
           <aside class="sv-inspector-card is-closed" id="sv-inspector-card" aria-live="polite">
             <div class="svi-header">
-              <span class="svi-kicker" id="svi-kicker"><i class="fa-solid fa-microscope"></i> ESPECTRÓMETRO PIXL / SUPERCAM</span>
+              <span class="svi-kicker" id="svi-kicker"><i class="fa-solid fa-microscope"></i> PIXL / SUPERCAM SPECTROMETER</span>
               <div class="svi-header-actions">
-                <button type="button" id="btn-minimize-inspector" class="svi-minimize-btn" title="Minimizar/Expandir descripción">
+                <button type="button" id="btn-minimize-inspector" class="svi-minimize-btn" title="Minimize/Expand description">
                   <i class="fa-solid fa-window-minimize"></i>
                 </button>
-                <button type="button" id="btn-close-inspector" class="svi-close-btn" title="Cerrar esta ventana emergente">
-                  <i class="fa-solid fa-xmark"></i> CERRAR
+                <button type="button" id="btn-close-inspector" class="svi-close-btn" title="Close this popup">
+                  <i class="fa-solid fa-xmark"></i> CLOSE
                 </button>
               </div>
             </div>
-            <h4 class="svi-title" id="svi-title">Estratigrafía Fluvial: Mesa Kodiak</h4>
+            <h4 class="svi-title" id="svi-title">Fluvial Stratigraphy: Kodiak Mesa</h4>
             <p class="svi-desc" id="svi-desc">
-              Capas sedimentarias inclinadas (foresets) que demuestran el avance de un antiguo delta fluvial sobre el lago del Cráter Jezero hace 3.700 millones de años.
+              Inclined sedimentary layers (foresets) demonstrating the progradation of an ancient river delta into Jezero Crater lake 3.7 billion years ago.
             </p>
             <div class="svi-metrics-row">
               <span id="svi-dist"><i class="fa-solid fa-ruler-horizontal text-orange"></i> DIST: 18.4 m</span>
-              <span id="svi-comp"><i class="fa-solid fa-atom text-cyan"></i> SiO₂ / Filosilicatos</span>
+              <span id="svi-comp"><i class="fa-solid fa-atom text-cyan"></i> SiO₂ / Phyllosilicates</span>
             </div>
           </aside>
 
-          <!-- Mini-mapa del panorama completo: muestra TODA la imagen 360° y el área que estás viendo (clic para saltar) -->
-          <div class="sv-pano-overview" id="sv-pano-overview" title="Panorama completo: haz clic o arrastra para moverte">
-            <canvas id="sv-overview-canvas" width="520" height="64" aria-label="Vista general del panorama completo"></canvas>
+          <!-- Full Panorama Mini-Map: shows the ENTIRE 360° image and current viewport box (click to jump) -->
+          <div class="sv-pano-overview" id="sv-pano-overview" title="Full panorama overview: click or drag to move">
+            <canvas id="sv-overview-canvas" width="520" height="64" aria-label="Full panorama overview"></canvas>
           </div>
 
-          <!-- Consola Inferior de Navegación Paso a Paso (Step-by-Step Rover Traverse) -->
+          <!-- Bottom Step-by-Step Navigation Console (Step-by-Step Rover Traverse) -->
           <div class="sv-step-navigator" id="sv-step-navigator">
-            <button id="btn-sv-prev" class="sv-nav-btn" type="button" title="Retroceder a la estación panorámica anterior">
+            <button id="btn-sv-prev" class="sv-nav-btn" type="button" title="Go to previous panoramic station">
               <i class="fa-solid fa-backward-step"></i>
-              <span>PASO ANTERIOR</span>
+              <span>PREV STEP</span>
             </button>
 
-            <div class="sv-steps-track" id="sv-steps-pills" role="tablist" aria-label="Estaciones del recorrido 360°">
-              <button type="button" class="sv-step-pill" data-station-id="scene-landing"><i class="fa-solid fa-location-dot"></i> <span>01 INICIO (LANDING)</span></button>
-              <button type="button" class="sv-step-pill is-active" data-station-id="scene-kodiak"><i class="fa-solid fa-location-dot"></i> <span>02 MESA KODIAK</span></button>
-              <button type="button" class="sv-step-pill" data-station-id="scene-ice"><i class="fa-solid fa-location-dot"></i> <span>03 HIELO ISRU</span></button>
-              <button type="button" class="sv-step-pill" data-station-id="scene-base"><i class="fa-solid fa-location-dot"></i> <span>04 CAMPAMENTO BASE</span></button>
-              <button type="button" class="sv-step-pill" data-station-id="scene-gale"><i class="fa-solid fa-location-dot"></i> <span>05 CRÁTER GALE</span></button>
+            <div class="sv-steps-track" id="sv-steps-pills" role="tablist" aria-label="360° Traverse Stations">
+              <button type="button" class="sv-step-pill" data-station-id="scene-landing"><i class="fa-solid fa-location-dot"></i> <span>01 START (LANDING)</span></button>
+              <button type="button" class="sv-step-pill is-active" data-station-id="scene-kodiak"><i class="fa-solid fa-location-dot"></i> <span>02 KODIAK MESA</span></button>
+              <button type="button" class="sv-step-pill" data-station-id="scene-ice"><i class="fa-solid fa-location-dot"></i> <span>03 ISRU ICE</span></button>
+              <button type="button" class="sv-step-pill" data-station-id="scene-base"><i class="fa-solid fa-location-dot"></i> <span>04 BASE CAMP</span></button>
+              <button type="button" class="sv-step-pill" data-station-id="scene-gale"><i class="fa-solid fa-location-dot"></i> <span>05 GALE CRATER</span></button>
               <button type="button" class="sv-step-pill" data-station-id="scene-valles"><i class="fa-solid fa-location-dot"></i> <span>06 VALLES MARINERIS</span></button>
             </div>
 
-            <button id="btn-sv-next" class="sv-nav-btn primary" type="button" title="Avanzar a la siguiente estación panorámica">
-              <span>SIGUIENTE PASO</span>
+            <button id="btn-sv-next" class="sv-nav-btn primary" type="button" title="Advance to next panoramic station">
+              <span>NEXT STEP</span>
               <i class="fa-solid fa-forward-step"></i>
             </button>
           </div>
@@ -566,26 +566,26 @@
     </main>
 
     <!-- ====================================================================
-         3. BARRA LATERAL DERECHA DESPLEGABLE (SELECTOR DE CAPAS Y CLIMA)
+         3. COLLAPSIBLE RIGHT SIDEBAR (LAYER SELECTOR & WEATHER)
          ==================================================================== -->
-    <aside id="sidebar-right" class="hud-sidebar-right glass-panel scroller" aria-label="Selector de Capas de la NASA y Telemetría Climática">
-      <!-- Panel de Capas Interactivas -->
+    <aside id="sidebar-right" class="hud-sidebar-right glass-panel scroller" aria-label="NASA Layer Selector and Weather Telemetry">
+      <!-- Interactive Layers Panel -->
       <div class="panel-heading">
         <div class="heading-title">
           <i class="fa-solid fa-layer-group text-orange"></i>
-          <h2>CAPAS NASA &amp; CLIMA</h2>
+          <h2>NASA LAYERS &amp; WEATHER</h2>
         </div>
         <div class="heading-right-group">
-          <span class="hud-tag" id="active-layers-counter">5 ACTIVAS</span>
-          <button id="btn-close-right-sidebar" class="panel-collapse-btn" type="button" title="Ocultar barra lateral derecha">
-            OCULTAR <i class="fa-solid fa-angles-right"></i>
+          <span class="hud-tag" id="active-layers-counter">5 ACTIVE</span>
+          <button id="btn-close-right-sidebar" class="panel-collapse-btn" type="button" title="Hide right sidebar">
+            HIDE <i class="fa-solid fa-angles-right"></i>
           </button>
         </div>
       </div>
 
       <section class="hud-card layers-control-card">
         <div class="card-section-title">
-          <i class="fa-solid fa-sliders"></i> INTERRUPTORES MULTIESPECTRALES
+          <i class="fa-solid fa-sliders"></i> MULTISPECTRAL LAYER SWITCHES
         </div>
 
         <div class="layer-toggles-list">
@@ -595,7 +595,7 @@
               <span class="lt-icon"><i class="fa-solid fa-mountain"></i></span>
               <div class="lt-text">
                 <strong>Topography (MOLA)</strong>
-                <span>Altímetro Láser Orbital (Relieve)</span>
+                <span>Orbital Laser Altimeter (Relief)</span>
               </div>
             </div>
             <div class="cyber-switch">
@@ -610,7 +610,7 @@
               <span class="lt-icon"><i class="fa-solid fa-gem"></i></span>
               <div class="lt-text">
                 <strong>Geology</strong>
-                <span>Litología y Minerales (THEMIS IR)</span>
+                <span>Lithology &amp; Minerals (THEMIS IR)</span>
               </div>
             </div>
             <div class="cyber-switch">
@@ -625,7 +625,7 @@
               <span class="lt-icon text-cyan"><i class="fa-solid fa-snowflake"></i></span>
               <div class="lt-text">
                 <strong>Resources (Ice)</strong>
-                <span>Reservas de Hielo H₂O Subterráneo</span>
+                <span>Subsurface H₂O Ice Reserves</span>
               </div>
             </div>
             <div class="cyber-switch">
@@ -640,7 +640,7 @@
               <span class="lt-icon text-warning"><i class="fa-solid fa-wind"></i></span>
               <div class="lt-text">
                 <strong>Weather</strong>
-                <span>Frentes de Polvo y Viento Superficial</span>
+                <span>Dust Fronts &amp; Surface Winds</span>
               </div>
             </div>
             <div class="cyber-switch">
@@ -655,7 +655,7 @@
               <span class="lt-icon text-orange"><i class="fa-solid fa-location-pin"></i></span>
               <div class="lt-text">
                 <strong>Mission Sites</strong>
-                <span>Rovers, Sondas y Campamentos</span>
+                <span>Rovers, Landers &amp; Base Camps</span>
               </div>
             </div>
             <div class="cyber-switch">
@@ -666,11 +666,11 @@
         </div>
       </section>
 
-      <!-- Panel de Clima: WEATHER AT JEZERO CRATER (Sincronizado por Región en Etapa 5) -->
+      <!-- Weather Panel: WEATHER AT JEZERO CRATER (Synced by Region in Stage 5) -->
       <section class="hud-card weather-station-card">
         <div class="weather-card-header">
           <div>
-            <span class="wc-kicker" id="wc-kicker">ESTACIÓN MEDA // REPORTE METEOROLÓGICO</span>
+            <span class="wc-kicker" id="wc-kicker">MEDA STATION // METEOROLOGICAL REPORT</span>
             <h3 class="wc-title" id="wc-title">WEATHER AT JEZERO CRATER</h3>
           </div>
           <span class="sol-pill" id="wc-sol">SOL 1420</span>
@@ -681,72 +681,72 @@
             <i class="fa-solid fa-temperature-low text-cyan"></i>
             <div>
               <span class="temp-value" id="wc-temp-val">-62°C</span>
-              <span class="temp-caption">TEMPERATURA SUPERFICIAL</span>
+              <span class="temp-caption">SURFACE TEMPERATURE</span>
             </div>
           </div>
           <div class="temp-extremes">
-            <span>MÁX: <strong id="wc-temp-max">-18°C</strong></span>
-            <span>MÍN: <strong id="wc-temp-min">-84°C</strong></span>
+            <span>MAX: <strong id="wc-temp-max">-18°C</strong></span>
+            <span>MIN: <strong id="wc-temp-min">-84°C</strong></span>
           </div>
         </div>
 
         <div class="weather-metrics-grid">
           <div class="wm-box">
-            <span class="wm-label"><i class="fa-solid fa-wind"></i> VIENTO ACTUAL</span>
+            <span class="wm-label"><i class="fa-solid fa-wind"></i> CURRENT WIND</span>
             <strong class="wm-val" id="wc-wind-val">24.5 <small>km/h</small></strong>
-            <span class="wm-sub" id="wc-wind-dir">Dirección: ENE (68°)</span>
+            <span class="wm-sub" id="wc-wind-dir">Direction: ENE (68°)</span>
           </div>
           <div class="wm-box">
-            <span class="wm-label"><i class="fa-solid fa-gauge-high"></i> PRESIÓN ATM.</span>
+            <span class="wm-label"><i class="fa-solid fa-gauge-high"></i> ATM. PRESSURE</span>
             <strong class="wm-val" id="wc-press-val">718 <small>Pa</small></strong>
             <span class="wm-sub" id="wc-press-sub">95.3% CO₂ Nominal</span>
           </div>
           <div class="wm-box">
-            <span class="wm-label"><i class="fa-solid fa-sun"></i> OPACIDAD SOLAR</span>
+            <span class="wm-label"><i class="fa-solid fa-sun"></i> SOLAR OPACITY</span>
             <strong class="wm-val text-warning" id="wc-tau-val">&tau; 0.74</strong>
-            <span class="wm-sub" id="wc-tau-sub">Polvo en suspensión</span>
+            <span class="wm-sub" id="wc-tau-sub">Suspended dust</span>
           </div>
           <div class="wm-box">
-            <span class="wm-label"><i class="fa-solid fa-radiation"></i> RADIACIÓN UV</span>
+            <span class="wm-label"><i class="fa-solid fa-radiation"></i> UV RADIATION</span>
             <strong class="wm-val text-cyan" id="wc-uv-val">0.24 <small>mSv/h</small></strong>
-            <span class="wm-sub" id="wc-uv-sub">Dentro de umbral EVA</span>
+            <span class="wm-sub" id="wc-uv-sub">Within EVA threshold</span>
           </div>
         </div>
 
-        <!-- Alerta de Tormenta de Polvo -->
+        <!-- Dust Storm Alert -->
         <div class="dust-storm-alert" id="wc-alert-box" role="alert">
           <div class="alert-icon">
             <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
           <div class="alert-text">
-            <strong id="wc-alert-title">ALERTA DE TORMENTA DE POLVO</strong>
-            <p id="wc-alert-desc">Frente regional detectado a 42 km al SO de Jezero. Reducción de visibilidad y caída de recarga solar (-18%) prevista en 3 horas.</p>
+            <strong id="wc-alert-title">DUST STORM ALERT</strong>
+            <p id="wc-alert-desc">Regional front detected 42 km SW of Jezero. Reduced visibility and solar recharge drop (-18%) expected within 3 hours.</p>
           </div>
         </div>
       </section>
     </aside>
 
     <!-- ====================================================================
-         5. PANEL INFERIOR DESPLEGABLE (HUD DE SUPERVIVENCIA)
+         5. COLLAPSIBLE BOTTOM PANEL (SURVIVAL HUD)
          ==================================================================== -->
-    <footer id="hud-footer" class="hud-footer glass-panel" aria-label="HUD de Supervivencia y Perfil de Elevación">
+    <footer id="hud-footer" class="hud-footer glass-panel" aria-label="Survival HUD and Elevation Profile">
 
-      <!-- Gráfico / Perfil de Elevación Topográfico Interactivo -->
+      <!-- Interactive Topographic Elevation Profile Graph -->
       <div class="footer-elevation-module">
         <div class="elev-header">
           <span class="elev-title" id="elev-title-text">
             <i class="fa-solid fa-chart-area text-orange"></i>
-            PERFIL DE ELEVACIÓN TOPOGRÁFICA // RUTA: JEZERO-ALPHA
+            TOPOGRAPHIC ELEVATION PROFILE // ROUTE: JEZERO-ALPHA
           </span>
           <div class="elev-header-right">
-            <span class="elev-meta" id="elev-meta-text">ALTITUD: -2,540m a -2,380m (&Delta; +160m)</span>
-            <button id="btn-close-bottom-hud" class="panel-collapse-btn" type="button" title="Minimizar HUD Inferior de Supervivencia">
-              <i class="fa-solid fa-angles-down"></i> OCULTAR HUD
+            <span class="elev-meta" id="elev-meta-text">ALTITUDE: -2,540m to -2,380m (&Delta; +160m)</span>
+            <button id="btn-close-bottom-hud" class="panel-collapse-btn" type="button" title="Minimize Bottom Survival HUD">
+              <i class="fa-solid fa-angles-down"></i> HIDE HUD
             </button>
           </div>
         </div>
 
-        <div class="elev-graph-box" title="Haz clic o arrastra sobre el perfil para desplazar el Rover">
+        <div class="elev-graph-box" title="Click or drag on the profile to move the Rover">
           <svg id="elevation-svg" class="elevation-svg" viewBox="0 0 600 82" preserveAspectRatio="none">
             <defs>
               <linearGradient id="elevFillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -755,36 +755,36 @@
               </linearGradient>
             </defs>
 
-            <!-- Líneas guía horizontales -->
+            <!-- Horizontal guide lines -->
             <line x1="0" y1="20" x2="600" y2="20" stroke="rgba(255,255,255,0.07)" stroke-dasharray="3 3" />
             <line x1="0" y1="45" x2="600" y2="45" stroke="rgba(255,255,255,0.07)" stroke-dasharray="3 3" />
             <line x1="0" y1="70" x2="600" y2="70" stroke="rgba(255,255,255,0.07)" stroke-dasharray="3 3" />
 
-            <!-- Polígono y curva de elevación dinámicos -->
+            <!-- Dynamic elevation polygon and curve -->
             <polygon id="elev-polygon" points="0,78 0,62 75,56 150,48 210,36 290,42 370,26 450,30 530,16 600,12 600,78" fill="url(#elevFillGrad)" />
             <path id="elev-path" d="M 0,62 L 75,56 L 150,48 L 210,36 L 290,42 L 370,26 L 450,30 L 530,16 L 600,12"
                   fill="none" stroke="#FF6B2B" stroke-width="2.5" />
 
-            <!-- Indicador de Posición Actual del Explorador -->
+            <!-- Current Explorer Position Indicator -->
             <line id="elev-rover-line" x1="198" y1="6" x2="198" y2="78" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="2 2" />
             <circle id="elev-rover-dot" cx="198" cy="38" r="5" fill="#00e5ff" />
-            <text id="elev-rover-label" x="206" y="18" fill="#00e5ff" font-family="Share Tech Mono" font-size="11">ROVER ACTUAL (KM 4.8 | -2,490m)</text>
+            <text id="elev-rover-label" x="206" y="18" fill="#00e5ff" font-family="Share Tech Mono" font-size="11">CURRENT ROVER (KM 4.8 | -2,490m)</text>
           </svg>
         </div>
       </div>
 
-      <!-- Métricas Clave de Supervivencia -->
+      <!-- Key Survival Metrics -->
       <div class="footer-telemetry-metrics">
 
-        <!-- Métrica 1: Oxígeno Consumido (%) -->
+        <!-- Metric 1: Oxygen Consumed (%) -->
         <div class="survival-metric-card" id="card-oxygen">
           <div class="sm-icon text-orange">
             <i class="fa-solid fa-lungs"></i>
           </div>
           <div class="sm-body">
             <div class="sm-top">
-              <span class="sm-label">OXÍGENO CONSUMIDO</span>
-              <span class="sm-tag" id="metric-oxygen-reserve">RESERVA: 78%</span>
+              <span class="sm-label">OXYGEN CONSUMED</span>
+              <span class="sm-tag" id="metric-oxygen-reserve">RESERVE: 78%</span>
             </div>
             <div class="sm-value-row">
               <strong class="sm-number" id="metric-oxygen">22</strong>
@@ -797,20 +797,20 @@
           </div>
         </div>
 
-        <!-- Métrica 2: Batería del Rover (%) -->
+        <!-- Metric 2: Rover Battery (%) -->
         <div class="survival-metric-card" id="card-battery">
           <div class="sm-icon text-cyan">
             <i class="fa-solid fa-car-battery"></i>
           </div>
           <div class="sm-body">
             <div class="sm-top">
-              <span class="sm-label">BATERÍA DEL ROVER</span>
+              <span class="sm-label">ROVER BATTERY</span>
               <span class="sm-tag text-cyan" id="metric-battery-tag">MMRTG + SOLAR</span>
             </div>
             <div class="sm-value-row">
               <strong class="sm-number text-cyan" id="metric-battery">92</strong>
               <span class="sm-unit text-cyan">%</span>
-              <span class="sm-sub" id="metric-battery-range">Autonomía: 28.4 km</span>
+              <span class="sm-sub" id="metric-battery-range">Range: 28.4 km</span>
             </div>
             <div class="cyber-progress-bar">
               <div class="progress-fill fill-cyan" id="bar-battery" style="width: 92%;"></div>
@@ -818,20 +818,20 @@
           </div>
         </div>
 
-        <!-- Métrica 3: Distancia de la Ruta (km) -->
+        <!-- Metric 3: Route Distance (km) -->
         <div class="survival-metric-card" id="card-distance">
           <div class="sm-icon text-mars">
             <i class="fa-solid fa-road"></i>
           </div>
           <div class="sm-body">
             <div class="sm-top">
-              <span class="sm-label">DISTANCIA DE LA RUTA</span>
-              <span class="sm-tag" id="metric-distance-traveled">RECORRIDO: 4.8 KM</span>
+              <span class="sm-label">ROUTE DISTANCE</span>
+              <span class="sm-tag" id="metric-distance-traveled">TRAVELED: 4.8 KM</span>
             </div>
             <div class="sm-value-row">
               <strong class="sm-number" id="metric-distance">14.6</strong>
               <span class="sm-unit">km</span>
-              <span class="sm-sub" id="metric-distance-remaining">Restante: 9.8 km</span>
+              <span class="sm-sub" id="metric-distance-remaining">Remaining: 9.8 km</span>
             </div>
             <div class="cyber-progress-bar">
               <div class="progress-fill fill-orange" id="bar-distance" style="width: 33%;"></div>
@@ -839,20 +839,20 @@
           </div>
         </div>
 
-        <!-- Métrica 4: Tiempo Estimado de Viaje -->
+        <!-- Metric 4: Estimated Travel Time -->
         <div class="survival-metric-card" id="card-time">
           <div class="sm-icon text-warning">
             <i class="fa-solid fa-stopwatch"></i>
           </div>
           <div class="sm-body">
             <div class="sm-top">
-              <span class="sm-label">TIEMPO ESTIMADO DE VIAJE</span>
-              <span class="sm-tag" id="metric-speed-tag">VEL. MEDIA: 3.1 KM/H</span>
+              <span class="sm-label">ESTIMATED TRAVEL TIME</span>
+              <span class="sm-tag" id="metric-speed-tag">AVG SPEED: 3.1 KM/H</span>
             </div>
             <div class="sm-value-row">
               <strong class="sm-number" id="metric-time">04:45</strong>
               <span class="sm-unit">hrs</span>
-              <span class="sm-sub" id="metric-time-sub">Llegada antes del ocaso</span>
+              <span class="sm-sub" id="metric-time-sub">Arrival before sunset</span>
             </div>
             <div class="cyber-progress-bar">
               <div class="progress-fill fill-warning" id="bar-time" style="width: 45%;"></div>
@@ -866,80 +866,80 @@
   </div>
 
   <!-- ====================================================================
-       6. MODAL <dialog> DE DOSSIER DE MISIONES NASA & EXPORTACIÓN EVA (ETAPA 5)
+       6. NASA MISSIONS DOSSIER & EVA EXPORT MODAL <dialog> (STAGE 5)
        ==================================================================== -->
   <dialog id="mission-dossier-dialog" class="hud-modal-dialog" closedby="any" aria-labelledby="dossier-modal-title">
     <div class="dossier-modal-shell">
-      <!-- Cabecera del Modal -->
+      <!-- Modal Header -->
       <header class="dossier-header">
         <div class="dh-left">
-          <span class="dh-kicker"><i class="fa-solid fa-database text-orange"></i> ARCHIVO PLANETARIO NASA PDS / JPL-CALTECH</span>
-          <h2 id="dossier-modal-title">DOSSIER OFICIAL DE MISIONES &amp; BITÁCORA DE SUPERVIVENCIA EVA</h2>
+          <span class="dh-kicker"><i class="fa-solid fa-database text-orange"></i> NASA PDS / JPL-CALTECH PLANETARY ARCHIVE</span>
+          <h2 id="dossier-modal-title">OFFICIAL MISSION DOSSIER &amp; EVA SURVIVAL LOGBOOK</h2>
         </div>
-        <button id="btn-close-dossier" class="dossier-close-btn" type="button" aria-label="Cerrar Dossier">
-          <i class="fa-solid fa-xmark"></i> <span>CERRAR [ESC]</span>
+        <button id="btn-close-dossier" class="dossier-close-btn" type="button" aria-label="Close Dossier">
+          <i class="fa-solid fa-xmark"></i> <span>CLOSE [ESC]</span>
         </button>
       </header>
 
-      <!-- Cuerpo Dividido: Catálogo de Misiones NASA + Expediente Detallado + Manifiesto EVA -->
+      <!-- Split Body: NASA Missions Catalog + Detailed Dossier + EVA Manifest -->
       <div class="dossier-body">
-        <!-- Columna Izquierda: Selector de Misiones de la NASA -->
-        <nav class="dossier-nav" aria-label="Misiones de la NASA en Marte">
+        <!-- Left Column: NASA Missions Selector -->
+        <nav class="dossier-nav" aria-label="NASA Mars Missions">
           <div class="card-section-title">
-            <i class="fa-solid fa-satellite"></i> ACTIVOS ESPACIALES NASA
+            <i class="fa-solid fa-satellite"></i> NASA SPACE ASSETS
           </div>
           <div class="dossier-mission-list" id="dossier-mission-list">
-            <!-- Botones de misión inyectados dinámicamente por app.js -->
+            <!-- Mission buttons injected dynamically by app.js -->
           </div>
         </nav>
 
-        <!-- Columna Central: Ficha Técnica de la Misión Seleccionada -->
+        <!-- Center Column: Technical Dossier of Selected Mission -->
         <section class="dossier-detail-pane" aria-live="polite">
           <div class="ddp-banner">
             <div>
               <span class="ddp-agency" id="ddp-agency">NASA / JPL-CALTECH // MARS 2020 PROGRAM</span>
-              <h3 class="ddp-name" id="ddp-name">Rover Perseverance &amp; Helicóptero Ingenuity</h3>
+              <h3 class="ddp-name" id="ddp-name">Perseverance Rover &amp; Ingenuity Helicopter</h3>
             </div>
-            <span class="ddp-status-badge" id="ddp-status">OPERATIVO EN SUPERFICIE</span>
+            <span class="ddp-status-badge" id="ddp-status">SURFACE OPERATIONAL</span>
           </div>
 
           <p class="ddp-summary" id="ddp-summary">
-            Explorador astrobiológico nuclear de 1,025 kg diseñado para buscar biofirmas microbianas antiguas en el delta del Cráter Jezero y producir oxígeno respirable mediante el experimento MOXIE (ISRU).
+            1,025 kg nuclear-powered astrobiology explorer designed to seek ancient microbial biosignatures in the Jezero Crater delta and produce breathable oxygen via the MOXIE (ISRU) experiment.
           </p>
 
-          <!-- Cuadrícula de Especificaciones de Ingeniería -->
+          <!-- Engineering Specifications Grid -->
           <div class="ddp-specs-grid" id="ddp-specs-grid">
-            <!-- Especificaciones inyectadas por app.js -->
+            <!-- Specs injected by app.js -->
           </div>
 
-          <!-- Instrumentos Científicos Clave para Supervivencia Humana -->
+          <!-- Key Scientific Instruments for Human Survival -->
           <div class="ddp-instruments-box">
             <div class="card-section-title">
-              <i class="fa-solid fa-microchip text-cyan"></i> INSTRUMENTACIÓN CIENTÍFICA &amp; APORTE A SUPERVIVENCIA EVA
+              <i class="fa-solid fa-microchip text-cyan"></i> SCIENTIFIC INSTRUMENTATION &amp; EVA SURVIVAL CONTRIBUTION
             </div>
             <ul class="ddp-instruments-list" id="ddp-instruments-list">
-              <!-- Instrumentos inyectados por app.js -->
+              <!-- Instruments injected by app.js -->
             </ul>
           </div>
 
-          <!-- Acciones de Sincronización Directa desde el Dossier -->
+          <!-- Direct Synchronization Actions from the Dossier -->
           <div class="ddp-actions-row">
             <button id="btn-dossier-flyto" class="planner-btn" type="button">
-              <i class="fa-solid fa-location-crosshairs"></i> <span>LOCALIZAR SITIO EN MAPA 2D</span>
+              <i class="fa-solid fa-location-crosshairs"></i> <span>LOCATE SITE ON 2D MAP</span>
             </button>
             <button id="btn-dossier-open360" class="planner-btn secondary" type="button">
-              <i class="fa-solid fa-vr-cardboard text-orange"></i> <span>ABRIR VISOR 360° DE LA REGIÓN</span>
+              <i class="fa-solid fa-vr-cardboard text-orange"></i> <span>OPEN REGION 360° VIEWER</span>
             </button>
           </div>
         </section>
 
-        <!-- Columna Derecha: Manifiesto de Supervivencia EVA & Exportación JSON -->
+        <!-- Right Column: EVA Survival Manifest & JSON Export -->
         <aside class="dossier-eva-export-pane">
           <div class="card-section-title">
-            <i class="fa-solid fa-file-shield text-orange"></i> MANIFIESTO TÁCTICO EVA ACTUAL
+            <i class="fa-solid fa-file-shield text-orange"></i> CURRENT TACTICAL EVA MANIFEST
           </div>
           <p class="eva-pane-desc">
-            Resumen sincronizado en tiempo real con la ruta activa, puntos de control y telemetría de soporte vital para descarga oficial.
+            Real-time synchronized summary of the active route, checkpoints, and life-support telemetry for official download.
           </p>
 
           <pre class="eva-json-preview" id="eva-json-preview"></pre>
@@ -947,16 +947,16 @@
           <div class="eva-export-actions">
             <button id="btn-download-json" class="hud-btn-cta full-width" type="button">
               <i class="fa-solid fa-download"></i>
-              <span>DESCARGAR REPORTE EVA (.JSON)</span>
+              <span>DOWNLOAD EVA REPORT (.JSON)</span>
             </button>
             <button id="btn-import-json" class="planner-btn full-width" type="button">
               <i class="fa-solid fa-file-import text-cyan"></i>
-              <span>IMPORTAR PLAN EVA (.JSON)</span>
+              <span>IMPORT EVA PLAN (.JSON)</span>
             </button>
             <input id="input-import-json" type="file" accept=".json,application/json" hidden>
             <button id="btn-copy-manifest" class="planner-btn secondary full-width" type="button">
               <i class="fa-solid fa-copy"></i>
-              <span id="copy-manifest-label">COPIAR TELEMETRÍA AL PORTAPAPELES</span>
+              <span id="copy-manifest-label">COPY TELEMETRY TO CLIPBOARD</span>
             </button>
           </div>
         </aside>
@@ -964,7 +964,7 @@
     </div>
   </dialog>
 
-  <!-- Motor Cartográfico (Leaflet.js) y Lógica Principal HUD -->
+  <!-- Cartographic Engine (Leaflet.js) and Main HUD Logic -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script type="module" src="./app.js"></script>
 </body>

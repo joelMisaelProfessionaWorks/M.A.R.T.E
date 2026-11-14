@@ -1,8 +1,8 @@
 {
   "name": "M.A.R.T.E — Interplanetary Survival Guide: Martian Map",
   "short_name": "M.A.R.T.E HUD",
-  "description": "Guía de Supervivencia Interplanetaria y Planificador EVA Marciano con Cartografía NASA y Street View 360°.",
-  "lang": "es",
+  "description": "Interplanetary Survival Guide and Martian EVA Planner with NASA Cartography and 360° Street View.",
+  "lang": "en",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

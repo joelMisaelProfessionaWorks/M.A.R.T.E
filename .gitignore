@@ -27,3 +27,11 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Python & Voice API temporary files
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+mars-voice-api/_temp_*.wav
+mars-voice-api/resultado_test.wav

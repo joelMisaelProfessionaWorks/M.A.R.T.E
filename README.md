@@ -8,81 +8,101 @@
 ![Build](https://img.shields.io/badge/Bundler-Vite%206-646cff)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
-Plataforma web interactiva de planificación de travesías extravehiculares (**EVA**) y supervivencia humana en Marte. Diseñada como una consola **HUD aeroespacial** (modo oscuro con acentos `#FF6B2B` y `#00E5FF`), combina **cartografía orbital multiespectral 2D**, simulación biofísica de soporte vital y un visor inmersivo **Martian Street View 360°** alimentado con mosaicos reales e imágenes en vivo de la NASA.
+Interactive web platform for planning extravehicular activity (**EVA**) traverses and human survival on Mars. Designed as an **aerospace HUD console** (dark mode with `#FF6B2B` and `#00E5FF` accents), it combines **multispectral 2D orbital cartography**, biophysical life-support simulation, AI-generated voice briefings, and an immersive **360° Martian Street View** powered by real NASA/JPL mosaics and live telemetry feeds.
 
 ---
 
-## 🛰️ Módulos Principales
+## ✨ Key Modules
 
-- **Consola HUD Espacial Adaptativa:** Sala de control sin superposiciones con paneles laterales retráctiles, modo **Pantalla Dividida (`2D + 360°`)**, reloj marciano en vivo (**MTC — Coordinated Mars Time**), retroalimentación sonora sintetizada por *Web Audio API* e interfaz móvil adaptable estilo navegador táctico (*bottom sheets*).
-- **Cartografía Orbital 2D Multiespectral:** Mapa interactivo sobre proyección planetaria con **6 capas base** (*Viking MDIM 2.1*, *MOLA Hypsometric Relief*, *Celestia 16K Shaded Relief*, *THEMIS Day IR* y servicios WMS de *USGS Astrogeology*), malla táctica procedural a alto zoom y **5 capas científicas dinámicas**:
-  1. **Topografía (MOLA):** Curvas de nivel y cotas altimétricas regionales.
-  2. **Geología (THEMIS IR):** Unidades litoestratigráficas y zonas de riesgo.
-  3. **Recursos H₂O (ISRU / SHARAD):** Reservas de hielo subterráneo para extracción de agua y oxígeno.
-  4. **Clima y Atmósfera:** Frentes regionales de tormentas de polvo y vientos catabáticos.
-  5. **Sitios de Misión NASA:** Ubicaciones históricas y activas de *landers*, *rovers* y helicóptero *Ingenuity*.
-- **Planificador de Rutas EVA y Motor de Supervivencia:**
-  - **4 travesías científicas preconfiguradas** (*Jezero-Alpha*, *Jezero-Beta*, *Gale Crater — Mount Sharp*, *Valles Marineris — Coprates Chasma*) y **trazado manual personalizado** directamente sobre el mapa (`+ TRAZAR EN MAPA`).
-  - Cálculo geodésico mediante la fórmula de **Haversine** ajustada al radio ecuatorial marciano (`3,396.2 km`).
-  - **Perfil de elevación SVG interactivo** y simulador de recorrido en tiempo real que estima consumo metabólico de **O₂**, descarga de **batería del rover** (MMRTG + paneles solares penalizados por opacidad atmosférica `τ`), distancia y tiempo estimado de misión.
-- **Martian Street View 360° (Motor Propio en Canvas 2D):**
-  - Exploración esférica/cilíndrica a 60 FPS con paneo inercial, zoom de campo visual (FOV), mini-mapa de orientación, **hotspots científicos 3D** y cono de visión radar sincronizado en tiempo real con el mapa 2D.
-  - Conmutación instantánea entre **Foto Real NASA** (panoramas de *Perseverance Mastcam-Z* y *Curiosity Mastcam*) y **Simulación Topográfica DEM**.
-  - **Buscador fotográfico integrado en vivo** con la API oficial `images-api.nasa.gov` para cargar nuevos panoramas marcianos bajo demanda.
-- **Dossier de Misiones y Exportación Táctica (`.json`):**
-  - Fichas técnicas detalladas de 6 misiones emblemáticas de la NASA en un modal nativo `<dialog>` y generación/descarga del **Manifiesto Táctico EVA** en formato JSON.
+1. **Multispectral 2D Orbital Map (`Leaflet.js`)**
+   - **5 Orbital Base Maps**: Mars Viking MDIM 2.1, MOLA Color Shaded Relief, MOLA Elevation, CTX Global Mosaic, and Valles Marineris HiRISE.
+   - **5 Toggleable NASA Tactical Layers**: Topographic Contours (MOLA), Geological Units (CRISM/THEMIS), Subsurface Water-Ice Reserves (SHARAD/RIMFAX ISRU), Dust Storm & Wind Advisories (MEDA/REMS), and Historic Landing Sites.
+   - Real-time rover vision cone overlay synced to the 360° camera azimuth and FOV.
 
----
+2. **EVA Route Planner & Survival Telemetry Engine**
+   - **4 Curated Mission Routes**: `JEZERO-ALPHA`, `JEZERO-BETA`, `GALE-SHARP`, and `VALLES-SUR` (Coprates Chasma).
+   - **Live Route Editing**: Custom drawing mode (`+ DRAW`), click-to-add waypoints, draggable markers, `UNDO`/`Ctrl+Z` support, and automatic `localStorage` state persistence.
+   - **Topographic Elevation Profile (SVG)** & real-time O₂ consumption, MMRTG/solar battery autonomy, distance, ETA, crew size (`2–6` astronauts), transport mode (`Rover` vs. `Foot EVA`), and departure window calculations.
 
-## 🛠️ Stack Tecnológico Real
+3. **Immersive 360° Martian Street View**
+   - **6 Step-by-Step Stations** across Jezero Crater, Gale Crater (Mount Sharp), and Valles Marineris with real NASA/JPL panoramic imagery and a procedurally rendered 2D fallback canvas.
+   - Interactive drag/zoom camera controls, azimuth compass, step pills, science/navigation hotspots, minimap overview, and a **NASA Photo Archive & Live Search Drawer** (`images-api.nasa.gov`).
 
-- **Frontend Core:** HTML5 Semántico (`<dialog>`, gráficos SVG dinámicos), CSS3 Puro (CSS Grid, Custom Properties, diseño responsivo móvil/escritorio), Vanilla JavaScript (ES6+).
-- **Empaquetado y Entorno de Desarrollo:** [Vite 6](https://vite.dev/).
-- **Cartografía 2D & Renderizado 360°:**
-  - [Leaflet.js 1.9.4](https://leafletjs.com/) — Motor GIS 2D, capas de teselas planetarias y superposiciones WMS.
-  - **HTML5 Canvas 2D API** — Motor propio de proyección panorámica 360° y capa táctica procedural.
-  - **Web Audio API** — Sintetizador de audio sci-fi para alertas e interacciones del HUD (sin archivos de audio externos).
-- **Tipografía e Iconografía:** Google Fonts (`Orbitron`, `Rajdhani`, `Share Tech Mono`) y Font Awesome `6.5.1`.
+4. **Dynamic Mars Weather, NASA Missions Dossier & EVA JSON Export**
+   - Live Mars weather telemetry via NASA's InSight API (`api.nasa.gov/insight_weather/`) with regional MEDA/REMS/MRO-MCS fallback presets.
+   - Native `<dialog>` **NASA Missions Dossier** covering Perseverance, Ingenuity, Curiosity, InSight, Viking 1, and MRO/MGS orbital sensors.
+   - Full `.JSON` EVA manifest export, clipboard copy, and `.JSON` route import.
+
+5. **Local AI Voice Briefing Server (`mars-voice-api`, Optional)**
+   - Optional Flask + F5-TTS voice synthesis server (`http://localhost:5000/api/narrate`) that generates spoken station briefings and caches audio blobs per session.
+
+6. **PWA & Offline Asset Caching**
+   - Pre-caches local panoramic mosaics and core assets via `public/sw.js` and `public/manifest.webmanifest`.
 
 ---
 
-## 📡 Fuentes de Datos Científicos y Créditos
+## 🛠️ Tech Stack
 
-- **NASA Image and Video Library API (`images-api.nasa.gov`):** Búsqueda y carga en tiempo real de mosaicos y fotografías de misiones marcianas.
-- **USGS Astrogeology Science Center & OpenPlanetaryMap:** Mosaicos globales *Mars Viking MDIM 2.1*, altimetría láser *MGS MOLA* e infrarrojo térmico *Mars Odyssey THEMIS*.
-- **NASA / JPL-Caltech / MSSS / ASU Photojournal:** Panorámicas de superficie integradas localmente (`PIA24921`, `PIA24264`, `PIA26369`, `PIA26474`, `PIA22545`, `PIA26363`, `PIA13077`) y parámetros ambientales de referencia basados en las estaciones *MEDA* (Mars 2020) y *REMS* (MSL).
+- **Frontend**: Vanilla JavaScript (ES Modules), HTML5 (`<dialog>`, Canvas 2D, SVG), CSS3 Grid/Flexbox
+- **Mapping & Build**: Leaflet 1.9.4, Vite 6
+- **Voice API (Optional)**: Python 3, Flask, Flask-CORS, PyTorch, F5-TTS, SoundFile
+- **Data Sources**: NASA/JPL-Caltech/ASU/MSSS, USGS Astrogeology (OpenPlanetaryMap Mars tiles), NASA Images API, NASA InSight Weather API
 
 ---
 
-## 📂 Estructura del Proyecto
+## 📂 Project Structure
 
 ```text
 M.A.R.T.E/
+├── mars-voice-api/
+│   ├── app.py                  # Flask + F5-TTS narration API server (port 5000)
+│   ├── test_voice.py           # Local verification script for voice generation
+│   └── requirements.txt        # Python dependencies for the voice backend
 ├── public/
-│   └── panoramas/        # Mosaicos panorámicos 360° locales de NASA/JPL
-├── index.html            # Estructura semántica del HUD, paneles, visores y modal <dialog>
-├── styles.css            # Sistema de diseño sci-fi, layout Grid y modo móvil responsivo
-├── app.js                # Lógica GIS (Leaflet), telemetría EVA, motor 360° y conexión API NASA
-├── vite.config.js        # Configuración de Vite con base relativa ('./') para despliegue estático
-└── package.json          # Scripts de desarrollo y construcción
+│   ├── panoramas/              # Local real NASA/JPL 360° panoramic mosaics
+│   ├── manifest.webmanifest    # PWA manifest metadata
+│   └── sw.js                   # Service Worker for offline panorama caching
+├── index.html                  # Semantic HUD layout, control drawers, 360° viewer & dossier modal
+├── styles.css                  # Aerospace dark HUD theme, Grid layout & responsive mobile styles
+├── app.js                      # GIS logic (Leaflet), EVA telemetry, 360° engine & NASA APIs
+├── vite.config.js              # Vite config with relative base ('./') for static deployment
+└── package.json                # npm development and production build scripts
 ```
 
 ---
 
-## ⚡ Instalación y Ejecución Local
+## 🚀 Quick Start
 
-### Requisitos previos
-- **Node.js** `>= 18` y **npm**.
-
-### Pasos
+### 1. Frontend HUD (Required)
 
 ```bash
-# 1. Entrar al directorio del proyecto
+# 1. Navigate to the project directory
 cd M.A.R.T.E
 
-# 2. Instalar dependencias
+# 2. Install Node dependencies
 npm install
 
-# 3. Iniciar servidor de desarrollo (abre automáticamente en el navegador)
+# 3. Start the Vite development server
 npm run dev
+
+# 4. Build production bundle (outputs to dist/)
+npm run build
+```
+
+### 2. AI Voice Narration Backend (Optional)
+
+Ensure the reference audio file `mars-voice-api/AI_Ranni.wav` is present before launching the Flask server:
+
+```bash
+# 1. Navigate to the voice API directory
+cd mars-voice-api
+
+# 2. Create a virtual environment and install dependencies
+python -m venv .venv
+# Windows PowerShell: .\.venv\Scripts\Activate.ps1
+# macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+
+# 3. Run the F5-TTS server on port 5000
+python app.py
 ```

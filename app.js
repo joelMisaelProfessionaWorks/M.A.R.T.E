@@ -1,10 +1,10 @@
 /**
  * ============================================================================
  * NASA SPACE APPS CHALLENGE 2026
- * PROYECTO: Interplanetary Survival Guide: Martian Map (M.A.R.T.E)
- * ETAPA 2 & ETAPA 3:
- *  - Mapa Orbital 2D Interactivo con Leaflet.js y 5 Capas de la NASA
- *  - Planificador de Rutas y Motor de Telemetría de Supervivencia en Tiempo Real
+ * PROJECT: Interplanetary Survival Guide: Martian Map (M.A.R.T.E)
+ * STAGE 2 & STAGE 3:
+ *  - Interactive 2D Orbital Map with Leaflet.js and 5 NASA Imagery Layers
+ *  - EVA Route Planner and Real-Time Survival Telemetry Engine
  * ============================================================================
  */
 
@@ -85,12 +85,12 @@ function initMarsDashboard() {
     'jezero-alpha': {
       id: 'jezero-alpha',
       code: 'JEZERO-ALPHA',
-      title: 'Exploradores Humanos: Destino Jezero Crater',
-      sector: 'Sector: Abanico Aluvial Occidental • Cuadrángulo Syrtis Major',
-      desc: 'Travesía planificada para astronautas y rover presurizado desde el sitio de descenso hasta el antiguo delta lacustre. Prioridad: extracción de regolito hidratado y establecimiento del Campamento Base.',
-      difficulty: 'INTERMEDIA',
+      title: 'Human Explorers: Destination Jezero Crater',
+      sector: 'Sector: Western Alluvial Fan • Syrtis Major Quadrangle',
+      desc: 'Planned traverse for astronauts and pressurized rover from the landing site to the ancient lacustrine delta. Priority: hydrated regolith extraction and Base Camp establishment.',
+      difficulty: 'MEDIUM',
       maxSlopeDeg: 14.2,
-      slopeStatus: 'SEGURA',
+      slopeStatus: 'SAFE',
       avgSpeedKmh: 3.1,
       totalDistKm: 14.6,
       baseO2RatePerKm: 3.15, // % de tanque EVA por km
@@ -108,29 +108,29 @@ function initMarsDashboard() {
       ],
       waypoints: [
         {
-          name: 'Punto de Inicio (Start)',
+          name: 'Starting Point (Start)',
           sub: 'Octavia E. Butler Landing',
           km: 0.0,
           coords: [18.28, 77.68],
           elev: -2540
         },
         {
-          name: 'Parada Científica: Kodiak',
-          sub: 'Análisis estratigráfico fluvial',
+          name: 'Science Stop: Kodiak',
+          sub: 'Fluvial stratigraphic analysis',
           km: 4.8,
           coords: [18.38, 77.49],
           elev: -2490
         },
         {
-          name: 'Depósito de Hielo Subterráneo',
-          sub: 'Extracción ISRU de H₂O',
+          name: 'Subsurface Ice Deposit',
+          sub: 'H₂O ISRU extraction',
           km: 9.4,
           coords: [18.52, 77.33],
           elev: -2435
         },
         {
-          name: 'Campamento Base (Base Camp)',
-          sub: 'Hábitat Delta Prime',
+          name: 'Base Camp',
+          sub: 'Delta Prime Habitat',
           km: 14.6,
           coords: [18.64, 77.15],
           elev: -2380
@@ -141,12 +141,12 @@ function initMarsDashboard() {
     'jezero-beta': {
       id: 'jezero-beta',
       code: 'JEZERO-BETA',
-      title: 'Expedición Geológica: Cráter Belva y Neretva Vallis',
-      sector: 'Sector: Meseta Superior del Delta • Canal de Entrada Occidental',
-      desc: 'Ruta de ascenso pronunciado bordeando el cráter de impacto Belva hacia el cañón alimentador Neretva Vallis. Mayor gasto energético a cambio de muestras de corteza profunda.',
-      difficulty: 'ALTA',
+      title: 'Geological Expedition: Belva Crater & Neretva Vallis',
+      sector: 'Sector: Upper Delta Plateau • Western Inlet Channel',
+      desc: 'Steep ascent route skirting Belva impact crater toward the Neretva Vallis feeder canyon. Higher energy expenditure in exchange for deep crustal samples.',
+      difficulty: 'HIGH',
       maxSlopeDeg: 19.8,
-      slopeStatus: 'PRECAUCIÓN',
+      slopeStatus: 'CAUTION',
       avgSpeedKmh: 2.6,
       totalDistKm: 19.2,
       baseO2RatePerKm: 3.45,
@@ -164,28 +164,28 @@ function initMarsDashboard() {
       waypoints: [
         {
           name: 'Octavia E. Butler Landing',
-          sub: 'Base de partida en llanura',
+          sub: 'Plains departure base',
           km: 0.0,
           coords: [18.28, 77.68],
           elev: -2540
         },
         {
-          name: 'Frente del Delta Norte',
-          sub: 'Ascenso por talud sedimentario',
+          name: 'Northern Delta Front',
+          sub: 'Ascent via sedimentary slope',
           km: 6.1,
           coords: [18.49, 77.42],
           elev: -2420
         },
         {
-          name: 'Mirador Cráter Belva',
-          sub: 'Impacto expone estratos antiguos',
+          name: 'Belva Crater Overlook',
+          sub: 'Impact exposes ancient strata',
           km: 12.8,
           coords: [18.58, 77.28],
           elev: -2365
         },
         {
-          name: 'Boca de Neretva Vallis',
-          sub: 'Estación Hidrológica Avanzada',
+          name: 'Neretva Vallis Mouth',
+          sub: 'Advanced Hydrological Station',
           km: 19.2,
           coords: [18.74, 76.98],
           elev: -2295
@@ -196,12 +196,12 @@ function initMarsDashboard() {
     'gale-sharp': {
       id: 'gale-sharp',
       code: 'GALE-SHARP',
-      title: 'Travesía Histórica: Cráter Gale hacia Aeolis Mons',
-      sector: 'Sector: Aeolis Palus • Faldas del Monte Sharp (5.5 km altitud)',
-      desc: 'Siguiendo la huella histórica del rover Curiosity a través de dunas basálticas oscuras (Bagnold Dunes) y crestas ricas en hematita y sulfatos.',
-      difficulty: 'ALTA',
+      title: 'Historic Traverse: Gale Crater toward Aeolis Mons',
+      sector: 'Sector: Aeolis Palus • Foothills of Mount Sharp (5.5 km altitude)',
+      desc: 'Following the historic tracks of the Curiosity rover across dark basaltic dunes (Bagnold Dunes) and ridges rich in hematite and sulfates.',
+      difficulty: 'HIGH',
       maxSlopeDeg: 23.4,
-      slopeStatus: 'EXIGENTE',
+      slopeStatus: 'DEMANDING',
       avgSpeedKmh: 2.4,
       totalDistKm: 24.8,
       baseO2RatePerKm: 3.30,
@@ -217,29 +217,29 @@ function initMarsDashboard() {
       ],
       waypoints: [
         {
-          name: 'Bradbury Landing (Inicio)',
-          sub: 'Sitio de descenso MSL Curiosity',
+          name: 'Bradbury Landing (Start)',
+          sub: 'MSL Curiosity landing site',
           km: 0.0,
           coords: [-4.42, 137.62],
           elev: -4501
         },
         {
-          name: 'Campo de Dunas Bagnold',
-          sub: 'Arena basáltica eólica activa',
+          name: 'Bagnold Dune Field',
+          sub: 'Active aeolian basaltic sand',
           km: 7.4,
           coords: [-4.54, 137.50],
           elev: -4440
         },
         {
-          name: 'Cresta Vera Rubin',
-          sub: 'Depósitos de óxido férrico (Hematita)',
+          name: 'Vera Rubin Ridge',
+          sub: 'Ferric oxide (Hematite) deposits',
           km: 16.2,
           coords: [-4.68, 137.38],
           elev: -4310
         },
         {
-          name: 'Unidad de Sulfatos Monte Sharp',
-          sub: 'Campamento de Altura Gale',
+          name: 'Mount Sharp Sulfate Unit',
+          sub: 'Gale High-Altitude Camp',
           km: 24.8,
           coords: [-4.95, 137.14],
           elev: -4011
@@ -250,12 +250,12 @@ function initMarsDashboard() {
     'valles-marineris': {
       id: 'valles-marineris',
       code: 'VALLES-SUR',
-      title: 'Misión Extrema: Cañón Coprates (Valles Marineris)',
-      sector: 'Sector: Coprates Chasma • Sistema de Cañones Ecuatoriales',
-      desc: 'Exploración de alto riesgo en el cañón tectónico más grande del Sistema Solar. Fuertes vientos catabáticos y pendientes cercanas al límite de vuelco del rover (28°).',
-      difficulty: 'EXTREMA',
+      title: 'Extreme Mission: Coprates Canyon (Valles Marineris)',
+      sector: 'Sector: Coprates Chasma • Equatorial Canyon System',
+      desc: 'High-risk exploration inside the largest tectonic canyon in the Solar System. Strong katabatic winds and slopes approaching the rover rollover limit (28°).',
+      difficulty: 'EXTREME',
       maxSlopeDeg: 27.6,
-      slopeStatus: 'CRÍTICA',
+      slopeStatus: 'CRITICAL',
       avgSpeedKmh: 2.1,
       totalDistKm: 31.5,
       baseO2RatePerKm: 3.65,
@@ -271,29 +271,29 @@ function initMarsDashboard() {
       ],
       waypoints: [
         {
-          name: 'Plataforma Coprates Floor',
-          sub: 'Fondo del cañón abisal',
+          name: 'Coprates Floor Platform',
+          sub: 'Abyssal canyon floor',
           km: 0.0,
           coords: [-13.62, -59.52],
           elev: -4120
         },
         {
-          name: 'Escarpe de Falla Normal 01',
-          sub: 'Pendiente rocosa de 27.6°',
+          name: 'Normal Fault Scarp 01',
+          sub: 'Rocky 27.6° slope',
           km: 10.5,
           coords: [-13.75, -59.35],
           elev: -3960
         },
         {
-          name: 'Terraza de Sulfatos Hídricos',
-          sub: 'Vetas minerales expuestas',
+          name: 'Hydrated Sulfate Terrace',
+          sub: 'Exposed mineral veins',
           km: 21.0,
           coords: [-13.88, -59.18],
           elev: -3790
         },
         {
-          name: 'Refugio Subterráneo de Pared',
-          sub: 'Tubo de lava / Caverna protegida',
+          name: 'Subsurface Cliffside Shelter',
+          sub: 'Lava tube / Shielded cavern',
           km: 31.5,
           coords: [-14.14, -58.84],
           elev: -3440
@@ -487,19 +487,19 @@ function initMarsDashboard() {
     'jezero-alpha': {
       contours: [
         {
-          elev: '-2,560m (Piso Lacustre Jezero)',
+          elev: '-2,560m (Jezero Lacustrine Floor)',
           color: '#ff9e66',
           dash: '6, 6',
           coords: [[18.18, 77.52], [18.25, 77.74], [18.46, 77.78], [18.65, 77.62], [18.68, 77.38]]
         },
         {
-          elev: '-2,460m (Talud Frontal del Delta)',
+          elev: '-2,460m (Front Delta Slope)',
           color: '#FF6B2B',
           dash: null,
           coords: [[18.24, 77.38], [18.38, 77.52], [18.54, 77.48], [18.66, 77.30], [18.72, 77.12]]
         },
         {
-          elev: '-2,340m (Meseta Delta Prime & Borde Cráter)',
+          elev: '-2,340m (Delta Prime Plateau & Crater Rim)',
           color: '#ff3d00',
           dash: '10, 5',
           coords: [[18.32, 77.10], [18.48, 77.26], [18.62, 77.22], [18.75, 77.05]]
@@ -507,25 +507,25 @@ function initMarsDashboard() {
       ],
       geology: [
         {
-          name: 'Unidad Deltaica Aluvial (Filosilicatos y Carbonatos)',
-          code: 'Nh-d1 // Alta Prioridad Astrobiológica',
-          desc: 'Sedimentos fluviales ricos en arcillas esmectitas y carbonatos depositados por el antiguo río Neretva Vallis hace ~3.700 millones de años.',
+          name: 'Alluvial Delta Unit (Phyllosilicates & Carbonates)',
+          code: 'Nh-d1 // High Astrobiological Priority',
+          desc: 'Fluvial sediments rich in smectite clays and carbonates deposited by the ancient Neretva Vallis river ~3.7 billion years ago.',
           color: '#ce93d8',
           fillColor: '#ab47bc',
           coords: [[18.44, 77.12], [18.68, 77.14], [18.64, 77.42], [18.40, 77.38]]
         },
         {
-          name: 'Unidad Máaz (Piso Volcánico Basáltico / Olivino)',
-          code: 'Ah-v2 // Regolito Ígneo Fracturado',
-          desc: 'Rocas ígneas ricas en piroxeno y olivino alteradas por agua subterránea. Terreno firme óptimo para tracción de rovers.',
+          name: 'Máaz Unit (Basaltic / Olivine Volcanic Floor)',
+          code: 'Ah-v2 // Fractured Igneous Regolith',
+          desc: 'Igneous rocks rich in pyroxene and olivine altered by groundwater. Firm terrain optimal for rover traction.',
           color: '#ffb74d',
           fillColor: '#f57c00',
           coords: [[18.20, 77.46], [18.44, 77.48], [18.42, 77.76], [18.18, 77.72]]
         },
         {
-          name: 'Unidad Séítah (Cumulados de Olivino y Carbonato Magnésico)',
-          code: 'Nh-s3 // Zona de Dunas Eólicas',
-          desc: 'Afloramiento geológico más antiguo del piso del cráter con presencia de ondas eólicas (megaripples). Precaución: riesgo de atasco en ruedas.',
+          name: 'Séítah Unit (Olivine & Magnesium Carbonate Cumulates)',
+          code: 'Nh-s3 // Aeolian Dune Hazard Zone',
+          desc: 'Oldest geological outcrop on the crater floor with aeolian bedforms (megaripples). Caution: wheel entrapment hazard.',
           color: '#ef5350',
           fillColor: '#d32f2f',
           coords: [[18.30, 77.32], [18.48, 77.35], [18.46, 77.54], [18.28, 77.50]]
@@ -533,55 +533,55 @@ function initMarsDashboard() {
       ],
       resources: [
         {
-          name: 'Reserva de Hielo Subsuperficial: Delta Norte (ISRU-01)',
+          name: 'Subsurface Ice Reserve: North Delta (ISRU-01)',
           coords: [18.52, 77.33],
           radius: 5800,
-          purity: '84% H₂O Cristalino + Sílice Hidratada',
-          depth: '1.2m bajo regolito',
-          yield: 'Estimado: 42,000 Litros procesables'
+          purity: '84% Crystalline H₂O + Hydrated Silica',
+          depth: '1.2m beneath regolith',
+          yield: 'Estimated: 42,000 Liters processable'
         },
         {
-          name: 'Bolsón de Permafrost Protegido: Neretva Rim (ISRU-02)',
+          name: 'Protected Permafrost Pocket: Neretva Rim (ISRU-02)',
           coords: [18.64, 77.15],
           radius: 4800,
-          purity: '91% Hielo de Agua Subterráneo',
-          depth: '0.8m (Sombra térmica permanente)',
-          yield: 'Estimado: 68,500 Litros (Soporte Vital Campamento Base)'
+          purity: '91% Subsurface Water Ice',
+          depth: '0.8m (Permanent thermal shadow)',
+          yield: 'Estimated: 68,500 Liters (Base Camp Life Support)'
         },
         {
-          name: 'Depósito de Sulfatos Polihidratados: Kodiak Este',
+          name: 'Polyhydrated Sulfate Deposit: East Kodiak',
           coords: [18.35, 77.56],
           radius: 4200,
-          purity: '38% Agua ligada a minerales',
-          depth: 'Superficial (0.2m)',
-          yield: 'Requiere horno de pirólisis a 450°C'
+          purity: '38% Mineral-bound water',
+          depth: 'Surface (0.2m)',
+          yield: 'Requires pyrolysis furnace at 450°C'
         }
       ],
       weather: {
         coords: [18.24, 77.22],
         outerRadius: 11500,
         innerRadius: 5500,
-        tag: 'TORMENTA DE POLVO (&tau; 1.45 | 24.5 KM/H)',
-        title: 'Frente de Tormenta de Polvo Regional (Jezero SO)',
-        desc: 'Avance hacia el ENE a 24.5 km/h. Opacidad atmosférica Tau (&tau;) subiendo a 1.45. Se recomienda completar travesía antes de las 17:30 MTC.'
+        tag: 'DUST STORM (&tau; 1.45 | 24.5 KM/H)',
+        title: 'Regional Dust Storm Front (SW Jezero)',
+        desc: 'Advancing ENE at 24.5 km/h. Atmospheric opacity Tau (&tau;) rising to 1.45. Recommended to complete traverse before 17:30 MTC.'
       }
     },
     'jezero-beta': {
       contours: [
         {
-          elev: '-2,420m (Rampa de Ascenso Belva)',
+          elev: '-2,420m (Belva Ascent Ramp)',
           color: '#ff9e66',
           dash: '6, 6',
           coords: [[18.34, 77.45], [18.48, 77.56], [18.64, 77.46], [18.74, 77.28]]
         },
         {
-          elev: '-2,350m (Anillo de Eyección Cráter Belva)',
+          elev: '-2,350m (Belva Crater Ejecta Ring)',
           color: '#FF6B2B',
           dash: null,
           coords: [[18.48, 77.18], [18.58, 77.34], [18.68, 77.26], [18.76, 77.08]]
         },
         {
-          elev: '-2,280m (Garganta de Neretva Vallis)',
+          elev: '-2,280m (Neretva Vallis Gorge)',
           color: '#ff3d00',
           dash: '10, 5',
           coords: [[18.60, 76.88], [18.72, 77.04], [18.82, 76.96]]
@@ -589,17 +589,17 @@ function initMarsDashboard() {
       ],
       geology: [
         {
-          name: 'Brecha de Impacto Cráter Belva (Estratigrafía Expuesta)',
-          code: 'Hc-b1 // Ventana Cortical Profunda',
-          desc: 'Cráter de impacto de 900m que expone secuencias deltaicas profundas y megabloques transportados por inundaciones.',
+          name: 'Belva Crater Impact Breccia (Exposed Stratigraphy)',
+          code: 'Hc-b1 // Deep Crustal Window',
+          desc: '900m impact crater exposing deep deltaic sequences and flood-transported megablocks.',
           color: '#ce93d8',
           fillColor: '#8e24aa',
           coords: [[18.50, 77.18], [18.66, 77.20], [18.64, 77.38], [18.48, 77.35]]
         },
         {
-          name: 'Canal Fluvial Neretva Vallis (Arcillas Fe/Mg)',
-          code: 'Nh-nv // Antiguo Cañón Alimentador',
-          desc: 'Lecho rocoso tallado por el río que alimentó el lago Jezero. Abundantes filosilicatos hidratados.',
+          name: 'Neretva Vallis Fluvial Channel (Fe/Mg Clays)',
+          code: 'Nh-nv // Ancient Feeder Canyon',
+          desc: 'Bedrock carved by the river that fed Lake Jezero. Abundant hydrated phyllosilicates.',
           color: '#4dd0e1',
           fillColor: '#0097a7',
           coords: [[18.64, 76.88], [18.80, 76.90], [18.78, 77.16], [18.62, 77.12]]
@@ -607,47 +607,47 @@ function initMarsDashboard() {
       ],
       resources: [
         {
-          name: 'Acuífero Congelado Neretva Gorge (ISRU-NV1)',
+          name: 'Frozen Aquifer Neretva Gorge (ISRU-NV1)',
           coords: [18.74, 76.98],
           radius: 6200,
-          purity: '93% Hielo Subsuperficial en Pared de Cañón',
-          depth: '0.7m bajo talud norte',
-          yield: 'Estimado: 74,000 Litros procesables'
+          purity: '93% Subsurface Ice in Canyon Wall',
+          depth: '0.7m beneath northern slope',
+          yield: 'Estimated: 74,000 Liters processable'
         },
         {
-          name: 'Lente de Hielo Cráter Belva Sur (ISRU-BV2)',
+          name: 'Ice Lens South Belva Crater (ISRU-BV2)',
           coords: [18.58, 77.28],
           radius: 4800,
-          purity: '81% H₂O en brecha porosa',
-          depth: '1.4m bajo piso del cráter',
-          yield: 'Estimado: 39,000 Litros procesables'
+          purity: '81% H₂O in porous breccia',
+          depth: '1.4m beneath crater floor',
+          yield: 'Estimated: 39,000 Liters processable'
         }
       ],
       weather: {
         coords: [18.62, 77.18],
         outerRadius: 10500,
         innerRadius: 4800,
-        tag: 'TURBULENCIA BELVA (&tau; 0.81 | 29.2 KM/H)',
-        title: 'Enjambre de Remolinos (Dust Devils) en Borde Belva',
-        desc: 'Vórtices convectivos detectados por el sensor MEDA-Norte con ráfagas de 29.2 km/h.'
+        tag: 'BELVA TURBULENCE (&tau; 0.81 | 29.2 KM/H)',
+        title: 'Dust Devil Swarm along Belva Rim',
+        desc: 'Convective vortices detected by the MEDA-North sensor with gusts up to 29.2 km/h.'
       }
     },
     'gale-sharp': {
       contours: [
         {
-          elev: '-4,500m (Llanura Aeolis Palus / Bradbury)',
+          elev: '-4,500m (Aeolis Palus Plains / Bradbury)',
           color: '#ff9e66',
           dash: '6, 6',
           coords: [[-4.35, 137.45], [-4.42, 137.70], [-4.60, 137.68], [-4.68, 137.52]]
         },
         {
-          elev: '-4,310m (Cresta de Hematita Vera Rubin)',
+          elev: '-4,310m (Vera Rubin Hematite Ridge)',
           color: '#FF6B2B',
           dash: null,
           coords: [[-4.55, 137.28], [-4.68, 137.45], [-4.82, 137.38], [-4.88, 137.22]]
         },
         {
-          elev: '-4,010m (Faldas de Sulfatos Aeolis Mons / Monte Sharp)',
+          elev: '-4,010m (Aeolis Mons / Mount Sharp Sulfate Foothills)',
           color: '#ff3d00',
           dash: '10, 5',
           coords: [[-4.78, 137.05], [-4.92, 137.22], [-5.05, 137.12]]
@@ -655,25 +655,25 @@ function initMarsDashboard() {
       ],
       geology: [
         {
-          name: 'Campo de Dunas Eólicas Bagnold (Basalto y Olivino)',
-          code: 'Am-bd // Dunas Activas Oscuras',
-          desc: 'Cinturón de dunas de arena basáltica moldeadas por vientos del Monte Sharp. Baja tracción para ruedas metálicas.',
+          name: 'Bagnold Aeolian Dune Field (Basalt & Olivine)',
+          code: 'Am-bd // Dark Active Dunes',
+          desc: 'Belt of basaltic sand dunes shaped by Mount Sharp winds. Low traction hazard for metal wheels.',
           color: '#ef5350',
           fillColor: '#c62828',
           coords: [[-4.48, 137.38], [-4.62, 137.40], [-4.60, 137.58], [-4.46, 137.55]]
         },
         {
-          name: 'Formación Murray & Cresta Vera Rubin (Lutitas Lacustres)',
-          code: 'Hm-vr // Hematita y Arcillas Esmectitas',
-          desc: 'Sedimentos lacustres finamente laminados que prueban la existencia de un lago habitable de larga duración en Gale.',
+          name: 'Murray Formation & Vera Rubin Ridge (Lacustrine Mudstones)',
+          code: 'Hm-vr // Hematite and Smectite Clays',
+          desc: 'Finely laminated lacustrine sediments proving the existence of a long-lived habitable lake in Gale.',
           color: '#ce93d8',
           fillColor: '#9c27b0',
           coords: [[-4.62, 137.24], [-4.80, 137.26], [-4.78, 137.46], [-4.60, 137.42]]
         },
         {
-          name: 'Unidad Portadora de Sulfatos (Monte Sharp / Gediz Vallis)',
-          code: 'Hs-ms // Kieserita y Sulfatos de Magnesio',
-          desc: 'Estratos depositados durante la transición climática de Marte hacia una era más árida.',
+          name: 'Sulfate-Bearing Unit (Mount Sharp / Gediz Vallis)',
+          code: 'Hs-ms // Kieserite and Magnesium Sulfates',
+          desc: 'Strata deposited during Mars climatic transition toward a more arid era.',
           color: '#ffb74d',
           fillColor: '#ef6c00',
           coords: [[-4.82, 137.04], [-5.02, 137.06], [-4.98, 137.28], [-4.80, 137.24]]
@@ -681,47 +681,47 @@ function initMarsDashboard() {
       ],
       resources: [
         {
-          name: 'Arcillas Hidratadas Glen Torridon (ISRU-GALE-01)',
+          name: 'Hydrated Clays Glen Torridon (ISRU-GALE-01)',
           coords: [-4.68, 137.38],
           radius: 6400,
-          purity: '62% Agua Estructural en Filosilicatos',
-          depth: '0.4m bajo superficie',
-          yield: 'Estimado: 51,000 Litros mediante extracción térmica'
+          purity: '62% Structural Water in Phyllosilicates',
+          depth: '0.4m beneath surface',
+          yield: 'Estimated: 51,000 Liters via thermal extraction'
         },
         {
-          name: 'Canal Aluvial Gediz Vallis (ISRU-GALE-02)',
+          name: 'Alluvial Channel Gediz Vallis (ISRU-GALE-02)',
           coords: [-4.95, 137.14],
           radius: 5600,
-          purity: '78% Sulfatos Polihidratados + H₂O Subsuperficial',
-          depth: '1.1m en abanico de escombros',
-          yield: 'Estimado: 63,000 Litros procesables'
+          purity: '78% Polyhydrated Sulfates + Subsurface H₂O',
+          depth: '1.1m in debris fan',
+          yield: 'Estimated: 63,000 Liters processable'
         }
       ],
       weather: {
         coords: [-4.76, 137.52],
         outerRadius: 12000,
         innerRadius: 5200,
-        tag: 'VIENTO DE LADERA GALE (&tau; 0.58 | 18.4 KM/H)',
-        title: 'Corriente Descendente de Aeolis Mons (Monte Sharp)',
-        desc: 'Flujo térmico NNO a 18.4 km/h registrado por la estación REMS del rover Curiosity.'
+        tag: 'GALE SLOPE WIND (&tau; 0.58 | 18.4 KM/H)',
+        title: 'Downslope Flow from Aeolis Mons (Mount Sharp)',
+        desc: 'NNW thermal flow at 18.4 km/h recorded by the Curiosity rover REMS station.'
       }
     },
     'valles-marineris': {
       contours: [
         {
-          elev: '-4,120m (Piso Abisal Coprates Chasma)',
+          elev: '-4,120m (Coprates Chasma Abyssal Floor)',
           color: '#ff9e66',
           dash: '6, 6',
           coords: [[-13.52, -59.62], [-13.68, -59.40], [-13.84, -59.48]]
         },
         {
-          elev: '-3,790m (Terraza Tectónica de Falla Normal)',
+          elev: '-3,790m (Normal Fault Tectonic Terrace)',
           color: '#FF6B2B',
           dash: null,
           coords: [[-13.70, -59.38], [-13.88, -59.18], [-14.04, -59.25]]
         },
         {
-          elev: '-3,440m (Escarpe Superior y Pared del Cañón)',
+          elev: '-3,440m (Upper Scarp & Canyon Wall)',
           color: '#ff3d00',
           dash: '10, 5',
           coords: [[-13.92, -59.02], [-14.12, -58.82], [-14.24, -58.95]]
@@ -729,17 +729,17 @@ function initMarsDashboard() {
       ],
       geology: [
         {
-          name: 'Depósitos Estratificados Interiores (Sulfatos Hídricos)',
-          code: 'Hvi-s1 // Mesetas Sedimentarias del Cañón',
-          desc: 'Secuencias kilométricas de sulfatos hidratados y óxidos férricos expuestos por el colapso tectónico de Valles Marineris.',
+          name: 'Interior Layered Deposits (Hydrated Sulfates)',
+          code: 'Hvi-s1 // Canyon Sedimentary Plateaus',
+          desc: 'Kilometer-thick sequences of hydrated sulfates and ferric oxides exposed by the tectonic collapse of Valles Marineris.',
           color: '#ce93d8',
           fillColor: '#8e24aa',
           coords: [[-13.76, -59.32], [-13.98, -59.30], [-13.96, -59.05], [-13.74, -59.08]]
         },
         {
-          name: 'Escarpe Basáltico y Deslizamientos de Roca (Landslides)',
-          code: 'Av-ls // Pendiente Crítica 27.6°',
-          desc: 'Taludes de fragmentación volcánica con líneas de pendiente recurrentes (RSL).',
+          name: 'Basaltic Scarp & Rock Landslides',
+          code: 'Av-ls // Critical 27.6° Slope',
+          desc: 'Volcanic fragmentation talus slopes with recurring slope lineae (RSL) and landslide hazard.',
           color: '#ef5350',
           fillColor: '#d32f2f',
           coords: [[-13.96, -59.04], [-14.20, -59.02], [-14.18, -58.76], [-13.94, -58.78]]
@@ -747,29 +747,29 @@ function initMarsDashboard() {
       ],
       resources: [
         {
-          name: 'Acuífero Salino y Niebla H₂O Coprates (ISRU-VM-01)',
+          name: 'Saline Aquifer & H₂O Fog Coprates (ISRU-VM-01)',
           coords: [-13.88, -59.18],
           radius: 7500,
-          purity: '89% Salmueras Hidratadas + Condensación Atmosférica',
-          depth: '0.9m en terraza fracturada',
-          yield: 'Estimado: 92,000 Litros procesables'
+          purity: '89% Hydrated Brines + Atmospheric Condensation',
+          depth: '0.9m in fractured terrace',
+          yield: 'Estimated: 92,000 Liters processable'
         },
         {
-          name: 'Caverna / Tubo Subterráneo con Glaciar Enterrado (ISRU-VM-02)',
+          name: 'Cavern / Subsurface Tube with Buried Glacier (ISRU-VM-02)',
           coords: [-14.14, -58.84],
           radius: 6200,
-          purity: '95% Hielo Protegido de Radiación UV',
-          depth: 'Interior de caverna de pared',
-          yield: 'Estimado: 120,000 Litros (Base Permanente)'
+          purity: '95% Ice Shielded from UV Radiation',
+          depth: 'Interior of canyon wall cavern',
+          yield: 'Estimated: 120,000 Liters (Permanent Base)'
         }
       ],
       weather: {
         coords: [-13.78, -59.02],
         outerRadius: 14500,
         innerRadius: 6800,
-        tag: '⚠ VIENTO CATABÁTICO CAÑÓN (&tau; 1.32 | 64.8 KM/H)',
-        title: 'Corriente de Chorro Canalizada en Coprates Chasma',
-        desc: 'Ráfagas severas de 64.8 km/h a lo largo del eje del cañón con niebla de polvo en suspensión (&tau; 1.32).'
+        tag: '⚠ CANYON KATABATIC WIND (&tau; 1.32 | 64.8 KM/H)',
+        title: 'Channeled Jet Stream in Coprates Chasma',
+        desc: 'Severe gusts of 64.8 km/h along the canyon axis with suspended dust haze (&tau; 1.32).'
       }
     }
   };
@@ -778,7 +778,7 @@ function initMarsDashboard() {
     return {
       contours: [
         {
-          elev: `${estimateNumericAltitude(centerLat, centerLng)}m (Contorno Regional Primario)`,
+          elev: `${estimateNumericAltitude(centerLat, centerLng)}m (Primary Regional Contour)`,
           color: '#FF6B2B',
           dash: '6, 6',
           coords: [
@@ -791,9 +791,9 @@ function initMarsDashboard() {
       ],
       geology: [
         {
-          name: 'Unidad Litoestratigráfica Regional Cartografiada (THEMIS IR)',
-          code: 'Nh-custom // Sector de Exploración EVA',
-          desc: 'Regolito basáltico y sedimentos minerales analizados por espectrometría orbital.',
+          name: 'Mapped Regional Lithostratigraphic Unit (THEMIS IR)',
+          code: 'Nh-custom // EVA Exploration Sector',
+          desc: 'Basaltic regolith and mineral sediments analyzed by orbital spectrometry.',
           color: '#ce93d8',
           fillColor: '#ab47bc',
           coords: [
@@ -806,32 +806,32 @@ function initMarsDashboard() {
       ],
       resources: [
         {
-          name: 'Depósito Subsuperficial de H₂O Detectado por Radar SHARAD',
+          name: 'Subsurface H₂O Deposit Detected by SHARAD Radar',
           coords: [centerLat + 0.06, centerLng - 0.05],
           radius: 5500,
-          purity: '82% Hielo de Agua + Regolito Hidratado',
-          depth: '1.3m bajo superficie',
-          yield: 'Estimado: 45,000 Litros procesables'
+          purity: '82% Water Ice + Hydrated Regolith',
+          depth: '1.3m beneath surface',
+          yield: 'Estimated: 45,000 Liters processable'
         }
       ],
       weather: {
         coords: [centerLat - 0.10, centerLng + 0.12],
         outerRadius: 11000,
         innerRadius: 5000,
-        tag: 'FRENTE EÓLICO REGIONAL (&tau; 0.95 | 26.0 KM/H)',
-        title: 'Actividad Eólica Regional Detectada',
-        desc: 'Corrientes superficiales monitoreadas por sensores orbitales de la NASA en el sector activo.'
+        tag: 'REGIONAL AEOLIAN FRONT (&tau; 0.95 | 26.0 KM/H)',
+        title: 'Regional Aeolian Activity Detected',
+        desc: 'Surface winds monitored by NASA orbital sensors in the active sector.'
       }
     };
   }
 
-  // Reconstruye y sincroniza las capas NASA (Topography, Geology, Resources, Weather) para la región activa
+  // Rebuilds and syncs NASA layers (Topography, Geology, Resources, Weather) for the active region
   function rebuildRegionalNasaLayers(routeKey) {
     const center = activeRouteData?.center || JEZERO_CENTER;
     const regionData =
       REGIONAL_LAYERS_DB[routeKey] || buildProceduralSectorLayers(center[0], center[1]);
 
-    // 1. Actualizar Curvas de Nivel MOLA (Capa Topography)
+    // 1. Update MOLA Contour Lines (Topography Layer)
     regionalContoursGroup.clearLayers();
     regionData.contours.forEach((contour) => {
       const polyline = L.polyline(contour.coords, {
@@ -839,14 +839,14 @@ function initMarsDashboard() {
         weight: 2.2,
         opacity: 0.9,
         dashArray: contour.dash
-      }).bindTooltip(`MOLA ALTITUD: ${contour.elev}`, {
+      }).bindTooltip(`MOLA ALTITUDE: ${contour.elev}`, {
         sticky: true,
         className: 'cyber-leaflet-tooltip'
       });
       regionalContoursGroup.addLayer(polyline);
     });
 
-    // 2. Actualizar Polígonos Litológicos (Capa Geology)
+    // 2. Update Lithological Polygons (Geology Layer)
     nasaLayers.geol.clearLayers();
     regionData.geology.forEach((unit) => {
       const polygon = L.polygon(unit.coords, {
@@ -881,12 +881,12 @@ function initMarsDashboard() {
         fillOpacity: 0.2
       }).bindPopup(`
         <div class="hud-popup-card cyan-theme">
-          <div class="hp-kicker">RADAR SUBSUPERFICIAL SHARAD / RIMFAX</div>
+          <div class="hp-kicker">SUBSURFACE RADAR SHARAD / RIMFAX</div>
           <h4 class="hp-title"><i class="fa-solid fa-snowflake"></i> ${res.name}</h4>
           <ul class="hp-list">
-            <li><strong>Pureza Detectada:</strong> ${res.purity}</li>
-            <li><strong>Profundidad de Extracción:</strong> ${res.depth}</li>
-            <li><strong>Potencial ISRU (O₂ / Agua):</strong> ${res.yield}</li>
+            <li><strong>Detected Purity:</strong> ${res.purity}</li>
+            <li><strong>Extraction Depth:</strong> ${res.depth}</li>
+            <li><strong>ISRU Potential (O₂ / Water):</strong> ${res.yield}</li>
           </ul>
         </div>
       `);
@@ -904,7 +904,7 @@ function initMarsDashboard() {
       });
 
       const centerMarker = L.marker(res.coords, { icon: resIcon }).bindTooltip(
-        `RECURSO H₂O: ${res.name}`,
+        `H₂O RESOURCE: ${res.name}`,
         { className: 'cyber-leaflet-tooltip cyan' }
       );
 
@@ -924,7 +924,7 @@ function initMarsDashboard() {
       fillOpacity: 0.24
     }).bindPopup(`
       <div class="hud-popup-card warning-theme">
-        <div class="hp-kicker">ALERTA METEOROLÓGICA ACTIVA // SOL 1420</div>
+        <div class="hp-kicker">ACTIVE WEATHER ALERT // SOL 1420</div>
         <h4 class="hp-title"><i class="fa-solid fa-triangle-exclamation"></i> ${w.title}</h4>
         <p class="hp-desc">${w.desc}</p>
       </div>
@@ -963,30 +963,30 @@ function initMarsDashboard() {
   const historicGlobalSites = [
     {
       id: 'ingenuity-field',
-      name: 'Campo de Vuelo Wright Brothers (Ingenuity)',
-      mission: 'Helicóptero Marciano Ingenuity (72 Vuelos)',
+      name: 'Wright Brothers Field (Ingenuity)',
+      mission: 'Ingenuity Mars Helicopter (72 Flights)',
       coords: [18.4486, 77.4509],
       elev: '-2,538m',
       icon: 'fa-helicopter',
-      desc: 'Primer aeródromo extraterrestre de la historia humana.'
+      desc: 'First extraterrestrial airfield in human history.'
     },
     {
       id: 'global-curiosity',
-      name: 'Misión Curiosity (MSL) — Cráter Gale',
-      mission: 'NASA Mars Science Laboratory (2012 - Presente)',
+      name: 'Curiosity Mission (MSL) — Gale Crater',
+      mission: 'NASA Mars Science Laboratory (2012 - Present)',
       coords: [-4.5895, 137.4417],
       elev: '-4,501m',
       icon: 'fa-robot',
-      desc: 'Ascenso por Aeolis Mons (Monte Sharp). Evidencia confirmada de antiguos ambientes habitables ricos en compuestos orgánicos.'
+      desc: 'Ascent up Aeolis Mons (Mount Sharp). Confirmed evidence of ancient habitable environments rich in organic compounds.'
     },
     {
       id: 'global-insight',
-      name: 'Sonda InSight — Elysium Planitia',
-      mission: 'NASA Discovery Program (Estudio Sísmico)',
+      name: 'InSight Lander — Elysium Planitia',
+      mission: 'NASA Discovery Program (Seismic Study)',
       coords: [4.5024, 135.6234],
       elev: '-2,613m',
       icon: 'fa-wave-square',
-      desc: 'Estación geofísica que registró más de 1,300 martemotos y midió el núcleo líquido de Marte.'
+      desc: 'Geophysical station that recorded over 1,300 marsquakes and measured the liquid core of Mars.'
     },
     {
       id: 'global-viking1',
@@ -995,16 +995,16 @@ function initMarsDashboard() {
       coords: [22.4800, -47.9500],
       elev: '-3,627m',
       icon: 'fa-flag-usa',
-      desc: 'Primera nave espacial en operar exitosamente a largo plazo sobre la superficie de Marte.'
+      desc: 'First spacecraft to operate successfully long-term on the surface of Mars.'
     },
     {
       id: 'global-olympus',
-      name: 'Cumbre de Olympus Mons',
-      mission: 'Volcán Escudo Más Grande del Sistema Solar',
+      name: 'Olympus Mons Summit',
+      mission: 'Largest Shield Volcano in the Solar System',
       coords: [18.6500, -133.8000],
       elev: '+21,229m',
       icon: 'fa-mountain',
-      desc: 'Caldera volcánica de 21.2 km de altitud sobre el datum marciano, casi tres veces la altura del Monte Everest.'
+      desc: 'Volcanic caldera standing 21.2 km above the Martian datum, nearly three times the height of Mount Everest.'
     }
   ];
 
@@ -1033,7 +1033,7 @@ function initMarsDashboard() {
           <span>ALT: ${site.elev}</span>
         </div>
         <button type="button" class="hp-action-btn secondary" data-open-dossier="${site.id}">
-          <i class="fa-solid fa-book-journal-whills"></i> VER EXPEDIENTE TÉCNICO NASA
+          <i class="fa-solid fa-book-journal-whills"></i> VIEW NASA TECHNICAL DOSSIER
         </button>
       </div>
     `);
@@ -1064,7 +1064,7 @@ function initMarsDashboard() {
     return MARS_RADIUS_KM * c;
   }
 
-  // Parámetros configurables de la misión EVA y clave de persistencia local
+  // Configurable EVA mission parameters and local persistence key
   const STORAGE_KEY_EVA = 'MARTE_MISSION_STATE_V1';
   const btnUndoPoint = document.getElementById('btn-undo-point');
   const evaCrewSelect = document.getElementById('eva-crew-size');
@@ -1087,7 +1087,65 @@ function initMarsDashboard() {
       };
       localStorage.setItem(STORAGE_KEY_EVA, JSON.stringify(payload));
     } catch {
-      // Ignorar si el almacenamiento está restringido en modo privado
+      // Ignore if storage is restricted in private browsing mode
+    }
+  }
+
+  function restoreMissionStateFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_EVA);
+      if (!raw) return false;
+      const saved = JSON.parse(raw);
+      if (!saved || typeof saved !== 'object') return false;
+
+      if (saved.evaConfig && typeof saved.evaConfig === 'object') {
+        evaConfig = {
+          crewSize: Number(saved.evaConfig.crewSize) || 2,
+          transportMode: saved.evaConfig.transportMode === 'foot' ? 'foot' : 'rover',
+          departureWindow: ['morning', 'afternoon', 'night'].includes(saved.evaConfig.departureWindow)
+            ? saved.evaConfig.departureWindow
+            : 'morning'
+        };
+        if (evaCrewSelect) evaCrewSelect.value = String(evaConfig.crewSize);
+        if (evaModeSelect) evaModeSelect.value = evaConfig.transportMode;
+        if (evaWindowSelect) evaWindowSelect.value = evaConfig.departureWindow;
+      }
+
+      const targetProgress =
+        typeof saved.roverProgress === 'number' && !Number.isNaN(saved.roverProgress)
+          ? Math.max(0, Math.min(100, Math.round(saved.roverProgress)))
+          : 33;
+
+      if (
+        saved.routeKey === 'custom' &&
+        saved.customRouteData &&
+        Array.isArray(saved.customRouteData.waypoints) &&
+        saved.customRouteData.waypoints.length >= 2
+      ) {
+        currentRouteKey = 'custom';
+        activeRouteData = saved.customRouteData;
+        if (routeSelector) routeSelector.value = 'custom';
+        recalculateRouteMetricsFromWaypoints(false);
+        rebuildRegionalNasaLayers('custom');
+        renderRouteOnMap(false);
+        syncLayersWithCheckboxes();
+        updateRoverProgress(targetProgress);
+        if (typeof updateRegionalWeatherPanel === 'function') {
+          updateRegionalWeatherPanel('custom');
+        }
+        return true;
+      }
+
+      if (saved.routeKey && ROUTES_CATALOG[saved.routeKey]) {
+        if (routeSelector) routeSelector.value = saved.routeKey;
+        loadRoute(saved.routeKey, false);
+        updateRoverProgress(targetProgress);
+        return true;
+      }
+
+      return false;
+    } catch {
+      return false;
     }
   }
 
@@ -1183,14 +1241,14 @@ function initMarsDashboard() {
     };
   }
 
-  // Convierte cualquier ruta editada (arrastrar/borrar) en ruta personalizada y recalcula distancias, alturas y pendientes
+  // Converts any edited route (drag/delete) into a custom route and recalculates distances, elevations, and slopes
   function recalculateRouteMetricsFromWaypoints(convertToCustom = false) {
     if (convertToCustom && activeRouteData.id !== 'custom') {
       activeRouteData.id = 'custom';
       activeRouteData.code = 'CUSTOM-EVA';
-      activeRouteData.title = 'Exploración Táctica Personalizada';
-      activeRouteData.sector = 'Sector: Ruta Ajustada por Comandante de Misión';
-      activeRouteData.difficulty = 'PERSONALIZADA';
+      activeRouteData.title = 'Custom Tactical Exploration';
+      activeRouteData.sector = 'Sector: Route Adjusted by Mission Commander';
+      activeRouteData.difficulty = 'CUSTOM';
       currentRouteKey = 'custom';
       if (routeSelector) routeSelector.value = 'custom';
     }
@@ -1223,7 +1281,7 @@ function initMarsDashboard() {
     activeRouteData.totalDistKm = cumDist;
     activeRouteData.maxSlopeDeg = Number(maxSlope.toFixed(1));
     activeRouteData.slopeStatus =
-      maxSlope > 24 ? 'CRÍTICA' : maxSlope > 16 ? 'PRECAUCIÓN' : 'SEGURA';
+      maxSlope > 24 ? 'CRITICAL' : maxSlope > 16 ? 'CAUTION' : 'SAFE';
 
     if (newPathCoords.length > 0) {
       const mid = newPathCoords[Math.floor(newPathCoords.length / 2)];
@@ -1300,7 +1358,8 @@ function initMarsDashboard() {
       if (isGeolOn && Array.isArray(regionData.geology)) {
         for (const unit of regionData.geology) {
           const isHighRisk =
-            unit.color === '#ef5350' || /precauci|riesgo|duna|escarpe|falla/i.test(unit.desc);
+            unit.color === '#ef5350' ||
+            /caution|hazard|risk|dune|scarp|fault|landslide|precauci|riesgo|duna|escarpe|falla/i.test(unit.desc);
           if (isHighRisk && isPointInPolygon(coord, unit.coords)) {
             crossesHazardGeol = unit.name;
           }
@@ -1346,7 +1405,7 @@ function initMarsDashboard() {
         opacity: 0.9,
         dashArray: '10, 8'
       })
-        .bindTooltip(`RUTA ACTIVA: ${activeRouteData.code} (${activeRouteData.totalDistKm.toFixed(1)} km)`, {
+        .bindTooltip(`ACTIVE ROUTE: ${activeRouteData.code} (${activeRouteData.totalDistKm.toFixed(1)} km)`, {
           sticky: true,
           className: 'cyber-leaflet-tooltip'
         })
@@ -1372,7 +1431,7 @@ function initMarsDashboard() {
         icon: L.divIcon({
           className: 'hud-custom-div-icon',
           html: `
-            <div class="hud-site-marker marker-${markerType}" title="Arrastra para reajustar este punto en vivo">
+            <div class="hud-site-marker marker-${markerType}" title="Drag to readjust this point live">
               <div class="hsm-ring"></div>
               <div class="hsm-core"><i class="fa-solid ${iconClass}"></i></div>
               <span class="hsm-label">${wp.name}</span>
@@ -1383,7 +1442,7 @@ function initMarsDashboard() {
         })
       }).bindPopup(`
         <div class="hud-popup-card">
-          <div class="hp-kicker">WAYPOINT 0${index + 1} // ARRASTRABLE EN MAPA</div>
+          <div class="hp-kicker">WAYPOINT 0${index + 1} // DRAGGABLE ON MAP</div>
           <h4 class="hp-title">${wp.name}</h4>
           <p class="hp-desc">${wp.sub}</p>
           <div class="hp-meta">
@@ -1391,12 +1450,12 @@ function initMarsDashboard() {
             <span>ALT: ${wp.elev.toLocaleString('en-US')}m</span>
           </div>
           <button type="button" class="hp-action-btn" data-open-360="wp-${index}">
-            <i class="fa-solid fa-vr-cardboard"></i> EXPLORAR EN 360° STREET VIEW
+            <i class="fa-solid fa-vr-cardboard"></i> EXPLORE IN 360° STREET VIEW
           </button>
           ${
             canDeleteWp
               ? `<button type="button" class="hp-action-btn secondary" data-delete-wp="${index}">
-                   <i class="fa-solid fa-trash-can"></i> ELIMINAR ESTE WAYPOINT
+                   <i class="fa-solid fa-trash-can"></i> REMOVE THIS WAYPOINT
                  </button>`
               : ''
           }
@@ -1435,11 +1494,11 @@ function initMarsDashboard() {
       })
     }).bindPopup(`
       <div class="hud-popup-card cyan-theme">
-        <div class="hp-kicker">TELEMETRÍA DE UNIDAD MÓVIL EN VIVO</div>
-        <h4 class="hp-title">Unidad EVA M.A.R.T.E 01</h4>
-        <p class="hp-desc">Avance actual: ${roverProgress}% de la ruta ${activeRouteData.code}. Tripulación: ${evaConfig.crewSize} astronautas.</p>
+        <div class="hp-kicker">LIVE MOBILE UNIT TELEMETRY</div>
+        <h4 class="hp-title">EVA Unit M.A.R.T.E 01</h4>
+        <p class="hp-desc">Current progress: ${roverProgress}% of route ${activeRouteData.code}. Crew: ${evaConfig.crewSize} astronauts.</p>
         <button type="button" class="hp-action-btn" data-open-360="rover-live">
-          <i class="fa-solid fa-vr-cardboard"></i> ABRIR CÁMARA 360° DEL ROVER
+          <i class="fa-solid fa-vr-cardboard"></i> OPEN ROVER 360° CAMERA
         </button>
       </div>
     `);
@@ -1463,16 +1522,16 @@ function initMarsDashboard() {
       const isLast = idx === activeRouteData.waypoints.length - 1;
       let nodeStatus = 'status-pending';
       let badgeClass = isLast ? 'target' : 'next';
-      let badgeText = isLast ? 'DESTINO' : 'PENDIENTE';
+      let badgeText = isLast ? 'DESTINATION' : 'PENDING';
 
       if (traveledKm >= wp.km + 0.4 || (roverProgress === 100 && isLast)) {
         nodeStatus = 'status-completed';
         badgeClass = 'done';
-        badgeText = 'COMPLETADO';
+        badgeText = 'COMPLETED';
       } else if (Math.abs(traveledKm - wp.km) <= 2.2) {
         nodeStatus = 'status-active';
         badgeClass = 'current';
-        badgeText = 'POSICIÓN ACTUAL';
+        badgeText = 'CURRENT POSITION';
       }
 
       const li = document.createElement('li');
@@ -1487,7 +1546,7 @@ function initMarsDashboard() {
               <span class="wp-badge ${badgeClass}">${badgeText}</span>
               ${
                 canDelete
-                  ? `<button type="button" class="wp-delete-btn" title="Eliminar este punto" aria-label="Eliminar ${wp.name}">
+                  ? `<button type="button" class="wp-delete-btn" title="Remove this point" aria-label="Remove ${wp.name}">
                        <i class="fa-solid fa-xmark"></i>
                      </button>`
                   : ''
@@ -1531,11 +1590,11 @@ function initMarsDashboard() {
     const deltaElev = Math.max(maxElev - minElev, 40);
 
     if (elevTitleEl) {
-      elevTitleEl.innerHTML = `<i class="fa-solid fa-chart-area text-orange"></i> PERFIL DE ELEVACIÓN TOPOGRÁFICA // RUTA: ${activeRouteData.code}`;
+      elevTitleEl.innerHTML = `<i class="fa-solid fa-chart-area text-orange"></i> TOPOGRAPHIC ELEVATION PROFILE // ROUTE: ${activeRouteData.code}`;
     }
     if (elevMetaEl) {
       const sign = maxElev >= minElev ? '+' : '';
-      elevMetaEl.innerHTML = `ALTITUD: ${minElev.toLocaleString('en-US')}m a ${maxElev.toLocaleString('en-US')}m (&Delta; ${sign}${maxElev - minElev}m)`;
+      elevMetaEl.innerHTML = `ALTITUDE: ${minElev.toLocaleString('en-US')}m to ${maxElev.toLocaleString('en-US')}m (&Delta; ${sign}${maxElev - minElev}m)`;
     }
 
     const svgWidth = 600;
@@ -1584,7 +1643,7 @@ function initMarsDashboard() {
       const traveledKm = ((roverProgress / 100) * activeRouteData.totalDistKm).toFixed(1);
       const labelX = roverX > 390 ? roverX - 185 : roverX + 8;
       elevRoverLabel.setAttribute('x', Math.max(8, labelX));
-      elevRoverLabel.textContent = `ROVER ACTUAL (KM ${traveledKm} | ${roverPos.elev.toLocaleString('en-US')}m)`;
+      elevRoverLabel.textContent = `CURRENT ROVER (KM ${traveledKm} | ${roverPos.elev.toLocaleString('en-US')}m)`;
     }
   }
 
@@ -1642,19 +1701,19 @@ function initMarsDashboard() {
     if (metricOxygen) metricOxygen.textContent = o2ConsumedPct;
     if (metricOxygenReserve) {
       metricOxygenReserve.textContent = env.reachedIsruDepot
-        ? `RESERVA: ${o2ReservePct}% (+ISRU)`
-        : `RESERVA: ${o2ReservePct}%`;
+        ? `RESERVE: ${o2ReservePct}% (+ISRU)`
+        : `RESERVE: ${o2ReservePct}%`;
     }
     if (metricOxygenRate) {
       metricOxygenRate.textContent =
         o2ConsumedPct > 72
-          ? `¡Consumo Alto! (${o2KgRate} kg/h • ${evaConfig.crewSize} PAX)`
-          : `${o2KgRate} kg/h (${evaConfig.crewSize} Astronautas)`;
+          ? `High Consumption! (${o2KgRate} kg/h • ${evaConfig.crewSize} PAX)`
+          : `${o2KgRate} kg/h (${evaConfig.crewSize} Astronauts)`;
     }
     if (barOxygen) barOxygen.style.width = `${o2ConsumedPct}%`;
     if (cardOxygen) cardOxygen.classList.toggle('alert-critical', o2ConsumedPct >= 75);
 
-    // 2. Batería (%)
+    // 2. Battery (%)
     const effectiveBattRate =
       activeRouteData.baseBatteryPerKm * modeBattMult * departureSolarMult * stormPenalty * geolTractionPenalty;
     const batteryDrain = traveledKm * effectiveBattRate - isruBattBonusPct;
@@ -1664,24 +1723,24 @@ function initMarsDashboard() {
     if (metricBattery) metricBattery.textContent = batteryRemainingPct;
     if (metricBatteryTag) {
       metricBatteryTag.textContent = env.crossesStormCore
-        ? 'TORMENTA NÚCLEO (-35%)'
+        ? 'CORE STORM (-35%)'
         : evaConfig.departureWindow === 'night'
-        ? 'MODO NOCTURNO (MMRTG)'
+        ? 'NIGHT MODE (MMRTG)'
         : env.isWeatherOn
-        ? 'SOLAR ATENUADO (POLVO)'
-        : 'MMRTG + SOLAR ÓPTIMO';
+        ? 'SOLAR ATTENUATED (DUST)'
+        : 'MMRTG + SOLAR OPTIMAL';
     }
-    if (metricBatteryRange) metricBatteryRange.textContent = `Autonomía: ${remainingAutonomyKm} km`;
+    if (metricBatteryRange) metricBatteryRange.textContent = `Range: ${remainingAutonomyKm} km`;
     if (barBattery) barBattery.style.width = `${batteryRemainingPct}%`;
     if (cardBattery) cardBattery.classList.toggle('alert-critical', batteryRemainingPct <= 25);
 
-    // 3. Distancia (km)
+    // 3. Distance (km)
     if (metricDistance) metricDistance.textContent = totalKm.toFixed(1);
-    if (metricDistanceTraveled) metricDistanceTraveled.textContent = `RECORRIDO: ${traveledKm.toFixed(1)} KM`;
-    if (metricDistanceRemaining) metricDistanceRemaining.textContent = `Restante: ${remainingKm.toFixed(1)} km`;
+    if (metricDistanceTraveled) metricDistanceTraveled.textContent = `TRAVELED: ${traveledKm.toFixed(1)} KM`;
+    if (metricDistanceRemaining) metricDistanceRemaining.textContent = `Remaining: ${remainingKm.toFixed(1)} km`;
     if (barDistance) barDistance.style.width = `${roverProgress}%`;
 
-    // 4. Tiempo Estimado
+    // 4. Estimated Time
     const totalHours = totalKm / effectiveSpeedKmh;
     const hrs = Math.floor(totalHours);
     const mins = Math.round((totalHours - hrs) * 60);
@@ -1693,95 +1752,102 @@ function initMarsDashboard() {
 
     if (metricTime) metricTime.textContent = formattedTime;
     if (metricSpeedTag) {
-      metricSpeedTag.textContent = `${isFootEva ? 'EVA PIE' : 'ROVER'}: ${effectiveSpeedKmh.toFixed(1)} KM/H`;
+      metricSpeedTag.textContent = `${isFootEva ? 'FOOT EVA' : 'ROVER'}: ${effectiveSpeedKmh.toFixed(1)} KM/H`;
     }
     if (metricTimeSub) {
       metricTimeSub.textContent =
         roverProgress >= 100
-          ? '¡Destino alcanzado con éxito!'
+          ? 'Destination reached successfully!'
           : totalHours > 8.5 || evaConfig.departureWindow === 'night'
-          ? `⚠ Restan ${remH}h ${remM}m (Exposición térmica nocturna)`
-          : `Restan ${remH}h ${remM}m (Antes del ocaso)`;
+          ? `⚠ ${remH}h ${remM}m left (Nocturnal thermal exposure)`
+          : `${remH}h ${remM}m left (Before sunset)`;
     }
     if (barTime) {
       const timeLoadPct = Math.min(100, Math.round((totalHours / 12) * 100));
       barTime.style.width = `${timeLoadPct}%`;
     }
 
-    // 4.5. Radiación Ionizante (GCR + SPE) calibrada con datos NASA Curiosity RAD
+    // 4.5. Ionizing Radiation (GCR + SPE) calibrated with NASA Curiosity RAD data
     const elapsedHours = traveledKm / effectiveSpeedKmh;
-    const baseGcrRate = 0.027; // mSv/h promedio en superficie marciana
+    const baseGcrRate = 0.027; // Average mSv/h on the Martian surface
 
-    // Atenuación por blindaje: Rover Presurizado atenúa ~38%, traje EVA a pie solo ~5%
+    // Shielding attenuation: Pressurized Rover attenuates ~38%, Foot EVA suit only ~5%
     const shieldingMult = isFootEva ? 0.95 : 0.62;
 
-    // Modificador por ventana horaria y actividad solar (SPE)
+    // Departure window and solar activity (SPE) modifier
     const solarWindowMult =
       evaConfig.departureWindow === 'night'
-        ? 0.85 // Sin componente solar directa nocturna (solo GCR)
+        ? 0.85 // No direct nocturnal solar component (GCR only)
         : evaConfig.departureWindow === 'morning'
         ? 0.95
-        : 1.15; // Mediodía / Máxima exposición solar
+        : 1.15; // Midday / Peak solar exposure
 
-    // Si cruza núcleo de tormenta o hay evento SPE activo, se dispara pico de partículas
+    // Particle spike if crossing storm core or active SPE event
     const speSpike = env.crossesStormCore ? 0.16 : env.crossesStormOuter ? 0.06 : 0;
 
-    // Tasa efectiva absorbida por la tripulación (mSv/h) y dosis acumulada (mSv)
+    // Effective absorbed crew rate (mSv/h) and accumulated dose (mSv)
     const radiationRateMsvH = Number(((baseGcrRate * solarWindowMult + speSpike) * shieldingMult).toFixed(3));
     const accumulatedDoseMsv = Number((radiationRateMsvH * elapsedHours).toFixed(2));
     const projectedTotalDoseMsv = Number((accumulatedDoseMsv + radiationRateMsvH * remHours).toFixed(2));
     const isRadiationCritical = radiationRateMsvH >= 0.08 || projectedTotalDoseMsv >= 2.5;
 
-    // Actualiza la lectura del panel meteorológico derecho (donde actualmente dice 0.19 mSv/h)
-    const metricRadEl = document.getElementById('weather-uv-value') || document.querySelector('[data-metric="radiation"]');
+    // Update the right-hand weather panel radiation reading
+    const metricRadEl =
+      document.getElementById('wc-uv-val') ||
+      document.getElementById('weather-uv-value') ||
+      document.querySelector('[data-metric="radiation"]');
     if (metricRadEl) {
       metricRadEl.textContent = `${radiationRateMsvH.toFixed(2)} mSv/h`;
     }
 
-    // 5. Directriz Dinámica inteligente según intersecciones con Capas NASA
+    // 5. Intelligent Dynamic Directive based on NASA Layer Intersections
     if (directiveBoxEl && directiveTitleEl && directiveTextEl) {
       const hazards = [];
       if (env.crossesStormCore || env.crossesStormOuter) {
-        hazards.push('Cruce activo por frente de tormenta de polvo');
+        hazards.push('Active dust storm front crossing');
       }
       if (env.crossesHazardGeol) {
-        hazards.push(`Terreno de riesgo (${env.crossesHazardGeol})`);
+        hazards.push(`Hazard terrain (${env.crossesHazardGeol})`);
       }
-
       if (isRadiationCritical) {
         hazards.push(
-          `Radiación ionizante elevada (${radiationRateMsvH.toFixed(2)} mSv/h • Dosis acum: ${accumulatedDoseMsv} mSv)`
+          `Elevated ionizing radiation (${radiationRateMsvH.toFixed(2)} mSv/h • Accum dose: ${accumulatedDoseMsv} mSv)`
         );
       }
 
-      if (o2ConsumedPct >= 75 || batteryRemainingPct <= 25 || activeRouteData.maxSlopeDeg >= 25 || env.crossesStormCore || isRadiationCritical) 
-      {
+      if (
+        o2ConsumedPct >= 75 ||
+        batteryRemainingPct <= 25 ||
+        activeRouteData.maxSlopeDeg >= 25 ||
+        env.crossesStormCore ||
+        isRadiationCritical
+      ) {
         directiveBoxEl.classList.add('alert-mode');
-        directiveTitleEl.textContent = isRadiationCritical && !env.crossesStormCore
-          ? '☢ ALERTA RADIOLÓGICA DE SUPERFICIE:'
-          : '⚠ ALERTA TÁCTICA DE SUPERVIVENCIA:';
+        directiveTitleEl.textContent =
+          isRadiationCritical && !env.crossesStormCore
+            ? '☢ SURFACE RADIATION ALERT:'
+            : '⚠ TACTICAL SURVIVAL ALERT:';
 
         directiveTextEl.textContent =
           `${hazards.length ? hazards.join(' • ') + '. ' : ''}` +
-          `O₂: ${o2ConsumedPct}% | Bat: ${batteryRemainingPct}% | Dosis EVA: ${accumulatedDoseMsv} mSv. ` +
+          `O₂: ${o2ConsumedPct}% | Bat: ${batteryRemainingPct}% | EVA Dose: ${accumulatedDoseMsv} mSv. ` +
           `${
             isRadiationCritical
               ? isFootEva
-                ? 'Abordar Rover Presurizado o evacuar a Refugio Subterráneo de Pared.'
-                : 'Blindaje de Rover activo (-38%). Dirigirse a Refugio Subterráneo de Pared.'
+                ? 'Board Pressurized Rover or evacuate to Subsurface Cliffside Shelter.'
+                : 'Rover shielding active (-38%). Proceed to Subsurface Cliffside Shelter.'
               : env.reachedIsruDepot
-              ? `Reabastecimiento ISRU activo en ${env.reachedIsruDepot}.`
-              : 'Dirigirse a un depósito de hielo ISRU cercano.'
+              ? `ISRU resupply active at ${env.reachedIsruDepot}.`
+              : 'Head to a nearby ISRU ice deposit.'
           }`;
-      } 
-      else {
+      } else {
         directiveBoxEl.classList.remove('alert-mode');
         directiveTitleEl.textContent = env.reachedIsruDepot
-          ? '✓ REABASTECIMIENTO ISRU CONECTADO:'
-          : 'DIRECTRIZ DE SUPERVIVENCIA:';
+          ? '✓ ISRU RESUPPLY CONNECTED:'
+          : 'SURVIVAL DIRECTIVE:';
         directiveTextEl.textContent = env.reachedIsruDepot
-          ? `Extracción H₂O/O₂ validada en "${env.reachedIsruDepot}" (+16% reserva O₂). ${hazards.length ? 'Atención: ' + hazards.join(', ') + '.' : 'Sistemas nominales.'}`
-          : `${hazards.length ? 'Precaución en ruta: ' + hazards.join(' • ') + '. ' : ''}Reserva de O₂ al ${o2ReservePct}% para ${evaConfig.crewSize} astronautas • Dosis rad acumulada: ${accumulatedDoseMsv} mSv.`;
+          ? `H₂O/O₂ extraction validated at "${env.reachedIsruDepot}" (+16% O₂ reserve). ${hazards.length ? 'Attention: ' + hazards.join(', ') + '.' : 'Systems nominal.'}`
+          : `${hazards.length ? 'Route caution: ' + hazards.join(' • ') + '. ' : ''}O₂ reserve at ${o2ReservePct}% for ${evaConfig.crewSize} astronauts • Accum rad dose: ${accumulatedDoseMsv} mSv.`;
       }
     }
 
@@ -1797,7 +1863,7 @@ function initMarsDashboard() {
     roverSlider.style.setProperty('--control-value', roverSlider.value);
     roverSlider.setAttribute(
       'aria-valuetext',
-      `${roverSlider.value} por ciento del recorrido completado`
+      `${roverSlider.value} percent of route completed`
     );
   }
 
@@ -1940,7 +2006,7 @@ function initMarsDashboard() {
     }
     if (btnPlaySim) {
       btnPlaySim.classList.remove('is-playing');
-      btnPlaySim.innerHTML = '<i class="fa-solid fa-play"></i> <span>SIMULAR</span>';
+      btnPlaySim.innerHTML = '<i class="fa-solid fa-play"></i> <span>SIMULATE</span>';
     }
   }
 
@@ -1952,7 +2018,7 @@ function initMarsDashboard() {
       }
       if (roverProgress >= 100) updateRoverProgress(0);
       btnPlaySim.classList.add('is-playing');
-      btnPlaySim.innerHTML = '<i class="fa-solid fa-pause"></i> <span>PAUSAR</span>';
+      btnPlaySim.innerHTML = '<i class="fa-solid fa-pause"></i> <span>PAUSE</span>';
 
       simIntervalId = setInterval(() => {
         if (roverProgress >= 100) {
@@ -1970,8 +2036,8 @@ function initMarsDashboard() {
     if (btnCustomDraw) {
       btnCustomDraw.classList.toggle('is-drawing', isCustomDrawing);
       btnCustomDraw.innerHTML = isCustomDrawing
-        ? '<i class="fa-solid fa-check"></i> <span>TRAZANDO</span>'
-        : '<i class="fa-solid fa-pen-ruler"></i> <span>+ TRAZAR</span>';
+        ? '<i class="fa-solid fa-check"></i> <span>DRAWING</span>'
+        : '<i class="fa-solid fa-pen-ruler"></i> <span>+ DRAW</span>';
     }
 
     if (isCustomDrawing) {
@@ -2037,12 +2103,12 @@ function initMarsDashboard() {
       activeRouteData = {
         id: 'custom',
         code: 'CUSTOM-EVA',
-        title: 'Exploración Táctica Personalizada',
-        sector: 'Sector: Trazado Manual por Comandante de Misión',
-        desc: 'Ruta definida manualmente sobre la cartografía orbital de la NASA. Arrastra cualquier marcador para ajustar la ruta en vivo.',
-        difficulty: 'PERSONALIZADA',
+        title: 'Custom Tactical Exploration',
+        sector: 'Sector: Manual Track by Mission Commander',
+        desc: 'Route manually plotted on NASA orbital cartography. Drag any marker to adjust the route live.',
+        difficulty: 'CUSTOM',
         maxSlopeDeg: 8.5,
-        slopeStatus: 'CALCULADA',
+        slopeStatus: 'CALCULATED',
         avgSpeedKmh: 2.9,
         totalDistKm: 0,
         baseO2RatePerKm: 3.25,
@@ -2052,7 +2118,7 @@ function initMarsDashboard() {
         pathCoords: [startPt],
         waypoints: [
           {
-            name: 'Punto de Partida EVA',
+            name: 'EVA Starting Point',
             sub: `LAT ${startPt[0].toFixed(3)}° LON ${startPt[1].toFixed(3)}°`,
             km: 0.0,
             coords: [startPt[0], startPt[1]],
@@ -2064,7 +2130,7 @@ function initMarsDashboard() {
 
     const wpNumber = activeRouteData.waypoints.length + 1;
     activeRouteData.waypoints.push({
-      name: `Punto Táctico EVA ${String(wpNumber).padStart(2, '0')}`,
+      name: `Tactical EVA Point ${String(wpNumber).padStart(2, '0')}`,
       sub: `LAT ${lat.toFixed(3)}° LON ${lng.toFixed(3)}°`,
       km: 0,
       coords: [lat, lng],
@@ -2107,10 +2173,10 @@ function initMarsDashboard() {
     });
 
     if (activeLayersCounter) {
-      activeLayersCounter.textContent = `${activeCount} ACTIVA${activeCount === 1 ? '' : 'S'}`;
+      activeLayersCounter.textContent = `${activeCount} ACTIVE`;
     }
 
-    // Recalcular telemetría (ej. impacto de la tormenta de polvo en la batería solar)
+    // Recalculate telemetry (e.g. dust storm impact on solar array)
     updateSurvivalTelemetry();
   }
 
@@ -2130,7 +2196,7 @@ function initMarsDashboard() {
   marsMap.on('mousemove', (e) => {
     const { lat, lng } = e.latlng;
     const latDir = lat >= 0 ? 'N' : 'S';
-    const lngDir = lng >= 0 ? 'E' : 'O';
+    const lngDir = lng >= 0 ? 'E' : 'W';
     const numAlt = estimateNumericAltitude(lat, lng);
     const altStr = `${numAlt > 0 ? '+' : ''}${numAlt.toLocaleString('en-US')}m`;
 
@@ -2142,7 +2208,7 @@ function initMarsDashboard() {
   marsMap.on('moveend', () => {
     const center = marsMap.getCenter();
     const latDir = center.lat >= 0 ? 'N' : 'S';
-    const lngDir = center.lng >= 0 ? 'E' : 'O';
+    const lngDir = center.lng >= 0 ? 'E' : 'W';
     if (headerCoords) {
       headerCoords.textContent = `${Math.abs(center.lat).toFixed(2)}°${latDir} • ${Math.abs(center.lng).toFixed(2)}°${lngDir}`;
     }
@@ -2250,13 +2316,13 @@ function initMarsDashboard() {
   const btnNasaApiSearch = document.getElementById('btn-nasa-api-search');
   const nasaApiResultsGrid = document.getElementById('nasa-api-results-grid');
 
-  // Definición de las 6 Estaciones Panorámicas 360° Paso a Paso en Marte (con Fotografía Real NASA JPL-Caltech + Geometría 2D)
+  // Definition of the 6 Step-by-Step 360° Mars Panoramic Stations (Real NASA JPL-Caltech Imagery + 2D Geometry)
   const STREETVIEW_STATIONS = [
     {
       id: 'scene-landing',
       stepNum: '01',
-      shortLabel: '01 INICIO (LANDING)',
-      title: 'ESTACIÓN 01: SITIO DE AMARTIZAJE OCTAVIA E. BUTLER (KM 0.0)',
+      shortLabel: '01 START (LANDING)',
+      title: 'STATION 01: OCTAVIA E. BUTLER LANDING SITE (KM 0.0)',
       sensor: 'NAVCAM + MASTCAM-Z (PERSEVERANCE)',
       routeKey: 'jezero-alpha',
       progressPct: 0,
@@ -2271,7 +2337,7 @@ function initMarsDashboard() {
         localUrl: 'panoramas/PIA24264-landing.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA24264/PIA24264~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24264',
-        credit: 'NASA/JPL-Caltech/ASU/MSSS — Primer Panorama 360° Mastcam-Z en Octavia E. Butler Landing (142 imágenes cosidas)'
+        credit: 'NASA/JPL-Caltech/ASU/MSSS — First Mastcam-Z 360° Panorama at Octavia E. Butler Landing (142 stitched images)'
       },
       palette: {
         skyZenith: '#182232',
@@ -2284,11 +2350,11 @@ function initMarsDashboard() {
         accentFeature: 'landing'
       },
       defaultInspect: {
-        kicker: 'BALIZA DE DESCENSO MARS 2020 // TELEMETRÍA UHF',
-        title: 'Punto de Inicio: Octavia E. Butler Landing',
-        desc: 'Zona de toque inicial en la Unidad Volcánica Máaz. Marcas de erosión por retrocohetes Skycrane visibles en el regolito circundante.',
+        kicker: 'MARS 2020 LANDING BEACON // UHF TELEMETRY',
+        title: 'Starting Point: Octavia E. Butler Landing',
+        desc: 'Initial touchdown zone on the Máaz Volcanic Unit. Skycrane retro-rocket blast marks visible in the surrounding regolith.',
         dist: 'DIST: 6.2 m',
-        comp: 'Basalto / Piroxeno'
+        comp: 'Basalt / Pyroxene'
       },
       hotspots: [
         {
@@ -2296,7 +2362,7 @@ function initMarsDashboard() {
           yaw: 22,
           kind: 'nav',
           icon: 'fa-circle-arrow-up',
-          label: 'AVANZAR PASO 02: MESA KODIAK (KM 4.8)',
+          label: 'ADVANCE STEP 02: KODIAK MESA (KM 4.8)',
           targetScene: 'scene-kodiak'
         },
         {
@@ -2304,31 +2370,31 @@ function initMarsDashboard() {
           yaw: -42,
           kind: 'science',
           icon: 'fa-helicopter',
-          label: 'Aeródromo Wright Brothers (Ingenuity)',
-          kicker: 'REGISTRO DE AVIACIÓN PLANETARIA // INGENUITY',
-          desc: 'Pista llana de regolito compactado desde donde despegó el primer helicóptero propulsado en otro planeta (72 vuelos completados).',
+          label: 'Wright Brothers Field (Ingenuity)',
+          kicker: 'PLANETARY AVIATION LOG // INGENUITY',
+          desc: 'Flat compacted regolith runway from which the first powered helicopter on another planet took off (72 flights completed).',
           dist: 'DIST: 48.0 m',
-          comp: 'Regolito Firme (0% Riesgo)'
+          comp: 'Firm Regolith (0% Risk)'
         },
         {
           pitch: -2,
           yaw: 78,
           kind: 'science',
           icon: 'fa-microscope',
-          label: 'Afloramiento Ígneo "Máaz"',
-          kicker: 'ESPECTRÓMETRO PIXL // RAYOS X',
-          desc: 'Roca basáltica vesicular con recubrimiento de polvo férrico y sales de perclorato. Indica actividad volcánica antigua seguida de alteración acuosa.',
+          label: '"Máaz" Igneous Outcrop',
+          kicker: 'PIXL SPECTROMETER // X-RAY',
+          desc: 'Vesicular basaltic rock coated with ferric dust and perchlorate salts. Indicates ancient volcanic activity followed by aqueous alteration.',
           dist: 'DIST: 3.4 m',
-          comp: 'FeO / MgO / Olivino'
+          comp: 'FeO / MgO / Olivine'
         }
       ]
     },
     {
       id: 'scene-kodiak',
       stepNum: '02',
-      shortLabel: '02 MESA KODIAK',
-      title: 'ESTACIÓN 02: PARADA CIENTÍFICA MESA KODIAK (KM 4.8)',
-      sensor: 'MASTCAM-Z SUPER-RESOLUCIÓN 110MM',
+      shortLabel: '02 KODIAK MESA',
+      title: 'STATION 02: KODIAK MESA SCIENCE STOP (KM 4.8)',
+      sensor: 'MASTCAM-Z SUPER-RESOLUTION 110MM',
       routeKey: 'jezero-alpha',
       progressPct: 33,
       coords: [18.38, 77.49],
@@ -2342,7 +2408,7 @@ function initMarsDashboard() {
         localUrl: 'panoramas/PIA24921-kodiak-delta.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA24921/PIA24921~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24921',
-        credit: 'NASA/JPL-Caltech/ASU/MSSS — Mosaico Real 2.5-Gigapíxeles del Frente Deltaico de Jezero y Butte Kodiak (1,118 cuadros)'
+        credit: 'NASA/JPL-Caltech/ASU/MSSS — Real 2.5-Gigapixel Mosaic of the Jezero Delta Front and Kodiak Butte (1,118 frames)'
       },
       palette: {
         skyZenith: '#1a202c',
@@ -2355,11 +2421,11 @@ function initMarsDashboard() {
         accentFeature: 'kodiak'
       },
       defaultInspect: {
-        kicker: 'ESPECTRÓMETRO PIXL / SUPERCAM LÁSER',
-        title: 'Estratigrafía Fluvial: Mesa Kodiak',
-        desc: 'Capas sedimentarias inclinadas (foresets) que demuestran el avance de un antiguo delta fluvial sobre el lago del Cráter Jezero hace 3.700 millones de años.',
+        kicker: 'PIXL SPECTROMETER / SUPERCAM LASER',
+        title: 'Fluvial Stratigraphy: Kodiak Mesa',
+        desc: 'Inclined sedimentary beds (foresets) proving the progradation of an ancient river delta into Lake Jezero 3.7 billion years ago.',
         dist: 'DIST: 18.4 m',
-        comp: 'SiO₂ / Filosilicatos'
+        comp: 'SiO₂ / Phyllosilicates'
       },
       hotspots: [
         {
@@ -2367,7 +2433,7 @@ function initMarsDashboard() {
           yaw: 35,
           kind: 'nav',
           icon: 'fa-circle-arrow-up',
-          label: 'AVANZAR PASO 03: DEPÓSITO HIELO ISRU (KM 9.4)',
+          label: 'ADVANCE STEP 03: ISRU ICE DEPOSIT (KM 9.4)',
           targetScene: 'scene-ice'
         },
         {
@@ -2375,7 +2441,7 @@ function initMarsDashboard() {
           yaw: -155,
           kind: 'nav',
           icon: 'fa-circle-arrow-left',
-          label: 'RETROCEDER PASO 01: SITIO DE INICIO (KM 0.0)',
+          label: 'GO BACK STEP 01: LANDING SITE (KM 0.0)',
           targetScene: 'scene-landing'
         },
         {
@@ -2383,31 +2449,31 @@ function initMarsDashboard() {
           yaw: -8,
           kind: 'science',
           icon: 'fa-layer-group',
-          label: 'Estratos Deltaicos de Kodiak',
-          kicker: 'ASTROBIOLOGÍA // NIVEL PALEO-LACUSTRE',
-          desc: 'Secuencia de conglomerados y areniscas finas depositadas por corrientes de baja energía. Excelente potencial de preservación de biosignaturas.',
+          label: 'Kodiak Deltaic Strata',
+          kicker: 'ASTROBIOLOGY // PALEO-LACUSTRINE HORIZON',
+          desc: 'Sequence of conglomerates and fine sandstones deposited by low-energy currents. Excellent biosignature preservation potential.',
           dist: 'DIST: 24.5 m',
-          comp: 'Arcillas Esmectitas / Carbonatos'
+          comp: 'Smectite Clays / Carbonates'
         },
         {
           pitch: -2,
           yaw: 65,
           kind: 'science',
           icon: 'fa-vial',
-          label: 'Tubo de Muestra de Titanio #14',
-          kicker: 'PROGRAMA MARS SAMPLE RETURN // NASA-ESA',
-          desc: 'Núcleo cilíndrico de roca sedimentaria sellado herméticamente para recolección por la tripulación humana.',
+          label: 'Titanium Sample Tube #14',
+          kicker: 'MARS SAMPLE RETURN PROGRAM // NASA-ESA',
+          desc: 'Cylindrical sedimentary rock core hermetically sealed for recovery by the human crew.',
           dist: 'DIST: 2.1 m',
-          comp: 'Sellado Hermético Nominal'
+          comp: 'Nominal Hermetic Seal'
         }
       ]
     },
     {
       id: 'scene-ice',
       stepNum: '03',
-      shortLabel: '03 HIELO ISRU',
-      title: 'ESTACIÓN 03: DEPÓSITO DE HIELO SUBSUPERFICIAL ISRU (KM 9.4)',
-      sensor: 'MASTCAM-Z + RADAR RIMFAX OVERLAY',
+      shortLabel: '03 ISRU ICE',
+      title: 'STATION 03: SUBSURFACE ISRU ICE DEPOSIT (KM 9.4)',
+      sensor: 'MASTCAM-Z + RIMFAX RADAR OVERLAY',
       routeKey: 'jezero-alpha',
       progressPct: 65,
       coords: [18.52, 77.33],
@@ -2421,7 +2487,7 @@ function initMarsDashboard() {
         localUrl: 'panoramas/PIA26369-bright-angel.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA26369/PIA26369~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26369',
-        credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° de "Bright Angel" y Canal Fluvial Neretva Vallis (Cheyava Falls)'
+        credit: 'NASA/JPL-Caltech/ASU/MSSS — 360° Panorama of "Bright Angel" and Neretva Vallis Fluvial Channel (Cheyava Falls)'
       },
       palette: {
         skyZenith: '#111d2e',
@@ -2434,11 +2500,11 @@ function initMarsDashboard() {
         accentFeature: 'ice'
       },
       defaultInspect: {
-        kicker: 'RADAR SUBSUPERFICIAL RIMFAX // EXTRACCIÓN ISRU',
-        title: 'Veta de Hielo de Agua Subterráneo (ISRU-01)',
-        desc: 'Lente de hielo cristalino expuesta a 1.2m de profundidad en el talud protegido del norte del delta. Recurso crítico para agua potable y combustible LOX/CH₄.',
+        kicker: 'RIMFAX SUBSURFACE RADAR // ISRU EXTRACTION',
+        title: 'Subsurface Water Ice Vein (ISRU-01)',
+        desc: 'Crystalline ice lens exposed at 1.2m depth along the sheltered northern delta slope. Critical resource for potable water and LOX/CH₄ propellant.',
         dist: 'DIST: 7.8 m',
-        comp: '84% H₂O + Sílice Hidratada'
+        comp: '84% H₂O + Hydrated Silica'
       },
       hotspots: [
         {
@@ -2446,7 +2512,7 @@ function initMarsDashboard() {
           yaw: 28,
           kind: 'nav',
           icon: 'fa-circle-arrow-up',
-          label: 'AVANZAR PASO 04: CAMPAMENTO BASE (KM 14.6)',
+          label: 'ADVANCE STEP 04: BASE CAMP (KM 14.6)',
           targetScene: 'scene-base'
         },
         {
@@ -2454,7 +2520,7 @@ function initMarsDashboard() {
           yaw: -160,
           kind: 'nav',
           icon: 'fa-circle-arrow-left',
-          label: 'RETROCEDER PASO 02: MESA KODIAK (KM 4.8)',
+          label: 'GO BACK STEP 02: KODIAK MESA (KM 4.8)',
           targetScene: 'scene-kodiak'
         },
         {
@@ -2462,31 +2528,31 @@ function initMarsDashboard() {
           yaw: -15,
           kind: 'ice',
           icon: 'fa-snowflake',
-          label: 'Trinchera de Hielo Cristalino H₂O (84%)',
-          kicker: 'SOPORTE VITAL // RESERVA HÍDRICA CONFIRMADA',
-          desc: 'Capacidad estimada de 42,000 litros tras sublimación térmica y filtrado de percloratos. Permite recargar el 100% de las mochilas PLSS.',
+          label: 'Crystalline H₂O Ice Trench (84%)',
+          kicker: 'LIFE SUPPORT // CONFIRMED WATER RESERVE',
+          desc: 'Estimated capacity of 42,000 liters after thermal sublimation and perchlorate filtration. Capable of refilling 100% of PLSS backpacks.',
           dist: 'DIST: 5.4 m',
-          comp: 'H₂O Sólido (-64°C)'
+          comp: 'Solid H₂O (-64°C)'
         },
         {
           pitch: 3,
           yaw: 55,
           kind: 'ice',
           icon: 'fa-lungs',
-          label: 'Planta Procesadora MOXIE-XL',
-          kicker: 'ELECTRÓLISIS DE ÓXIDO SÓLIDO // O₂',
-          desc: 'Generador de oxígeno en superficie produciendo 2.4 kg de O₂ respirable por hora a partir del CO₂ atmosférico marciano.',
+          label: 'MOXIE-XL Processing Plant',
+          kicker: 'SOLID OXIDE ELECTROLYSIS // O₂',
+          desc: 'Surface oxygen generator producing 2.4 kg of breathable O₂ per hour from Martian atmospheric CO₂.',
           dist: 'DIST: 11.2 m',
-          comp: 'Pureza O₂: 99.6%'
+          comp: 'O₂ Purity: 99.6%'
         }
       ]
     },
     {
       id: 'scene-base',
       stepNum: '04',
-      shortLabel: '04 CAMPAMENTO BASE',
-      title: 'ESTACIÓN 04: CAMPAMENTO BASE HÁBITAT DELTA PRIME (KM 14.6)',
-      sensor: 'CÁMARA EXTERIOR DE TORRE METEOROLÓGICA',
+      shortLabel: '04 BASE CAMP',
+      title: 'STATION 04: DELTA PRIME HABITAT BASE CAMP (KM 14.6)',
+      sensor: 'EXTERIOR METEOROLOGICAL TOWER CAMERA',
       routeKey: 'jezero-alpha',
       progressPct: 100,
       coords: [18.64, 77.15],
@@ -2496,11 +2562,11 @@ function initMarsDashboard() {
       narration: "Welcome to Base Camp Delta Prime. Radiation levels are stable.",
       realPano: {
         piaId: 'PIA26474',
-        sol: 'SOL 1337 (CUMBRE BORDE JEZERO)',
+        sol: 'SOL 1337 (JEZERO RIM SUMMIT)',
         localUrl: 'panoramas/PIA26474-rio-chiquito.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA26474/PIA26474~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26474',
-        credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° en "Rio Chiquito" (Mirador de la Cumbre del Borde Occidental de Jezero)'
+        credit: 'NASA/JPL-Caltech/ASU/MSSS — 360° Panorama at "Rio Chiquito" (Western Jezero Crater Rim Summit Overlook)'
       },
       palette: {
         skyZenith: '#171f2e',
@@ -2513,11 +2579,11 @@ function initMarsDashboard() {
         accentFeature: 'base'
       },
       defaultInspect: {
-        kicker: 'DESTINO ALCANZADO // REFUGIO PRESURIZADO CLASE IV',
-        title: 'Campamento Base: Hábitat Delta Prime',
-        desc: 'Complejo presurizado con blindaje de regolito sinterizado contra radiación cósmica y solar. Esclusas EVA listas para acoplamiento del rover.',
+        kicker: 'DESTINATION REACHED // CLASS IV PRESSURIZED SHELTER',
+        title: 'Base Camp: Delta Prime Habitat',
+        desc: 'Pressurized complex with sintered regolith shielding against cosmic and solar radiation. EVA airlocks ready for rover docking.',
         dist: 'DIST: 14.0 m',
-        comp: 'Presión Int: 101.3 kPa (Nominal)'
+        comp: 'Internal Press: 101.3 kPa (Nominal)'
       },
       hotspots: [
         {
@@ -2525,7 +2591,7 @@ function initMarsDashboard() {
           yaw: -145,
           kind: 'nav',
           icon: 'fa-circle-arrow-left',
-          label: 'RETROCEDER PASO 03: ESTACIÓN HIELO ISRU',
+          label: 'GO BACK STEP 03: ISRU ICE STATION',
           targetScene: 'scene-ice'
         },
         {
@@ -2533,7 +2599,7 @@ function initMarsDashboard() {
           yaw: 95,
           kind: 'nav',
           icon: 'fa-rocket',
-          label: 'SALTO PLANETARIO: CRÁTER GALE (CURIOSITY)',
+          label: 'PLANETARY JUMP: GALE CRATER (CURIOSITY)',
           targetScene: 'scene-gale'
         },
         {
@@ -2541,31 +2607,31 @@ function initMarsDashboard() {
           yaw: -18,
           kind: 'science',
           icon: 'fa-campground',
-          label: 'Domo Habitacional Principal "Ares Prime"',
-          kicker: 'INFRAESTRUCTURA HUMANA EN MARTE // NASA ARTEMIS-MARS',
-          desc: 'Capacidad para 6 astronautas durante 500 Soles. Cuenta con invernadero hidropónico presurizado, laboratorio médico y reactor Kilopower.',
+          label: 'Main Habitation Dome "Ares Prime"',
+          kicker: 'HUMAN INFRASTRUCTURE ON MARS // NASA ARTEMIS-MARS',
+          desc: 'Supports 6 astronauts for 500 Sols. Equipped with a pressurized hydroponic greenhouse, medical lab, and Kilopower reactor.',
           dist: 'DIST: 16.0 m',
-          comp: 'Blindaje: 0.02 mSv/h'
+          comp: 'Shielding: 0.02 mSv/h'
         },
         {
           pitch: 6,
           yaw: -85,
           kind: 'science',
           icon: 'fa-triangle-exclamation',
-          label: 'Frente de Tormenta de Polvo al Suroeste',
-          kicker: 'RADAR METEOROLÓGICO MEDA // ALERTA ACTIVA',
-          desc: 'Columna de polvo en suspensión elevándose a 12 km de altitud. Los exploradores deben permanecer dentro del hábitat durante el paso del frente.',
+          label: 'Southwest Dust Storm Front',
+          kicker: 'MEDA WEATHER RADAR // ACTIVE ALERT',
+          desc: 'Suspended dust plume rising to 12 km altitude. Explorers must remain inside the habitat while the front passes.',
           dist: 'DIST: 42.0 km',
-          comp: 'Opacidad Tau: 1.45'
+          comp: 'Tau Opacity: 1.45'
         }
       ]
     },
     {
       id: 'scene-gale',
       stepNum: '05',
-      shortLabel: '05 CRÁTER GALE',
-      title: 'ESTACIÓN 05: CRÁTER GALE — MONTE SHARP (CURIOSITY MSL)',
-      sensor: 'MASTCAM 100MM // ROVER CURIOSITY',
+      shortLabel: '05 GALE CRATER',
+      title: 'STATION 05: GALE CRATER — MOUNT SHARP (CURIOSITY MSL)',
+      sensor: 'MASTCAM 100MM // CURIOSITY ROVER',
       routeKey: 'gale-sharp',
       progressPct: 65,
       coords: [-4.68, 137.38],
@@ -2579,7 +2645,7 @@ function initMarsDashboard() {
         localUrl: 'panoramas/PIA22545-gale-curiosity.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA22545/PIA22545~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA22545',
-        credit: 'NASA/JPL-Caltech/MSSS — Panorama 360° Real de Curiosity Mastcam en Cresta Vera Rubin y Aeolis Mons (Monte Sharp)'
+        credit: 'NASA/JPL-Caltech/MSSS — Real Curiosity Mastcam 360° Panorama at Vera Rubin Ridge and Aeolis Mons (Mount Sharp)'
       },
       palette: {
         skyZenith: '#211c19',
@@ -2592,11 +2658,11 @@ function initMarsDashboard() {
         accentFeature: 'gale'
       },
       defaultInspect: {
-        kicker: 'MISIÓN MARS SCIENCE LABORATORY // SOL 3840',
-        title: 'Faldas de Aeolis Mons (Monte Sharp)',
-        desc: 'Montaña central de 5.5 km de altura cuyos estratos registran la transición climática de Marte desde una era húmeda de arcillas hacia una era árida de sulfatos.',
+        kicker: 'MARS SCIENCE LABORATORY MISSION // SOL 3840',
+        title: 'Foothills of Aeolis Mons (Mount Sharp)',
+        desc: '5.5 km high central peak whose strata record Mars climate transition from a wet clay-forming era to an arid sulfate era.',
         dist: 'DIST: 32.0 m',
-        comp: 'Hematita / Sulfato de Calcio'
+        comp: 'Hematite / Calcium Sulfate'
       },
       hotspots: [
         {
@@ -2604,7 +2670,7 @@ function initMarsDashboard() {
           yaw: 50,
           kind: 'nav',
           icon: 'fa-circle-arrow-up',
-          label: 'SALTO PLANETARIO: VALLES MARINERIS SUR',
+          label: 'PLANETARY JUMP: SOUTH VALLES MARINERIS',
           targetScene: 'scene-valles'
         },
         {
@@ -2612,7 +2678,7 @@ function initMarsDashboard() {
           yaw: -130,
           kind: 'nav',
           icon: 'fa-circle-arrow-left',
-          label: 'VOLVER A CRÁTER JEZERO: CAMPAMENTO BASE',
+          label: 'RETURN TO JEZERO CRATER: BASE CAMP',
           targetScene: 'scene-base'
         },
         {
@@ -2620,9 +2686,9 @@ function initMarsDashboard() {
           yaw: 4,
           kind: 'science',
           icon: 'fa-mountain',
-          label: 'Cumbre Estratificada de Aeolis Mons',
-          kicker: 'GEOLOGÍA PLANETARIA // CURIOSITY CHEM-CAM',
-          desc: 'Afloramientos ricos en hematita en la Cresta Vera Rubin y vetas blancas de yeso formadas por circulación hidrotermal.',
+          label: 'Layered Summit of Aeolis Mons',
+          kicker: 'PLANETARY GEOLOGY // CURIOSITY CHEMCAM',
+          desc: 'Hematite-rich outcrops on Vera Rubin Ridge and bright gypsum veins formed by hydrothermal fluid circulation.',
           dist: 'DIST: 4.2 km',
           comp: 'Fe₂O₃ / CaSO₄·2H₂O'
         }
@@ -2632,8 +2698,8 @@ function initMarsDashboard() {
       id: 'scene-valles',
       stepNum: '06',
       shortLabel: '06 VALLES MARINERIS',
-      title: 'ESTACIÓN 06: CAÑÓN ABISAL COPRATES CHASMA (VALLES MARINERIS)',
-      sensor: 'SONDA ÓPTICA DE RECONOCIMIENTO EXTREMO',
+      title: 'STATION 06: COPRATES CHASMA ABYSSAL CANYON (VALLES MARINERIS)',
+      sensor: 'EXTREME RECONNAISSANCE OPTICAL PROBE',
       routeKey: 'valles-marineris',
       progressPct: 68,
       coords: [-13.8900, -59.1800],
@@ -2647,7 +2713,7 @@ function initMarsDashboard() {
         localUrl: 'panoramas/PIA13077-valles-marineris.jpg',
         remoteUrl: 'https://images-assets.nasa.gov/image/PIA13077/PIA13077~large.jpg',
         jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA13077',
-        credit: 'NASA/JPL-Caltech/Univ. of Arizona — Mosaico Real de Valles Marineris (Coprates Chasma)'
+        credit: 'NASA/JPL-Caltech/Univ. of Arizona — Real Mosaic of Valles Marineris (Coprates Chasma)'
       },
       palette: {
         skyZenith: '#121521',
@@ -2660,11 +2726,11 @@ function initMarsDashboard() {
         accentFeature: 'valles'
       },
       defaultInspect: {
-        kicker: 'SISTEMA DE CAÑONES ECUATORIALES // PROFUNDIDAD 7 KM',
-        title: 'Escarpe Tectónico Coprates Chasma',
-        desc: 'Las paredes expuestas del cañón muestran más de 6 km de corteza marciana primordial y depósitos masivos de sulfatos hidratados.',
+        kicker: 'EQUATORIAL CANYON SYSTEM // 7 KM DEPTH',
+        title: 'Coprates Chasma Tectonic Scarp',
+        desc: 'Exposed canyon walls reveal over 6 km of primordial Martian crust and massive hydrated sulfate deposits.',
         dist: 'DIST: 120 m',
-        comp: 'Basalto / Kieserita Hidratada'
+        comp: 'Basalt / Hydrated Kieserite'
       },
       hotspots: [
         {
@@ -2672,7 +2738,7 @@ function initMarsDashboard() {
           yaw: 0,
           kind: 'nav',
           icon: 'fa-circle-arrow-up',
-          label: 'VOLVER AL INICIO: CRÁTER JEZERO (KM 0.0)',
+          label: 'RETURN TO START: JEZERO CRATER (KM 0.0)',
           targetScene: 'scene-landing'
         },
         {
@@ -2680,11 +2746,11 @@ function initMarsDashboard() {
           yaw: -32,
           kind: 'science',
           icon: 'fa-person-falling-burst',
-          label: 'Muralla Norte de Coprates (Pendiente 27.6°)',
-          kicker: 'ALERTA GEOTÉCNICA // RIESGO DE AVALANCHA DE REGOLITO',
-          desc: 'Abanicos de derrubios recurrentes y líneas de pendiente oscura (RSL). Prohibido acercar el rover a menos de 50 metros de la base del talud.',
+          label: 'North Wall of Coprates (27.6° Slope)',
+          kicker: 'GEOTECHNICAL ALERT // REGOLITH AVALANCHE RISK',
+          desc: 'Recurrent debris fans and dark slope lineae (RSL). Rover approach prohibited within 50 meters of the talus base.',
           dist: 'DIST: 85.0 m',
-          comp: 'Pendiente Crítica: 27.6°'
+          comp: 'Critical Slope: 27.6°'
         }
       ]
     }
@@ -2994,7 +3060,7 @@ function initMarsDashboard() {
       canvas,
       loaded: false,
       error: false,
-      sourceUsed: 'CARGANDO TELEMETRÍA ÓPTICA NASA...'
+      sourceUsed: 'LOADING NASA OPTICAL TELEMETRY...'
     };
     realPanoCanvasCache[cacheKey] = entry;
 
@@ -3103,7 +3169,7 @@ function initMarsDashboard() {
       img.onload = () => {
         if (timedOut) return;
         clearTimeout(timer);
-        const label = isRemote ? 'SERVIDOR REMOTO NASA IMAGES API' : 'ARCHIVO OFICIAL NASA JPL (ALTA VELOCIDAD)';
+        const label = isRemote ? 'REMOTE NASA IMAGES API SERVER' : 'OFFICIAL NASA JPL ARCHIVE (HIGH SPEED)';
         if (typeof img.decode === 'function') {
           img.decode().then(() => buildFromImage(img, label)).catch(() => buildFromImage(img, label));
         } else {
@@ -3147,16 +3213,16 @@ function initMarsDashboard() {
     }
     if (srpbStatusTagEl) {
       if (render360Mode === 'sim2d') {
-        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-vector-square"></i> VISTA 2D SIMULADA ACTIVA';
+        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-vector-square"></i> SIMULATED 2D VIEW ACTIVE';
         srpbStatusTagEl.style.color = '#00E5FF';
       } else if (realEntry && realEntry.loaded) {
-        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> VISTA REAL NASA 360° ACTIVA';
+        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> REAL NASA 360° VIEW ACTIVE';
         srpbStatusTagEl.style.color = '#38F28D';
       } else if (realEntry && realEntry.error) {
-        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> RESPALDO VISTA 2D';
+        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> 2D VIEW FALLBACK';
         srpbStatusTagEl.style.color = '#FFB020';
       } else {
-        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-satellite-dish fa-spin"></i> CARGANDO VISTA REAL NASA...';
+        srpbStatusTagEl.innerHTML = '<i class="fa-solid fa-satellite-dish fa-spin"></i> LOADING REAL NASA VIEW...';
         srpbStatusTagEl.style.color = '#00E5FF';
       }
     }
@@ -3444,7 +3510,7 @@ function initMarsDashboard() {
   }
 
   // ==========================================================================
-  // ARCHIVO FOTOGRÁFICO REAL DE LA NASA (CATÁLOGO LOCAL INSTANTÁNEO + API EN VIVO)
+  // REAL NASA PHOTOGRAPHIC ARCHIVE (INSTANT LOCAL CATALOG + LIVE API)
   // ==========================================================================
   const LOCAL_CURATED_PANORAMAS = [
     {
@@ -3454,61 +3520,61 @@ function initMarsDashboard() {
       thumbUrl: 'panoramas/PIA24264-landing.jpg',
       hiResUrl: 'panoramas/PIA24264-landing.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24264',
-      credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° Mastcam-Z en Octavia E. Butler Landing'
+      credit: 'NASA/JPL-Caltech/ASU/MSSS — Mastcam-Z 360° Panorama at Octavia E. Butler Landing'
     },
     {
       nasaId: 'PIA24921',
-      title: 'Perseverance 360° — Frente del Delta Jezero y Mesa Kodiak',
+      title: 'Perseverance 360° — Jezero Delta Front & Kodiak Mesa',
       dateStr: 'SOL 466',
       thumbUrl: 'panoramas/PIA24921-kodiak-delta.jpg',
       hiResUrl: 'panoramas/PIA24921-kodiak-delta.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24921',
-      credit: 'NASA/JPL-Caltech/ASU/MSSS — Mosaico Real 2.5-Gigapíxeles del Frente Deltaico y Mesa Kodiak'
+      credit: 'NASA/JPL-Caltech/ASU/MSSS — Real 2.5-Gigapixel Mosaic of the Delta Front and Kodiak Mesa'
     },
     {
       nasaId: 'PIA26369',
-      title: 'Perseverance 360° — Bright Angel y Canal Neretva Vallis',
+      title: 'Perseverance 360° — Bright Angel & Neretva Vallis Channel',
       dateStr: 'SOL 1178',
       thumbUrl: 'panoramas/PIA26369-bright-angel.jpg',
       hiResUrl: 'panoramas/PIA26369-bright-angel.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26369',
-      credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° en Bright Angel (Neretva Vallis)'
+      credit: 'NASA/JPL-Caltech/ASU/MSSS — 360° Panorama at Bright Angel (Neretva Vallis)'
     },
     {
       nasaId: 'PIA26474',
-      title: 'Perseverance 360° — Cumbre del Borde Occidental (Rio Chiquito)',
+      title: 'Perseverance 360° — Western Rim Summit (Rio Chiquito)',
       dateStr: 'SOL 1337',
       thumbUrl: 'panoramas/PIA26474-rio-chiquito.jpg',
       hiResUrl: 'panoramas/PIA26474-rio-chiquito.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26474',
-      credit: 'NASA/JPL-Caltech/ASU/MSSS — Panorama 360° en Mirador Rio Chiquito (Cumbre de Jezero)'
+      credit: 'NASA/JPL-Caltech/ASU/MSSS — 360° Panorama at Rio Chiquito Overlook (Jezero Summit)'
     },
     {
       nasaId: 'PIA22545',
-      title: 'Curiosity 360° — Cresta Vera Rubin y Monte Sharp (Cráter Gale)',
+      title: 'Curiosity 360° — Vera Rubin Ridge & Mount Sharp (Gale Crater)',
       dateStr: 'MSL CURIOSITY',
       thumbUrl: 'panoramas/PIA22545-gale-curiosity.jpg',
       hiResUrl: 'panoramas/PIA22545-gale-curiosity.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA22545',
-      credit: 'NASA/JPL-Caltech/MSSS — Panorama 360° Mastcam en Cresta Vera Rubin (Cráter Gale)'
+      credit: 'NASA/JPL-Caltech/MSSS — Mastcam 360° Panorama at Vera Rubin Ridge (Gale Crater)'
     },
     {
       nasaId: 'PIA26363',
-      title: 'Curiosity 360° — Canal Gediz Vallis y Rocas de Azufre Elemental',
+      title: 'Curiosity 360° — Gediz Vallis Channel & Elemental Sulfur Rocks',
       dateStr: 'SOL 4208',
       thumbUrl: 'panoramas/PIA26363-gediz-vallis.jpg',
       hiResUrl: 'panoramas/PIA26363-gediz-vallis.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26363',
-      credit: 'NASA/JPL-Caltech/MSSS — Panorama 360° Mastcam en Canal Gediz Vallis (Monte Sharp)'
+      credit: 'NASA/JPL-Caltech/MSSS — Mastcam 360° Panorama at Gediz Vallis Channel (Mount Sharp)'
     },
     {
       nasaId: 'PIA13077',
-      title: 'MRO HiRISE + Viking — Cañón Coprates (Valles Marineris)',
+      title: 'MRO HiRISE + Viking — Coprates Canyon (Valles Marineris)',
       dateStr: 'MRO / VIKING',
       thumbUrl: 'panoramas/PIA13077-valles-marineris.jpg',
       hiResUrl: 'panoramas/PIA13077-valles-marineris.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA13077',
-      credit: 'NASA/JPL-Caltech/Univ. of Arizona — Mosaico Real de Valles Marineris'
+      credit: 'NASA/JPL-Caltech/Univ. of Arizona — Real Mosaic of Valles Marineris'
     }
   ];
 
@@ -3517,7 +3583,7 @@ function initMarsDashboard() {
     if (btnSvNasaApi) btnSvNasaApi.classList.remove('is-active');
   }
 
-  // Cerrar gaveta de fotos con Escape o haciendo clic fuera
+  // Close photo drawer with Escape or by clicking outside
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && svNasaApiDrawer && !svNasaApiDrawer.classList.contains('is-hidden')) {
       closeNasaPhotoDrawer();
@@ -3537,14 +3603,14 @@ function initMarsDashboard() {
       STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
     st.realPano = {
       piaId: panoItem.nasaId,
-      sol: panoItem.dateStr || 'ARCHIVO NASA',
+      sol: panoItem.dateStr || 'NASA ARCHIVE',
       localUrl: panoItem.hiResUrl,
       remoteUrl: panoItem.hiResUrl,
       jplUrl: panoItem.jplUrl,
       credit: panoItem.credit
     };
 
-    // Activar VISTA REAL (LIFE) sin superposición y cerrar el cajón fotográfico inmediatamente
+    // Activate REAL VIEW (LIFE) without overlay and close photo drawer immediately
     render360Mode = 'real';
     needs360Redraw = true;
     if (svRenderModeGroup) {
@@ -3572,7 +3638,7 @@ function initMarsDashboard() {
         ? item.thumbUrl
         : `public/panoramas/${(item.thumbUrl || '').split('/').pop()}`;
 
-      // 1. Generamos el HTML (El botón vuelve a estar limpio, sin onclick inline)
+      // Build clean card HTML with integrated action button
       card.innerHTML = `
         <img class="snad-thumb" src="${imgSrc}" alt="${item.title.replace(/"/g, '&quot;')}" loading="lazy" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='${fallbackSrc}';}">
         <div class="snad-body">
@@ -3582,50 +3648,18 @@ function initMarsDashboard() {
           </div>
           <div class="snad-title">${item.title}</div>
           <button type="button" class="snad-load-btn">
-            <i class="fa-solid fa-vr-cardboard"></i> CARGAR EN 360°
+            <i class="fa-solid fa-vr-cardboard"></i> LOAD IN 360°
           </button>
         </div>
       `;
 
-      // 2. ASIGNACIÓN A PRUEBA DE FALLOS: Capturamos el botón recién creado
-      //const btn = card.querySelector('.snad-load-btn');
-      
-      //btn.onpointerdown = (e) => {
-          //e.preventDefault();
-          //e.stopPropagation(); // Detiene cualquier bloqueo
-          
-          //console.log("¡Cargando panorama nativo!", item.hiResUrl);
-
-          // Llamamos a TU función que prepara la UI y carga la imagen correctamente
-          //applySelectedPanoramaToViewer(item);
-
-         // if (window.marsViewer) {
-             // window.marsViewer.destroy();
-          //}
-
-          // Recuerda usar el ID REAL de tu contenedor aquí (ej. 'mars-viewer' o el que tengas)
-          //window.marsViewer = pannellum.viewer('nasa-api-search-input', {
-              //"type": "equirectangular",
-              //"panorama": item.hiResUrl,
-             // "autoLoad": true,
-              //"crossOrigin": "anonymous"
-         // });
-      //};
-
-      //card.addEventListener('click', () => {
-        //applySelectedPanoramaToViewer(item);
-      //});
-
-      // el boton esta debtro de la tarjeta un unico click cubre ambos clicks
+      // Since the button is inside the card, a single click listener handles both
       card.addEventListener('click', () => {
         applySelectedPanoramaToViewer(item);
       });
 
       nasaApiResultsGrid.appendChild(card);
     });
-    if (stationData.narration) {
-        MissionControlVoice.narrate(stationData.narration);
-    }
   }
 
   async function fetchNasaLivePanoramas(queryText) {
@@ -3644,7 +3678,7 @@ function initMarsDashboard() {
     nasaApiResultsGrid.innerHTML = `
       <div class="snad-loading">
         <i class="fa-solid fa-satellite-dish fa-spin"></i>
-        <span>BUSCANDO EN NASA: "${cleanQuery.toUpperCase()}"...</span>
+        <span>SEARCHING NASA: "${cleanQuery.toUpperCase()}"...</span>
       </div>
     `;
 
@@ -3671,9 +3705,9 @@ function initMarsDashboard() {
         if (!meta || !thumbLink) return;
 
         const nasaId = meta.nasa_id || 'NASA-IMG';
-        const title = meta.title || 'Fotografía Planetaria NASA';
+        const title = meta.title || 'NASA Planetary Photograph';
         const dateStr = (meta.date_created || '').slice(0, 10);
-        // Usamos ~medium.jpg para carga ultrarrápida sin congelar el navegador
+        // Use ~medium.jpg for ultra-fast loading without freezing the browser
         const fastHiResUrl = thumbLink.replace('~thumb.jpg', '~medium.jpg');
 
         mapped.push({
@@ -3935,13 +3969,13 @@ function initMarsDashboard() {
     currentStationId = station.id;
 
     if (svStationTitleEl) {
-      svStationTitleEl.textContent = `360° MARTE // ${station.title}`;
+      svStationTitleEl.textContent = `360° MARS // ${station.title}`;
     }
 
     if (Array.isArray(station.coords) && station.coords.length >= 2) {
       const [sLat, sLng] = station.coords;
       const latDir = sLat >= 0 ? 'N' : 'S';
-      const lngDir = sLng >= 0 ? 'E' : 'O';
+      const lngDir = sLng >= 0 ? 'E' : 'W';
       if (headerCoords) {
         headerCoords.textContent = `${Math.abs(sLat).toFixed(2)}°${latDir} • ${Math.abs(sLng).toFixed(2)}°${lngDir}`;
       }
@@ -4059,7 +4093,7 @@ function initMarsDashboard() {
     }
   }
 
-  // Bucle de telemetría de orientación 360° (Brújula, Pitch, FOV y Cono de Visión en Mapa 2D sin sobrecargar el DOM)
+  // 360° orientation telemetry loop (Compass, Pitch, FOV, and 2D Map Vision Cone without overloading DOM)
   setInterval(() => {
     if (streetContainer.classList.contains('is-hidden')) return;
     const normYaw = Math.round(((camYaw % 360) + 360) % 360);
@@ -4069,11 +4103,11 @@ function initMarsDashboard() {
       lastRenderedConeYaw = normYaw;
       lastRenderedConeFov = fov;
       const pitch = camPitch.toFixed(1);
-      const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+      const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
       const dirLabel = dirs[Math.round(normYaw / 45) % 8];
 
       if (svCompassHeadingEl) {
-        svCompassHeadingEl.textContent = `AZIMUT: ${String(normYaw).padStart(3, '0')}° ${dirLabel}`;
+        svCompassHeadingEl.textContent = `AZIMUTH: ${String(normYaw).padStart(3, '0')}° ${dirLabel}`;
       }
       const activeStation = STREETVIEW_STATIONS.find((s) => s.id === currentStationId);
       if (svCameraAnglesEl && activeStation) {
@@ -4326,7 +4360,7 @@ function initMarsDashboard() {
   });
 
   // ==========================================================================
-  // 11. CONMUTACIÓN DE VISTAS (MAPA 2D / STREET VIEW 360° / PANTALLA DIVIDIDA)
+  // 11. VIEWPORT SWITCHING (2D MAP / 360° STREET VIEW / SPLIT SCREEN)
   // ==========================================================================
   function setViewportMode(mode, targetStationId = null) {
     viewportStage.setAttribute('data-view-mode', mode);
@@ -4337,7 +4371,7 @@ function initMarsDashboard() {
       btnToggleStreet.classList.add('is-active');
       btnToggleStreet.setAttribute('aria-pressed', 'true');
       btnSplitView.classList.remove('is-active');
-      streetBtnLabel.textContent = 'MAPA 2D';
+      streetBtnLabel.textContent = '2D MAP';
       setPanelOpen('left', false);
       setPanelOpen('right', false);
     } else if (mode === 'split') {
@@ -4345,7 +4379,7 @@ function initMarsDashboard() {
       streetContainer.classList.remove('is-hidden');
       btnToggleStreet.classList.add('is-active');
       btnSplitView.classList.add('is-active');
-      streetBtnLabel.textContent = '360° ACTIVO';
+      streetBtnLabel.textContent = '360° ACTIVE';
       setPanelOpen('left', false);
       if (window.innerWidth <= 1150) {
         setPanelOpen('right', false);
@@ -4359,7 +4393,7 @@ function initMarsDashboard() {
       btnToggleStreet.classList.remove('is-active');
       btnToggleStreet.setAttribute('aria-pressed', 'false');
       btnSplitView.classList.remove('is-active');
-      streetBtnLabel.textContent = 'VISTA 360°';
+      streetBtnLabel.textContent = '360° VIEW';
     }
 
     if (mode === 'streetview' || mode === 'split') {
@@ -4400,76 +4434,76 @@ function initMarsDashboard() {
   }
 
   // ==========================================================================
-  // 12. CLIMA DINÁMICO POR REGIÓN PLANETARIA (ETAPA 5)
+  // 12. DYNAMIC WEATHER BY PLANETARY REGION (STAGE 5)
   // ==========================================================================
   const REGIONAL_WEATHER_DATA = {
     'jezero-alpha': {
-      kicker: 'ESTACIÓN MEDA // REPORTE METEOROLÓGICO',
+      kicker: 'MEDA STATION // METEOROLOGICAL REPORT',
       title: 'WEATHER AT JEZERO CRATER',
       sol: 'SOL 1420',
       temp: '-62°C',
       max: '-18°C',
       min: '-84°C',
       wind: '24.5 <small>km/h</small>',
-      windDir: 'Dirección: ENE (68°)',
+      windDir: 'Direction: ENE (68°)',
       press: '718 <small>Pa</small>',
       pressSub: '95.3% CO₂ Nominal',
       tau: '&tau; 0.74',
       uv: '0.24 <small>mSv/h</small>',
-      alertTitle: 'ALERTA DE TORMENTA DE POLVO',
+      alertTitle: 'DUST STORM ALERT',
       alertDesc:
-        'Frente regional detectado a 42 km al SO de Jezero. Reducción de visibilidad y caída de recarga solar (-18%) prevista en 3 horas.'
+        'Regional front detected 42 km SW of Jezero. Visibility drop and solar recharge reduction (-18%) forecast within 3 hours.'
     },
     'jezero-beta': {
-      kicker: 'ESTACIÓN MEDA-NORTE // REPORTE METEOROLÓGICO',
+      kicker: 'MEDA-NORTH STATION // METEOROLOGICAL REPORT',
       title: 'WEATHER AT JEZERO (BELVA RIM)',
       sol: 'SOL 1420',
       temp: '-65°C',
       max: '-21°C',
       min: '-86°C',
       wind: '29.2 <small>km/h</small>',
-      windDir: 'Dirección: NE (45°)',
+      windDir: 'Direction: NE (45°)',
       press: '704 <small>Pa</small>',
-      pressSub: 'Meseta Deltaica Superior',
+      pressSub: 'Upper Delta Plateau',
       tau: '&tau; 0.81',
       uv: '0.26 <small>mSv/h</small>',
-      alertTitle: 'RÁFAGAS TURBULENTAS EN CRÁTER BELVA',
+      alertTitle: 'TURBULENT GUSTS AT BELVA CRATER',
       alertDesc:
-        'Remolinos convectivos (Dust Devils) activos sobre el borde del cráter de impacto Belva. Mantener anclaje de tracción.'
+        'Active convective vortices (Dust Devils) over the Belva impact crater rim. Maintain traction anchoring.'
     },
     'gale-sharp': {
-      kicker: 'ESTACIÓN REMS (MSL) // REPORTE METEOROLÓGICO',
+      kicker: 'REMS STATION (MSL) // METEOROLOGICAL REPORT',
       title: 'WEATHER AT GALE CRATER',
       sol: 'SOL 4412',
       temp: '-54°C',
       max: '-9°C',
       min: '-79°C',
       wind: '18.4 <small>km/h</small>',
-      windDir: 'Dirección: NNO (338°)',
+      windDir: 'Direction: NNW (338°)',
       press: '845 <small>Pa</small>',
-      pressSub: 'Cuenca profunda (-4.5 km)',
+      pressSub: 'Deep basin (-4.5 km)',
       tau: '&tau; 0.58',
       uv: '0.21 <small>mSv/h</small>',
-      alertTitle: 'VIENTO DE LADERA EN AEOLIS MONS',
+      alertTitle: 'SLOPE WIND ON AEOLIS MONS',
       alertDesc:
-        'Corrientes térmicas descendentes desde la cumbre del Monte Sharp. Visibilidad orbital clara para ascenso EVA.'
+        'Thermal flows descending from Mount Sharp summit. Clear orbital visibility for EVA ascent.'
     },
     'valles-marineris': {
-      kicker: 'SONDA MRO-MCS // REPORTE METEOROLÓGICO',
+      kicker: 'MRO-MCS PROBE // METEOROLOGICAL REPORT',
       title: 'WEATHER AT VALLES MARINERIS',
       sol: 'SOL 1420',
       temp: '-48°C',
       max: '-4°C',
       min: '-74°C',
       wind: '64.8 <small>km/h</small>',
-      windDir: 'Cañón Axial: E (92°)',
+      windDir: 'Axial Canyon: E (92°)',
       press: '890 <small>Pa</small>',
-      pressSub: 'Alta densidad en abismo',
+      pressSub: 'High density in abyss',
       tau: '&tau; 1.32',
       uv: '0.19 <small>mSv/h</small>',
-      alertTitle: '⚠ ALERTA SEVERA: VIENTO CATABÁTICO DE CAÑÓN',
+      alertTitle: '⚠ SEVERE ALERT: CANYON KATABATIC WIND',
       alertDesc:
-        'Ráfagas canalizadas de 64.8 km/h en el fondo de Coprates Chasma. Niebla matutina de H₂O y polvo en suspensión denso.'
+        'Channeled 64.8 km/h gusts along Coprates Chasma floor. Morning H₂O fog and dense suspended dust.'
     }
   };
 
@@ -4498,7 +4532,7 @@ function initMarsDashboard() {
             minTemp: `${Math.round(sData.AT.mn)}°C`,
             windKmh: sData.HWS ? `${(sData.HWS.av * 3.6).toFixed(1)} <small>km/h</small>` : null,
             windDir: sData.WD?.most_common?.compass_point
-              ? `Dirección: ${sData.WD.most_common.compass_point} (${sData.WD.most_common.compass_degrees}°)`
+              ? `Direction: ${sData.WD.most_common.compass_point} (${sData.WD.most_common.compass_degrees}°)`
               : null,
             pressPa: sData.PRE ? `${Math.round(sData.PRE.av)} <small>Pa</small>` : null
           };
@@ -4518,8 +4552,8 @@ function initMarsDashboard() {
     };
 
     const statusBadge = liveMarsWeatherFeed
-      ? `<span class="wc-live-badge"><i class="fa-solid fa-satellite-dish"></i> TELEMETRÍA NASA LIVE</span>`
-      : `<span class="wc-live-badge is-fallback"><i class="fa-solid fa-database"></i> REFERENCIA MEDA / REMS</span>`;
+      ? `<span class="wc-live-badge"><i class="fa-solid fa-satellite-dish"></i> NASA LIVE TELEMETRY</span>`
+      : `<span class="wc-live-badge is-fallback"><i class="fa-solid fa-database"></i> MEDA / REMS REFERENCE</span>`;
 
     setHtml('wc-kicker', `${w.kicker}<br>${statusBadge}`);
     setHtml('wc-title', w.title);
@@ -4540,115 +4574,115 @@ function initMarsDashboard() {
   fetchLiveMarsWeatherTelemetry();
 
   // ==========================================================================
-  // 13. DOSSIER DE MISIONES DE LA NASA (<dialog closedby="any">) Y EXPORTACIÓN EVA
+  // 13. NASA MISSIONS DOSSIER (<dialog closedby="any">) & EVA EXPORT
   // ==========================================================================
   const NASA_MISSIONS_DOSSIER = [
     {
       id: 'perseverance-m2020',
       shortName: 'Perseverance (Mars 2020)',
-      subLabel: 'Cráter Jezero • Activo',
+      subLabel: 'Jezero Crater • Active',
       icon: 'fa-truck-monster',
       agency: 'NASA / JPL-CALTECH // MARS 2020 PROGRAM',
-      name: 'Rover Perseverance (Misión Mars 2020)',
-      status: 'OPERATIVO EN SUPERFICIE (SOL 1420)',
+      name: 'Perseverance Rover (Mars 2020 Mission)',
+      status: 'OPERATIONAL ON SURFACE (SOL 1420)',
       coords: [18.4447, 77.4508],
       routeKey: 'jezero-alpha',
       stationId: 'scene-kodiak',
       summary:
-        'Laboratorio astrobiológico propulsado por generador termoeléctrico de radioisótopos (MMRTG) de 1,025 kg. Aterrizó el 18 de febrero de 2021 en Octavia E. Butler Landing con la misión de recolectar núcleos de roca del antiguo delta lacustre y validar tecnologías críticas para la exploración humana.',
+        'Astrobiology laboratory powered by a 1,025 kg Multi-Mission Radioisotope Thermoelectric Generator (MMRTG). Landed on February 18, 2021 at Octavia E. Butler Landing with the mission to collect core rock samples from the ancient lake delta and validate critical technologies for human exploration.',
       specs: [
-        { label: 'SITIO DE DESCENSO', val: '18.4447°N, 77.4508°E' },
-        { label: 'ALTITUD MOLA', val: '-2,564 metros' },
-        { label: 'FUENTE DE ENERGÍA', val: 'MMRTG Pu-238 (110W)' },
-        { label: 'PRODUCCIÓN O₂ (MOXIE)', val: '122g O₂ (Pureza 98%)' },
-        { label: 'MUESTRAS SELLADAS', val: '24 Tubos de Titanio' },
-        { label: 'VELOCIDAD AUTÓNOMA', val: 'AutoNav 120 m/hora' }
+        { label: 'LANDING SITE', val: '18.4447°N, 77.4508°E' },
+        { label: 'MOLA ALTITUDE', val: '-2,564 meters' },
+        { label: 'POWER SOURCE', val: 'MMRTG Pu-238 (110W)' },
+        { label: 'O₂ PRODUCTION (MOXIE)', val: '122g O₂ (98% Purity)' },
+        { label: 'SEALED SAMPLES', val: '24 Titanium Tubes' },
+        { label: 'AUTONOMOUS SPEED', val: 'AutoNav 120 m/hour' }
       ],
       instruments: [
-        '<strong>MOXIE (ISRU Oxígeno):</strong> Demostró la conversión electroquímica de CO₂ atmosférico marciano en oxígeno respirable para futuros astronautas.',
-        '<strong>RIMFAX (Radar Subsuperficial):</strong> Cartografió estratos enterrados y lentes de hielo de agua hasta 20 metros bajo las ruedas del rover.',
-        '<strong>MEDA (Estación Ambiental):</strong> Provee la telemetría en vivo de viento, presión, humedad, polvo y radiación UV mostrada en este HUD.',
-        '<strong>PIXL & SHERLOC:</strong> Espectrómetros de fluorescencia de rayos X y Raman UV para detectar minerales hidratados y compuestos orgánicos.'
+        '<strong>MOXIE (ISRU Oxygen):</strong> Demonstrated electrochemical conversion of Martian atmospheric CO₂ into breathable oxygen for future astronauts.',
+        '<strong>RIMFAX (Subsurface Radar):</strong> Mapped buried strata and water ice lenses up to 20 meters beneath the rover wheels.',
+        '<strong>MEDA (Environmental Station):</strong> Provides live wind, pressure, humidity, dust, and UV radiation telemetry displayed on this HUD.',
+        '<strong>PIXL & SHERLOC:</strong> X-ray fluorescence and deep-UV Raman spectrometers to detect hydrated minerals and organic compounds.'
       ]
     },
     {
       id: 'ingenuity-field',
-      shortName: 'Helicóptero Ingenuity',
-      subLabel: '72 Vuelos Completados',
+      shortName: 'Ingenuity Helicopter',
+      subLabel: '72 Flights Completed',
       icon: 'fa-helicopter',
-      agency: 'NASA / JPL / AEROVIRONMENT // DEMOSTRADOR TECNOLÓGICO',
-      name: 'Helicóptero Marciano Ingenuity (Ginnie)',
-      status: 'MISIÓN HISTÓRICA COMPLETADA (72 VUELOS)',
+      agency: 'NASA / JPL / AEROVIRONMENT // TECH DEMONSTRATOR',
+      name: 'Ingenuity Mars Helicopter (Ginnie)',
+      status: 'HISTORIC MISSION COMPLETED (72 FLIGHTS)',
       coords: [18.4486, 77.4509],
       routeKey: 'jezero-alpha',
       stationId: 'scene-landing',
       summary:
-        'Primera aeronave motorizada en lograr vuelo controlado en otro planeta (19 de abril de 2021). Diseñado originalmente para solo 5 vuelos de prueba, superó todas las expectativas realizando 72 vuelos como explorador aéreo adelantado para Perseverance en una atmósfera con apenas el 1% de la densidad terrestre.',
+        'First powered aircraft to achieve controlled flight on another planet (April 19, 2021). Originally designed for only 5 test flights, it exceeded all expectations by completing 72 flights as an advance aerial scout for Perseverance in an atmosphere with barely 1% of Earth density.',
       specs: [
-        { label: 'AERÓDROMO BASE', val: 'Wright Brothers Field' },
-        { label: 'VUELOS TOTALES', val: '72 Vuelos Exitosos' },
-        { label: 'DISTANCIA VOLADA', val: '17.0 kilómetros' },
-        { label: 'ALTITUD MÁXIMA', val: '24.0 metros AGL' },
-        { label: 'VELOCIDAD DE CRUCERO', val: '10.0 m/s (36 km/h)' },
-        { label: 'ROTOR COAXIAL', val: '2,537 RPM Fibra Carbono' }
+        { label: 'HOME AIRFIELD', val: 'Wright Brothers Field' },
+        { label: 'TOTAL FLIGHTS', val: '72 Successful Flights' },
+        { label: 'DISTANCE FLOWN', val: '17.0 kilometers' },
+        { label: 'MAX ALTITUDE', val: '24.0 meters AGL' },
+        { label: 'CRUISING SPEED', val: '10.0 m/s (36 km/h)' },
+        { label: 'COAXIAL ROTOR', val: '2,537 RPM Carbon Fiber' }
       ],
       instruments: [
-        '<strong>Cámara RTE en Color (13 MP):</strong> Reconocimiento aéreo de escarpes, campos de dunas (Séítah) y rutas seguras para el rover y futuros exploradores.',
-        '<strong>Cámara Navcam Blanco y Negro:</strong> Seguimiento óptico del terreno a 30 cuadros por segundo para navegación autónoma.',
-        '<strong>Altímetro Láser Garmin:</strong> Medición continua de distancia al suelo sobre relieve rocoso irregular.'
+        '<strong>RTE Color Camera (13 MP):</strong> Aerial reconnaissance of scarps, dune fields (Séítah), and safe routes for the rover and future explorers.',
+        '<strong>Navcam Black & White Camera:</strong> Optical terrain tracking at 30 frames per second for autonomous flight navigation.',
+        '<strong>Garmin Laser Altimeter:</strong> Continuous ground-clearance measurement over rugged rocky relief.'
       ]
     },
     {
       id: 'global-curiosity',
       shortName: 'Curiosity (MSL)',
-      subLabel: 'Cráter Gale • Monte Sharp',
+      subLabel: 'Gale Crater • Mount Sharp',
       icon: 'fa-robot',
       agency: 'NASA / JPL-CALTECH // MARS SCIENCE LABORATORY',
-      name: 'Rover Curiosity (MSL) — Cráter Gale',
-      status: 'OPERATIVO EN SUPERFICIE (SOL 4412+)',
+      name: 'Curiosity Rover (MSL) — Gale Crater',
+      status: 'OPERATIONAL ON SURFACE (SOL 4412+)',
       coords: [-4.5895, 137.4417],
       routeKey: 'gale-sharp',
       stationId: 'scene-gale',
       summary:
-        'En la superficie marciana desde el 6 de agosto de 2012. Curiosity ha ascendido más de 800 metros verticales por las faldas del Monte Sharp (Aeolis Mons), confirmando que el antiguo lago del Cráter Gale poseía agua líquida con pH neutro y todos los ingredientes químicos necesarios para la vida (C, H, N, O, P, S).',
+        'Operating on Mars since August 6, 2012. Curiosity has climbed over 800 vertical meters up the foothills of Mount Sharp (Aeolis Mons), confirming that the ancient Gale Crater lake held pH-neutral liquid water and all key chemical ingredients for life (C, H, N, O, P, S).',
       specs: [
-        { label: 'SITIO DE DESCENSO', val: 'Bradbury Landing (-4.58°S)' },
-        { label: 'ALTITUD BASE', val: '-4,501 metros (MOLA)' },
-        { label: 'ODOMETRÍA ACUMULADA', val: '+32.4 kilómetros' },
-        { label: 'DOSIS RADIACIÓN (RAD)', val: '0.64 mSv/día en superficie' },
-        { label: 'PERFORACIONES', val: '42 Muestras Analizadas' },
-        { label: 'ENERGÍA', val: 'MMRTG Nuclear' }
+        { label: 'LANDING SITE', val: 'Bradbury Landing (-4.58°S)' },
+        { label: 'BASE ALTITUDE', val: '-4,501 meters (MOLA)' },
+        { label: 'TOTAL ODOMETRY', val: '+32.4 kilometers' },
+        { label: 'RADIATION DOSE (RAD)', val: '0.64 mSv/day on surface' },
+        { label: 'DRILL SAMPLES', val: '42 Samples Analyzed' },
+        { label: 'POWER', val: 'Nuclear MMRTG' }
       ],
       instruments: [
-        '<strong>RAD (Radiation Assessment Detector):</strong> Instrumento clave que midió por primera vez la radiación cósmica galáctica y solar en la superficie para diseñar el blindaje de hábitats humanos.',
-        '<strong>SAM (Sample Analysis at Mars):</strong> Laboratorio químico que detectó moléculas orgánicas complejas y variaciones estacionales de metano.',
-        '<strong>ChemCam (LIBS):</strong> Láser de ablación capaz de vaporizar rocas a 7 metros para identificar su composición elemental.'
+        '<strong>RAD (Radiation Assessment Detector):</strong> Key instrument that first measured galactic cosmic and solar radiation on the surface to design human habitat shielding.',
+        '<strong>SAM (Sample Analysis at Mars):</strong> Chemical laboratory that detected complex organic molecules and seasonal methane variations.',
+        '<strong>ChemCam (LIBS):</strong> Laser ablation spectrometer capable of vaporizing rocks from 7 meters away to identify elemental composition.'
       ]
     },
     {
       id: 'global-insight',
-      shortName: 'Sonda InSight',
-      subLabel: 'Elysium Planitia • Geofísica',
+      shortName: 'InSight Lander',
+      subLabel: 'Elysium Planitia • Geophysics',
       icon: 'fa-wave-square',
       agency: 'NASA DISCOVERY PROGRAM // CNES / DLR',
-      name: 'Lander Geofísico InSight — Elysium Planitia',
-      status: 'ARCHIVO SÍSMICO COMPLETADO (2018-2022)',
+      name: 'InSight Geophysical Lander — Elysium Planitia',
+      status: 'SEISMIC ARCHIVE COMPLETED (2018-2022)',
       coords: [4.5024, 135.6234],
       routeKey: null,
       stationId: null,
       summary:
-        'Primera misión dedicada a investigar el interior profundo de Marte. Reveló el grosor de la corteza marciana (24 a 72 km), el tamaño de su núcleo de hierro-níquel líquido (radio de ~1,830 km) y la tasa de impactos meteóricos actuales, datos esenciales para la ingeniería estructural de bases permanentes.',
+        'First mission dedicated to investigating Mars deep interior. Revealed Martian crustal thickness (24 to 72 km), the size of its liquid iron-nickel core (radius ~1,830 km), and current meteorite impact rates, essential data for structural engineering of permanent bases.',
       specs: [
-        { label: 'COORDENADAS', val: '4.5024°N, 135.6234°E' },
-        { label: 'ALTITUD MOLA', val: '-2,613 metros' },
-        { label: 'MARTEMOTOS DETECTADOS', val: '1,319 Eventos Sísmicos' },
-        { label: 'SISMO MÁS FUERTE', val: 'Magnitud 4.7 (Sol 1222)' },
-        { label: 'FLUJO TÉRMICO', val: 'Sonda HP³ (40 cm prof.)' },
-        { label: 'ENERGÍA', val: 'Paneles Solares UltraFlex' }
+        { label: 'COORDINATES', val: '4.5024°N, 135.6234°E' },
+        { label: 'MOLA ALTITUDE', val: '-2,613 meters' },
+        { label: 'MARSQUAKES DETECTED', val: '1,319 Seismic Events' },
+        { label: 'STRONGEST QUAKE', val: 'Magnitude 4.7 (Sol 1222)' },
+        { label: 'HEAT FLOW', val: 'HP³ Mole (40 cm depth)' },
+        { label: 'POWER', val: 'UltraFlex Solar Arrays' }
       ],
       instruments: [
-        '<strong>SEIS (Sismómetro de Banda Ancha):</strong> Determinó las zonas de actividad tectónica (Cerberus Fossae) para evitar construir campamentos humanos sobre fallas activas.',
-        '<strong>TWINS (Sensores Meteorológicos):</strong> Monitoreo continuo de remolinos de polvo e infrasonido atmosférico.'
+        '<strong>SEIS (Broadband Seismometer):</strong> Mapped active tectonic zones (Cerberus Fossae) to avoid building human camps over active faults.',
+        '<strong>TWINS (Weather Sensors):</strong> Continuous monitoring of dust vortices and atmospheric infrasound.'
       ]
     },
     {
@@ -4657,50 +4691,50 @@ function initMarsDashboard() {
       subLabel: 'Chryse Planitia • 1976',
       icon: 'fa-flag-usa',
       agency: 'NASA LANGLEY / JPL // VIKING PROGRAM',
-      name: 'Sonda Histórica Viking 1 — Chryse Planitia',
-      status: 'PATRIMONIO HISTÓRICO PLANETARIO (1976-1982)',
+      name: 'Historic Viking 1 Lander — Chryse Planitia',
+      status: 'PLANETARY HERITAGE SITE (1976-1982)',
       coords: [22.48, -47.95],
       routeKey: null,
       stationId: null,
       summary:
-        'Aterrizó el 20 de julio de 1976, transmitiendo las primeras fotografías panorámicas nítidas desde la superficie de Marte y operando durante 2,245 soles (más de 6 años terrestres). Sus análisis del regolito establecieron la presencia de percloratos y óxidos de hierro que hoy guían los protocolos de descontaminación EVA.',
+        'Landed on July 20, 1976, transmitting the first sharp panoramic photographs from the Martian surface and operating for 2,245 sols (over 6 Earth years). Its regolith analyses established the presence of perchlorates and iron oxides that guide today EVA decontamination protocols.',
       specs: [
-        { label: 'COORDENADAS', val: '22.4800°N, 47.9500°O' },
-        { label: 'ALTITUD MOLA', val: '-3,627 metros' },
-        { label: 'DURACIÓN OPERATIVA', val: '2,245 Soles Marcianos' },
-        { label: 'MASA EN SUPERFICIE', val: '572 kilogramos' },
-        { label: 'ENERGÍA', val: '2x RTG SNAP-19' },
-        { label: 'ESTACIÓN DESIGNADA', val: 'Thomas Mutch Memorial' }
+        { label: 'COORDINATES', val: '22.4800°N, 47.9500°W' },
+        { label: 'MOLA ALTITUDE', val: '-3,627 meters' },
+        { label: 'OPERATIONAL SPAN', val: '2,245 Martian Sols' },
+        { label: 'SURFACE MASS', val: '572 kilograms' },
+        { label: 'POWER', val: '2x SNAP-19 RTG' },
+        { label: 'DESIGNATED STATION', val: 'Thomas Mutch Memorial' }
       ],
       instruments: [
-        '<strong>GCMS (Cromatógrafo de Gases / Espectrómetro de Masas):</strong> Caracterizó la composición química del suelo superficial y la atmósfera de CO₂ (95.3%).',
-        '<strong>Brazo Robótico Colector:</strong> Excavó las primeras trincheras de regolito marciano para ensayos biológicos.'
+        '<strong>GCMS (Gas Chromatograph / Mass Spectrometer):</strong> Characterized surface soil chemistry and the CO₂-dominated atmosphere (95.3%).',
+        '<strong>Surface Sampler Arm:</strong> Dug the first Martian regolith trenches for biological experiments.'
       ]
     },
     {
       id: 'global-olympus',
       shortName: 'MRO HiRISE & MGS MOLA',
-      subLabel: 'Red Orbital Cartográfica',
+      subLabel: 'Orbital Mapping Network',
       icon: 'fa-satellite',
-      agency: 'NASA / JPL / USGS ASTROGEOLOGY // RED ORBITAL',
-      name: 'Constelación Orbital: MRO (HiRISE/CRISM) & MGS (MOLA)',
-      status: 'ENLACE ORBITAL ACTIVO (250-400 KM)',
+      agency: 'NASA / JPL / USGS ASTROGEOLOGY // ORBITAL NETWORK',
+      name: 'Orbital Constellation: MRO (HiRISE/CRISM) & MGS (MOLA)',
+      status: 'ACTIVE ORBITAL LINK (250-400 KM)',
       coords: [18.65, -133.8],
       routeKey: 'valles-marineris',
       stationId: 'scene-valles',
       summary:
-        'Los datos topográficos, geológicos y de hielo de agua que alimentan las 5 capas de esta aplicación provienen del Altímetro Láser MOLA (Mars Global Surveyor) y de los sensores HiRISE (25 cm/píxel), CTX y radar SHARAD a bordo del Mars Reconnaissance Orbiter (MRO), incluyendo el mapeo de Olympus Mons (+21,229m) y Valles Marineris.',
+        'Topographic, geological, and water-ice datasets powering the 5 layers of this application originate from the MOLA Laser Altimeter (Mars Global Surveyor) and HiRISE (25 cm/pixel), CTX, and SHARAD radar sensors aboard the Mars Reconnaissance Orbiter (MRO), including mapping of Olympus Mons (+21,229m) and Valles Marineris.',
       specs: [
-        { label: 'RESOLUCIÓN HIRISE', val: '0.25 metros / píxel' },
-        { label: 'PRECISIÓN VERTICAL MOLA', val: '±1.0 metro absoluto' },
-        { label: 'RADAR SHARAD (HIELO)', val: 'Penetración hasta 1 km' },
-        { label: 'CUMBRE OLYMPUS MONS', val: '+21,229 metros' },
-        { label: 'ABISMO VALLES MARINERIS', val: '-4,120 a -7,000 metros' },
-        { label: 'RELÉ TELEMETRÍA UHF', val: 'Electra Transceiver' }
+        { label: 'HIRISE RESOLUTION', val: '0.25 meters / pixel' },
+        { label: 'MOLA VERTICAL ACCURACY', val: '±1.0 meter absolute' },
+        { label: 'SHARAD RADAR (ICE)', val: 'Penetration up to 1 km' },
+        { label: 'OLYMPUS MONS SUMMIT', val: '+21,229 meters' },
+        { label: 'VALLES MARINERIS ABYSS', val: '-4,120 to -7,000 meters' },
+        { label: 'UHF TELEMETRY RELAY', val: 'Electra Transceiver' }
       ],
       instruments: [
-        '<strong>MOLA (Mars Orbiter Laser Altimeter):</strong> Base del modelo digital de elevación global utilizado en este planificador para calcular pendientes y esfuerzo metabólico.',
-        '<strong>CRISM & THEMIS:</strong> Espectrómetros orbitales que identifican arcillas hidratadas, carbonatos y reservas de hielo subsuperficial (ISRU).'
+        '<strong>MOLA (Mars Orbiter Laser Altimeter):</strong> Foundation of the global digital elevation model used in this planner to compute slopes and metabolic effort.',
+        '<strong>CRISM & THEMIS:</strong> Orbital spectrometers identifying hydrated clays, carbonates, and subsurface water-ice reserves (ISRU).'
       ]
     }
   ];
@@ -4793,7 +4827,7 @@ function initMarsDashboard() {
         const rawText = await file.text();
         const parsed = JSON.parse(rawText);
         if (!Array.isArray(parsed.waypoints) || parsed.waypoints.length < 2) {
-          throw new Error('El archivo JSON no contiene al menos 2 waypoints válidos.');
+          throw new Error('JSON file does not contain at least 2 valid waypoints.');
         }
 
         if (parsed.evaConfig) {
@@ -4810,12 +4844,12 @@ function initMarsDashboard() {
         activeRouteData = {
           id: 'custom',
           code: parsed.activeRoute?.code || 'IMPORTED-EVA',
-          title: parsed.activeRoute?.title || 'Plan EVA Importado',
-          sector: parsed.activeRoute?.sector || 'Sector: Manifiesto Táctico Importado (.JSON)',
-          desc: parsed.activeRoute?.desc || 'Expedición restaurada desde archivo oficial de telemetría EVA.',
-          difficulty: parsed.activeRoute?.difficulty || 'PERSONALIZADA',
+          title: parsed.activeRoute?.title || 'Imported EVA Plan',
+          sector: parsed.activeRoute?.sector || 'Sector: Imported Tactical Manifest (.JSON)',
+          desc: parsed.activeRoute?.desc || 'Expedition restored from official EVA telemetry file.',
+          difficulty: parsed.activeRoute?.difficulty || 'CUSTOM',
           maxSlopeDeg: Number(parsed.activeRoute?.maxSlopeDeg || 12),
-          slopeStatus: 'CALCULADA',
+          slopeStatus: 'CALCULATED',
           avgSpeedKmh: 2.9,
           totalDistKm: 0,
           baseO2RatePerKm: 3.25,
@@ -4824,7 +4858,7 @@ function initMarsDashboard() {
           zoom: 8,
           pathCoords: [],
           waypoints: parsed.waypoints.map((w, i) => ({
-            name: w.name || `Waypoint EVA 0${i + 1}`,
+            name: w.name || `EVA Waypoint 0${i + 1}`,
             sub: w.sub || `LAT ${Number(w.coords[0]).toFixed(3)}° LON ${Number(w.coords[1]).toFixed(3)}°`,
             km: Number(w.distanceKm || 0),
             coords: [Number(w.coords[0]), Number(w.coords[1])],
@@ -4844,7 +4878,7 @@ function initMarsDashboard() {
         if (dossierDialog?.open) dossierDialog.close();
         if (typeof playHudTone === 'function') playHudTone(940, 0.09, 'sine');
       } catch (err) {
-        alert(`No se pudo importar el Plan EVA: ${err.message}`);
+        alert(`Could not import EVA Plan: ${err.message}`);
       } finally {
         inputImportJson.value = '';
       }
@@ -4952,7 +4986,7 @@ function initMarsDashboard() {
     });
   }
 
-  // Descargar el Manifiesto EVA como archivo .json real
+  // Download the EVA Manifest as a real .json file
   if (btnDownloadJson) {
     btnDownloadJson.addEventListener('click', () => {
       const manifest = buildCurrentEvaManifestObject();
@@ -4960,7 +4994,7 @@ function initMarsDashboard() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `MARTE-PLAN-EVA-${activeRouteData.code}-SOL1420.json`;
+      a.download = `MARTE-EVA-PLAN-${activeRouteData.code}-SOL1420.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -4969,16 +5003,16 @@ function initMarsDashboard() {
     });
   }
 
-  // Copiar telemetría EVA al portapapeles
+  // Copy EVA telemetry to clipboard
   if (btnCopyManifest) {
     btnCopyManifest.addEventListener('click', async () => {
       const text = JSON.stringify(buildCurrentEvaManifestObject(), null, 2);
       try {
         await navigator.clipboard.writeText(text);
         if (copyManifestLabel) {
-          copyManifestLabel.textContent = '¡TELEMETRÍA COPIADA AL PORTAPAPELES!';
+          copyManifestLabel.textContent = 'TELEMETRY COPIED TO CLIPBOARD!';
           setTimeout(() => {
-            copyManifestLabel.textContent = 'COPIAR TELEMETRÍA AL PORTAPAPELES';
+            copyManifestLabel.textContent = 'COPY TELEMETRY TO CLIPBOARD';
           }, 2200);
         }
         playHudTone(880, 0.08, 'sine');
@@ -5075,9 +5109,11 @@ function initMarsDashboard() {
     });
   }
 
-  // Inicializar la ruta por defecto (JEZERO-ALPHA), el cono de visión y el Street View al arrancar
+  // Initialize restored or default route (JEZERO-ALPHA), vision cone, and Street View on startup
   loadStreetViewStation('scene-kodiak', true, false);
-  loadRoute('jezero-alpha', false);
+  if (!restoreMissionStateFromStorage()) {
+    loadRoute('jezero-alpha', false);
+  }
   updateRoverVisionConeOnMap(14, 90);
 
   if ('serviceWorker' in navigator) {
@@ -5088,17 +5124,33 @@ function initMarsDashboard() {
 }
 
 const MissionControlVoice = {
-    audioPlayer: null, 
+    audioPlayer: null,
+    audioCache: {},
     apiUrl: 'http://localhost:5000/api/narrate',
 
     narrate: async function(text) {
-        // 1. Detener audio anterior si existe
+        if (!text) return;
+
+        // 1. Stop previous audio if playing
         if (this.audioPlayer) {
             this.audioPlayer.pause();
             this.audioPlayer.currentTime = 0;
         }
 
-        console.log("📡 Solicitando narración a F5-TTS local...");
+        const cachedUrl = this.audioCache[text];
+        if (cachedUrl) {
+            console.log("🎵 Replaying cached F5-TTS narration...");
+            this.audioPlayer = new Audio(cachedUrl);
+            this.audioPlayer.volume = 1.0;
+            try {
+                await this.audioPlayer.play();
+            } catch (playError) {
+                console.warn("⚠️ Error playing cached audio:", playError);
+            }
+            return;
+        }
+
+        console.log("📡 Requesting narration from local F5-TTS server...");
 
         try {
             const response = await fetch(this.apiUrl, {
@@ -5109,49 +5161,48 @@ const MissionControlVoice = {
                 body: JSON.stringify({ text: text })
             });
 
-            if (!response.ok) throw new Error(`Error en respuesta HTTP: ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP response error: ${response.status}`);
 
-            // 2. Obtener Blob y verificar tamaño
+            // 2. Retrieve Blob and verify size
             const audioBlob = await response.blob();
-            console.log(`📦 Audio recibido. Tamaño: ${audioBlob.size} bytes | Tipo: ${audioBlob.type}`);
+            console.log(`📦 Audio received. Size: ${audioBlob.size} bytes | Type: ${audioBlob.type}`);
 
             if (audioBlob.size === 0) {
-                console.error("⚠️ El servidor devolvió un archivo de audio vacío (0 bytes).");
+                console.error("⚠️ Server returned an empty audio file (0 bytes).");
                 return;
             }
 
-            // 3. Crear URL y reproductor explícito con formato WAV
+            // 3. Create WAV object URL, cache it, and initialize audio player
             const audioUrl = URL.createObjectURL(audioBlob);
-            
+            this.audioCache[text] = audioUrl;
+
             this.audioPlayer = new Audio(audioUrl);
             this.audioPlayer.volume = 1.0;
 
             this.audioPlayer.onloadedmetadata = () => {
-                console.log(`⏱️ Duración del audio de Ranni: ${this.audioPlayer.duration.toFixed(2)} segundos`);
+                console.log(`⏱️ Audio duration: ${this.audioPlayer.duration.toFixed(2)} seconds`);
             };
 
             try {
                 await this.audioPlayer.play();
-                console.log("🔊 Reproduciendo narración de Ranni...");
+                console.log("🔊 Playing Mars narration...");
             } catch (playError) {
-                console.warn("⚠️ Error al reproducir audio:", playError);
+                console.warn("⚠️ Error playing audio:", playError);
             }
 
         } catch (error) {
-            console.error("❌ Fallo en la comunicación con la voz de Marte:", error);
+            console.error("❌ Failed to communicate with Mars Voice server:", error);
         }
     },
-    
+
     stop: function() {
         if (this.audioPlayer) this.audioPlayer.pause();
     }
 };
 
-// Iniciar de inmediato si el DOM ya está listo, o al dispararse DOMContentLoaded
+// Start immediately if DOM is ready, or wait for DOMContentLoaded
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initMarsDashboard);
 } else {
   initMarsDashboard();
 }
- 
-// api de el clma en tiempo real de marte segun los servidoeres de la nasa
