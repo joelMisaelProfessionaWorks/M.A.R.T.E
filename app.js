@@ -2821,6 +2821,112 @@ function initMarsDashboard() {
   const svOverviewCanvas = document.getElementById('sv-overview-canvas');
   let svOverviewCtx = svOverviewCanvas ? svOverviewCanvas.getContext('2d') : null;
 
+  // Elementos del Popup Limpio de Fotografía 3D (<dialog id="sv-photo-popup-dialog">)
+  const svPhotoPopupDialog = document.getElementById('sv-photo-popup-dialog');
+  const svPhotoPopupImg = document.getElementById('sv-photo-popup-img');
+  const svPhotoPopupTitle = document.getElementById('sv-photo-popup-title');
+  const svPhotoPopupDesc = document.getElementById('sv-photo-popup-desc');
+  const btnClosePhotoPopup = document.getElementById('btn-close-photo-popup');
+  const btnSvPhotoPopup = document.getElementById('btn-sv-photo-popup');
+
+  // Fallback obligatorio (Modern Web Guidance) para navegadores sin soporte nativo de <dialog closedby="any">
+  if (svPhotoPopupDialog && !('closedBy' in HTMLDialogElement.prototype)) {
+    svPhotoPopupDialog.addEventListener('click', (event) => {
+      if (event.target !== svPhotoPopupDialog) return;
+      const rect = svPhotoPopupDialog.getBoundingClientRect();
+      const isDialogContent =
+        rect.top <= event.clientY &&
+        event.clientY <= rect.top + rect.height &&
+        rect.left <= event.clientX &&
+        event.clientX <= rect.left + rect.width;
+      if (isDialogContent) return;
+      svPhotoPopupDialog.close();
+    });
+  }
+
+  if (svPhotoPopupDialog) {
+    svPhotoPopupDialog.addEventListener('close', () => {
+      sync360ViewportSize();
+      needs360Redraw = true;
+    });
+  }
+
+  if (btnClosePhotoPopup && svPhotoPopupDialog) {
+    btnClosePhotoPopup.addEventListener('click', () => {
+      svPhotoPopupDialog.close();
+      if (typeof playHudTone === 'function') playHudTone(560, 0.05, 'sine');
+    });
+  }
+
+  function openSvPhotoPopup(customData = null) {
+    if (!svPhotoPopupDialog) return;
+    const st =
+      STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
+    const rp = st?.realPano || {};
+
+    const titleText =
+      customData?.title ||
+      st?.defaultInspect?.title ||
+      st?.title ||
+      'Mars Surface Photograph';
+    const descText =
+      customData?.desc ||
+      st?.defaultInspect?.desc ||
+      rp.credit ||
+      st?.narration ||
+      '';
+
+    if (svPhotoPopupTitle) svPhotoPopupTitle.textContent = titleText;
+    if (svPhotoPopupDesc) svPhotoPopupDesc.textContent = descText;
+
+    if (svPhotoPopupImg) {
+      svPhotoPopupImg.alt = titleText;
+      const candidateUrls = [
+        customData?.imgUrl,
+        rp.localUrl,
+        rp.remoteUrl,
+        rp.remoteThumbUrl,
+        rp.thumbUrl,
+        ...(Array.isArray(rp.allUrls) ? rp.allUrls : [])
+      ].filter(Boolean);
+
+      let urlIdx = 0;
+      svPhotoPopupImg.onerror = () => {
+        if (urlIdx < candidateUrls.length) {
+          svPhotoPopupImg.src = candidateUrls[urlIdx++];
+        } else {
+          svPhotoPopupImg.onerror = null;
+          try {
+            svPhotoPopupImg.src = getOrGeneratePanoramaCanvas(st).toDataURL('image/jpeg', 0.88);
+          } catch {
+            // Keep current image if canvas export fails
+          }
+        }
+      };
+
+      if (candidateUrls.length > 0) {
+        svPhotoPopupImg.src = candidateUrls[urlIdx++];
+      } else {
+        try {
+          svPhotoPopupImg.src = getOrGeneratePanoramaCanvas(st).toDataURL('image/jpeg', 0.88);
+        } catch {
+          // Ignore
+        }
+      }
+    }
+
+    if (!svPhotoPopupDialog.open) {
+      svPhotoPopupDialog.showModal();
+    }
+  }
+
+  if (btnSvPhotoPopup) {
+    btnSvPhotoPopup.addEventListener('click', () => {
+      openSvPhotoPopup();
+      if (typeof playHudTone === 'function') playHudTone(760, 0.06, 'sine');
+    });
+  }
+
   let camYaw = 10;       // 0° a 360°
   let camPitch = 2;      // -42° a +42°
   let camFov = 90;       // 45° a 115°
@@ -3495,8 +3601,17 @@ function initMarsDashboard() {
     const sw = activeSourceCanvas.width;
     const sh = activeSourceCanvas.height;
 
-    const vFov = Math.max(28, Math.min(88, camFov * (ch / cw)));
-    const cropW = (camFov / 360) * sw;
+    const aspect = cw / Math.max(1, ch);
+    let effHFov = camFov;
+    let vFov = effHFov / aspect;
+    if (vFov > 84) {
+      vFov = 84;
+      effHFov = Math.min(140, vFov * aspect);
+    } else if (vFov < 28) {
+      vFov = 28;
+      effHFov = Math.max(30, vFov * aspect);
+    }
+    const cropW = (effHFov / 360) * sw;
     const cropH = (vFov / 180) * sh;
 
     // Coordenada central en la textura equirectangular (yaw=0 corresponde al centro sw*0.5)
@@ -3561,7 +3676,7 @@ function initMarsDashboard() {
     }
 
     // Proyectar cada Hotspot 3D usando transformaciones GPU (translate3d) sin recalcular layout DOM
-    const maxYawVis = camFov * 0.58;
+    const maxYawVis = effHFov * 0.58;
     const maxPitchVis = vFov * 0.65;
     for (let i = 0; i < activeHotspotNodes.length; i++) {
       const node = activeHotspotNodes[i];
@@ -3575,7 +3690,7 @@ function initMarsDashboard() {
       const deltaPitch = data.pitch - camPitch;
 
       if (Math.abs(deltaYaw) <= maxYawVis && Math.abs(deltaPitch) <= maxPitchVis) {
-        const screenX = (0.5 + deltaYaw / camFov) * cw;
+        const screenX = (0.5 + deltaYaw / effHFov) * cw;
         const screenY = (0.5 - deltaPitch / vFov) * ch;
         if (node.visible !== true) {
           el.style.visibility = 'visible';
@@ -3601,6 +3716,11 @@ function initMarsDashboard() {
 
       render360Mode = mode;
       needs360Redraw = true;
+      setPanelOpen('left', false, true);
+      setPanelOpen('right', false, true);
+      setPanelOpen('bottom', false, true);
+      if (svInspectorCard) svInspectorCard.classList.add('is-closed');
+      if (btnReopenInspector) btnReopenInspector.classList.remove('is-active');
       svRenderModeGroup.querySelectorAll('[data-360-mode]').forEach((b) => {
         b.classList.toggle('is-active', b === btn);
       });
@@ -3779,6 +3899,16 @@ function initMarsDashboard() {
     const newEntry = getOrComposeRealPanoramaCanvas(st, previewImg, true);
     updateRealPhotoBadge(st, newEntry);
     needs360Redraw = true;
+    openSvPhotoPopup({
+      title: panoItem.title || st.defaultInspect?.title || st.title,
+      desc: panoItem.credit || st.defaultInspect?.desc || '',
+      imgUrl:
+        panoItem.hiResUrl ||
+        panoItem.remoteUrl ||
+        panoItem.thumbUrl ||
+        panoItem.remoteThumbUrl ||
+        ''
+    });
     if (typeof playHudTone === 'function') playHudTone(920, 0.08, 'sine');
   }
 
@@ -4522,8 +4652,9 @@ function initMarsDashboard() {
 
     item.panel.classList.toggle('is-collapsed', !openState);
     if (item.edge) {
-      item.edge.classList.toggle('is-visible', !openState);
-      item.edge.classList.toggle('is-sheet-open', openState);
+      const isMapMode = viewportStage?.getAttribute('data-view-mode') === 'map';
+      item.edge.classList.toggle('is-visible', !openState && isMapMode);
+      item.edge.classList.toggle('is-sheet-open', openState && isMapMode);
       item.edge.setAttribute('aria-expanded', String(openState));
     }
     if (item.btn) {
@@ -4658,28 +4789,35 @@ function initMarsDashboard() {
       btnToggleStreet.setAttribute('aria-pressed', 'true');
       btnSplitView.classList.remove('is-active');
       streetBtnLabel.textContent = '2D MAP';
-      setPanelOpen('left', false);
-      setPanelOpen('right', false);
+      setPanelOpen('left', false, true);
+      setPanelOpen('right', false, true);
+      setPanelOpen('bottom', false, true);
+      if (svInspectorCard) svInspectorCard.classList.add('is-closed');
+      if (btnReopenInspector) btnReopenInspector.classList.remove('is-active');
+      closeNasaPhotoDrawer();
     } else if (mode === 'split') {
       mapContainer.classList.remove('is-hidden');
       streetContainer.classList.remove('is-hidden');
       btnToggleStreet.classList.add('is-active');
       btnSplitView.classList.add('is-active');
       streetBtnLabel.textContent = '360° ACTIVE';
-      setPanelOpen('left', false);
-      if (window.innerWidth <= 1150) {
-        setPanelOpen('right', false);
-      }
-      if (mobileMediaQuery.matches) {
-        setPanelOpen('bottom', false);
-      }
+      setPanelOpen('left', false, true);
+      setPanelOpen('right', false, true);
+      setPanelOpen('bottom', false, true);
+      if (svInspectorCard) svInspectorCard.classList.add('is-closed');
+      if (btnReopenInspector) btnReopenInspector.classList.remove('is-active');
+      closeNasaPhotoDrawer();
     } else {
+      if (svPhotoPopupDialog?.open) {
+        svPhotoPopupDialog.close();
+      }
       mapContainer.classList.remove('is-hidden');
       streetContainer.classList.add('is-hidden');
       btnToggleStreet.classList.remove('is-active');
       btnToggleStreet.setAttribute('aria-pressed', 'false');
       btnSplitView.classList.remove('is-active');
       streetBtnLabel.textContent = '360° VIEW';
+      applyResponsivePanelDefaults(mobileMediaQuery.matches);
     }
 
     if (mode === 'streetview' || mode === 'split') {
@@ -4690,6 +4828,9 @@ function initMarsDashboard() {
           ? STREETVIEW_STATIONS.find((s) => s.id === nextStationId)?.realPano || null
           : null);
       loadStreetViewStation(nextStationId, false, !customRealPano, preservedPano);
+      if (mode === 'streetview') {
+        openSvPhotoPopup();
+      }
     }
 
     requestAnimationFrame(() => {
@@ -5290,8 +5431,7 @@ function initMarsDashboard() {
       if (!m) return;
       if (dossierDialog?.open) dossierDialog.close();
       const targetScene = m.stationId || currentStationId;
-      setViewportMode('split', targetScene);
-      loadStreetViewStation(targetScene, true);
+      setViewportMode('streetview', targetScene);
     });
   }
 
@@ -5344,7 +5484,7 @@ function initMarsDashboard() {
         'rover-live': currentStationId
       };
       const chosenScene = wpToStationMap[targetCode] || currentStationId;
-      setViewportMode('split', chosenScene);
+      setViewportMode('streetview', chosenScene);
       return;
     }
 
@@ -5432,13 +5572,13 @@ function initMarsDashboard() {
           .keys()
           .then((keys) => {
             keys
-              .filter((k) => k !== 'marte-hud-offline-v22')
+              .filter((k) => k !== 'marte-hud-offline-v23')
               .forEach((k) => caches.delete(k));
           })
           .catch(() => {});
       }
       navigator.serviceWorker
-        .register('./sw.js?v=22')
+        .register('./sw.js?v=23')
         .then((reg) => {
           if (reg && typeof reg.update === 'function') reg.update().catch(() => {});
         })

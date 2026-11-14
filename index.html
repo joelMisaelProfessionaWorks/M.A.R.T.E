@@ -15,7 +15,7 @@
   <!-- Leaflet.js Cartographic Engine (Stage 2) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <!-- Main HUD Stylesheet (v20 Mobile Google Maps / Waze Mode + Sidebars) -->
-  <link rel="stylesheet" href="styles.css?v=20">
+  <link rel="stylesheet" href="styles.css?v=23">
   <!-- Offline / PWA Support -->
   <meta name="theme-color" content="#07090e">
   <link rel="manifest" href="manifest.webmanifest">
@@ -416,6 +416,9 @@
           </div>
 
           <div class="vtb-right">
+            <button id="btn-sv-photo-popup" class="sv-tool-pill" type="button" title="Open clean photo popup">
+              <i class="fa-solid fa-image text-orange"></i> PHOTO
+            </button>
             <button id="btn-sv-nasa-api" class="sv-tool-pill" type="button" title="Open Official NASA Photo Archive">
               <i class="fa-solid fa-images text-orange"></i> NASA PHOTOS
             </button>
@@ -453,8 +456,8 @@
             <canvas id="mars-360-canvas" class="mars-360-canvas" aria-label="Interactive 360-degree panorama of the Martian surface"></canvas>
             <div id="mars-360-hotspots" class="mars-360-hotspots"></div>
 
-            <!-- Official NASA JPL Photojournal Real Archive Badge -->
-            <div class="sv-real-photo-badge" id="sv-real-photo-badge">
+            <!-- Official NASA JPL Photojournal Real Archive Badge (Hidden per clean 3D view requirement) -->
+            <div class="sv-real-photo-badge" id="sv-real-photo-badge" hidden>
               <div class="srpb-top">
                 <span class="srpb-pia" id="srpb-pia-id">NASA ID: PIA24921</span>
                 <span class="srpb-sol" id="srpb-sol-tag">SOL 466–474</span>
@@ -964,8 +967,37 @@
     </div>
   </dialog>
 
+  <!-- ========================================================================
+       CLEAN 3D PHOTO POPUP DIALOG (ONLY IMAGE + TEXT + CLOSE BUTTON)
+       ======================================================================== -->
+  <dialog id="sv-photo-popup-dialog" class="sv-photo-popup-dialog" closedby="any" aria-labelledby="sv-photo-popup-title">
+    <div class="sv-photo-popup-card">
+      <button id="btn-close-photo-popup" class="sv-photo-popup-close" type="button" aria-label="Close photo" autofocus>
+        <i class="fa-solid fa-xmark"></i>
+        <span>CLOSE</span>
+      </button>
+      <div class="sv-photo-popup-media">
+        <img
+          id="sv-photo-popup-img"
+          class="sv-photo-popup-img"
+          src="panoramas/PIA24921-kodiak-delta.jpg"
+          alt="Mars surface photograph"
+          width="1600"
+          height="800"
+          decoding="async"
+        >
+      </div>
+      <div class="sv-photo-popup-caption">
+        <h2 id="sv-photo-popup-title" class="sv-photo-popup-title">Fluvial Stratigraphy: Kodiak Mesa</h2>
+        <p id="sv-photo-popup-desc" class="sv-photo-popup-desc">
+          Inclined sedimentary beds (foresets) proving the progradation of an ancient river delta into Lake Jezero 3.7 billion years ago.
+        </p>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Cartographic Engine (Leaflet.js) and Main HUD Logic -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="app.js?v=22"></script>
+  <script src="app.js?v=23"></script>
 </body>
 </html>
