@@ -113,7 +113,12 @@ function initMarsDashboard() {
           km: 0.0,
           coords: [18.28, 77.68],
           elev: -2540,
-          narration: 'You have arrived at Octavia Butler landing site. All rover systems operational.'
+          narration: 'You have arrived at Octavia Butler landing site. All rover systems operational.',
+          details: [
+            'Initial touchdown zone on the Máaz Volcanic Unit. Skycrane retro-rocket blast marks visible in the surrounding regolith.',
+            'Flat compacted regolith runway from which the first powered helicopter on another planet took off (72 flights completed).',
+            'Vesicular basaltic rock coated with ferric dust and perchlorate salts. Indicates ancient volcanic activity followed by aqueous alteration.'
+          ]
         },
         {
           name: 'Science Stop: Kodiak',
