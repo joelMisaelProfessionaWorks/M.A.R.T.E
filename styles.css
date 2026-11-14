@@ -3862,6 +3862,7 @@ body {
   background: rgba(13, 19, 31, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 6px;
+  min-block-size: 210px;
   overflow: clip;
   display: flex;
   flex-direction: column;
@@ -3878,7 +3879,9 @@ body {
 
 .snad-thumb {
   inline-size: 100%;
-  block-size: 104px;
+  block-size: 108px;
+  min-block-size: 108px;
+  flex-shrink: 0;
   object-fit: cover;
   display: block;
   background: #05080f;

@@ -1,11 +1,10 @@
-const CACHE_NAME = 'marte-hud-offline-v1';
+const CACHE_NAME = 'marte-hud-offline-v20';
 
 const PRECACHE_ASSETS = [
   './',
   './index.html',
-  './styles.css',
-  './app.js',
-  './manifest.webmanifest',
+  './styles.css?v=20',
+  './app.js?v=20',
   './panoramas/PIA24264-landing.jpg',
   './panoramas/PIA24921-kodiak-delta.jpg',
   './panoramas/PIA26369-bright-angel.jpg',
@@ -35,20 +34,28 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  // Stale-While-Revalidate strategy for local app + orbital tile and CDN library caching
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const networkFetch = fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
-            const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return networkResponse;
-        })
-        .catch(() => cachedResponse);
+  // Never intercept cross-origin requests (NASA API, NASA images CDN, map tiles)
+  const reqUrl = new URL(event.request.url);
+  if (reqUrl.origin !== self.location.origin) return;
 
-      return cachedResponse || networkFetch;
-    })
+  // Network-First strategy for same-origin app assets so updates always load immediately
+  event.respondWith(
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return networkResponse;
+      })
+      .catch(() =>
+        caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+          return undefined;
+        })
+      )
   );
 });
