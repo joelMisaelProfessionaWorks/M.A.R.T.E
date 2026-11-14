@@ -2,6 +2,7 @@ import hashlib
 import io
 import os
 import re
+import threading
 import unicodedata
 import torch
 
@@ -61,6 +62,7 @@ CORS(app)
 
 print(f"Cargando modelo F5-TTS en memoria usando {NUM_THREADS} hilos...")
 tts_engine = F5TTS()
+infer_lock = threading.Lock()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 REF_AUDIO_PATH = os.path.join(BASE_DIR, "AI_Ranni.wav")
@@ -94,16 +96,20 @@ def narrate():
             print(f"⚡ Sirviendo desde caché: '{target_text}'")
             return send_file(cached_file, mimetype="audio/wav", as_attachment=False, download_name="narration.wav")
 
-        print(f"🎙️ Generando nuevo audio: '{target_text}'")
-        oraciones = [s.strip() for s in re.split(r'(?<=[.!?])\s+', target_text) if s.strip()]
-        if not oraciones:
-            oraciones = [target_text]
+        # 2. infer_lock + torch.inference_mode() serializan el acceso a PyTorch entre hilos
+        with infer_lock, torch.inference_mode():
+            if os.path.exists(cached_file):
+                print(f"⚡ Sirviendo desde caché tras espera: '{target_text}'")
+                return send_file(cached_file, mimetype="audio/wav", as_attachment=False, download_name="narration.wav")
 
-        fragmentos_audio = []
-        sample_rate_final = 24000
+            print(f"🎙️ Generando nuevo audio: '{target_text}'")
+            oraciones = [s.strip() for s in re.split(r'(?<=[.!?])\s+', target_text) if s.strip()]
+            if not oraciones:
+                oraciones = [target_text]
 
-        # 2. torch.inference_mode() acelera la inferencia y reduce consumo de RAM
-        with torch.inference_mode():
+            fragmentos_audio = []
+            sample_rate_final = 24000
+
             for i, oracion in enumerate(oraciones):
                 if len(oracion) < 2:
                     continue
@@ -118,19 +124,19 @@ def narrate():
                 fragmentos_audio.append(wav_chunk)
                 sample_rate_final = sr
 
-        if not fragmentos_audio:
-            return jsonify({"error": "No se pudo sintetizar el texto"}), 500
+            if not fragmentos_audio:
+                return jsonify({"error": "No se pudo sintetizar el texto"}), 500
 
-        wav_np = np.concatenate(fragmentos_audio, axis=0)
-        max_val = np.max(np.abs(wav_np))
-        if max_val > 0:
-            wav_np = (wav_np / max_val) * 0.95
+            wav_np = np.concatenate(fragmentos_audio, axis=0)
+            max_val = np.max(np.abs(wav_np))
+            if max_val > 0:
+                wav_np = (wav_np / max_val) * 0.95
 
-        wav_tensor = torch.from_numpy(wav_np).unsqueeze(0)
-        
-        # Guardar en caché en disco y enviar
-        torchaudio.save(cached_file, wav_tensor, sample_rate_final, format="wav")
-        print("✅ Audio generado y guardado en caché.")
+            wav_tensor = torch.from_numpy(wav_np).unsqueeze(0)
+
+            # Guardar en caché en disco y enviar
+            torchaudio.save(cached_file, wav_tensor, sample_rate_final, format="wav")
+            print("✅ Audio generado y guardado en caché.")
 
         return send_file(
             cached_file,

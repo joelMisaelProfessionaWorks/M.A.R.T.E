@@ -112,28 +112,32 @@ function initMarsDashboard() {
           sub: 'Octavia E. Butler Landing',
           km: 0.0,
           coords: [18.28, 77.68],
-          elev: -2540
+          elev: -2540,
+          narration: 'You have arrived at Octavia Butler landing site. All rover systems operational.'
         },
         {
           name: 'Science Stop: Kodiak',
           sub: 'Fluvial stratigraphic analysis',
           km: 4.8,
           coords: [18.38, 77.49],
-          elev: -2490
+          elev: -2490,
+          narration: 'Arrived at Kodiak Mesa science stop. Geological analysis in progress.'
         },
         {
           name: 'Subsurface Ice Deposit',
           sub: 'H₂O ISRU extraction',
           km: 9.4,
           coords: [18.52, 77.33],
-          elev: -2435
+          elev: -2435,
+          narration: 'Approaching subsurface ice deposit. Resource utilization systems ready.'
         },
         {
           name: 'Base Camp',
           sub: 'Delta Prime Habitat',
           km: 14.6,
           coords: [18.64, 77.15],
-          elev: -2380
+          elev: -2380,
+          narration: 'Welcome to Base Camp Delta Prime. Radiation levels are stable.'
         }
       ]
     },
@@ -167,28 +171,32 @@ function initMarsDashboard() {
           sub: 'Plains departure base',
           km: 0.0,
           coords: [18.28, 77.68],
-          elev: -2540
+          elev: -2540,
+          narration: 'You have arrived at Octavia Butler landing site. All rover systems operational.'
         },
         {
           name: 'Northern Delta Front',
           sub: 'Ascent via sedimentary slope',
           km: 6.1,
           coords: [18.49, 77.42],
-          elev: -2420
+          elev: -2420,
+          narration: 'Ascending Northern Delta Front via sedimentary slope.'
         },
         {
           name: 'Belva Crater Overlook',
           sub: 'Impact exposes ancient strata',
           km: 12.8,
           coords: [18.58, 77.28],
-          elev: -2365
+          elev: -2365,
+          narration: 'Arrived at Belva Crater Overlook. Impact exposes ancient strata.'
         },
         {
           name: 'Neretva Vallis Mouth',
           sub: 'Advanced Hydrological Station',
           km: 19.2,
           coords: [18.74, 76.98],
-          elev: -2295
+          elev: -2295,
+          narration: 'Arrived at Neretva Vallis Mouth. Advanced hydrological station ready.'
         }
       ]
     },
@@ -221,28 +229,32 @@ function initMarsDashboard() {
           sub: 'MSL Curiosity landing site',
           km: 0.0,
           coords: [-4.42, 137.62],
-          elev: -4501
+          elev: -4501,
+          narration: 'Welcome to Gale Crater. Mount Sharp is visible ahead.'
         },
         {
           name: 'Bagnold Dune Field',
           sub: 'Active aeolian basaltic sand',
           km: 7.4,
           coords: [-4.54, 137.50],
-          elev: -4440
+          elev: -4440,
+          narration: 'Crossing Bagnold Dune Field. Active basaltic sand detected.'
         },
         {
           name: 'Vera Rubin Ridge',
           sub: 'Ferric oxide (Hematite) deposits',
           km: 16.2,
           coords: [-4.68, 137.38],
-          elev: -4310
+          elev: -4310,
+          narration: 'Arrived at Vera Rubin Ridge. Hematite deposits confirmed.'
         },
         {
           name: 'Mount Sharp Sulfate Unit',
           sub: 'Gale High-Altitude Camp',
           km: 24.8,
           coords: [-4.95, 137.14],
-          elev: -4011
+          elev: -4011,
+          narration: 'Reached Mount Sharp Sulfate Unit. High altitude camp established.'
         }
       ]
     },
@@ -275,28 +287,32 @@ function initMarsDashboard() {
           sub: 'Abyssal canyon floor',
           km: 0.0,
           coords: [-13.62, -59.52],
-          elev: -4120
+          elev: -4120,
+          narration: 'Entering Coprates Chasma. Caution, extreme depth and steep cliffs.'
         },
         {
           name: 'Normal Fault Scarp 01',
           sub: 'Rocky 27.6° slope',
           km: 10.5,
           coords: [-13.75, -59.35],
-          elev: -3960
+          elev: -3960,
+          narration: 'Approaching Normal Fault Scarp. Caution, steep rocky slope ahead.'
         },
         {
           name: 'Hydrated Sulfate Terrace',
           sub: 'Exposed mineral veins',
           km: 21.0,
           coords: [-13.88, -59.18],
-          elev: -3790
+          elev: -3790,
+          narration: 'Arrived at Hydrated Sulfate Terrace. Exposed mineral veins detected.'
         },
         {
           name: 'Subsurface Cliffside Shelter',
           sub: 'Lava tube / Shielded cavern',
           km: 31.5,
           coords: [-14.14, -58.84],
-          elev: -3440
+          elev: -3440,
+          narration: 'Reached Subsurface Cliffside Shelter. Lava tube radiation shield active.'
         }
       ]
     }
@@ -1462,6 +1478,12 @@ function initMarsDashboard() {
         </div>
       `);
 
+      wpMarker.on('click', () => {
+        if (wp.narration && typeof MissionControlVoice !== 'undefined') {
+          MissionControlVoice.narrate(wp.narration);
+        }
+      });
+
       wpMarker.on('dragend', (ev) => {
         const newPos = ev.target.getLatLng();
         const newElev = estimateNumericAltitude(newPos.lat, newPos.lng);
@@ -1577,12 +1599,20 @@ function initMarsDashboard() {
 
       li.addEventListener('click', () => {
         stopRoverSimulation();
+        const prevStationId = currentStationId;
         const targetPct =
           activeRouteData.totalDistKm > 0
             ? Math.round((wp.km / activeRouteData.totalDistKm) * 100)
             : 0;
         updateRoverProgress(targetPct);
         marsMap.flyTo(wp.coords, 6, { duration: 0.85 });
+        if (
+          wp.narration &&
+          typeof MissionControlVoice !== 'undefined' &&
+          (streetContainer.classList.contains('is-hidden') || currentStationId === prevStationId)
+        ) {
+          MissionControlVoice.narrate(wp.narration);
+        }
       });
 
       waypointsListEl.appendChild(li);
@@ -5390,13 +5420,13 @@ function initMarsDashboard() {
           .keys()
           .then((keys) => {
             keys
-              .filter((k) => k !== 'marte-hud-offline-v21')
+              .filter((k) => k !== 'marte-hud-offline-v22')
               .forEach((k) => caches.delete(k));
           })
           .catch(() => {});
       }
       navigator.serviceWorker
-        .register('./sw.js?v=21')
+        .register('./sw.js?v=22')
         .then((reg) => {
           if (reg && typeof reg.update === 'function') reg.update().catch(() => {});
         })
@@ -5406,24 +5436,31 @@ function initMarsDashboard() {
 }
 
 const MissionControlVoice = {
-    audioPlayer: null,
+    audioPlayer: (() => {
+        const audio = new Audio();
+        audio.preload = 'auto';
+        audio.playsInline = true;
+        return audio;
+    })(),
     audioCache: {},
+    abortController: null,
+    requestId: 0,
+    silentWav: 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA',
     apiUrl: 'https://mars-voice-api-1072208312217.us-central1.run.app/api/narrate',
 
     narrate: async function(text) {
         if (!text) return;
 
-        // 1. Stop previous audio if playing
-        if (this.audioPlayer) {
-            this.audioPlayer.pause();
-            this.audioPlayer.currentTime = 0;
-        }
+        // 1. Cancel any pending request and stop previous playback
+        this.stop();
+        const reqId = ++this.requestId;
 
         const cachedUrl = this.audioCache[text];
         if (cachedUrl) {
             console.log("🎵 Replaying cached F5-TTS narration...");
-            this.audioPlayer = new Audio(cachedUrl);
+            this.audioPlayer.src = cachedUrl;
             this.audioPlayer.volume = 1.0;
+            this.audioPlayer.currentTime = 0;
             try {
                 await this.audioPlayer.play();
             } catch (playError) {
@@ -5431,6 +5468,24 @@ const MissionControlVoice = {
             }
             return;
         }
+
+        // 2. Unlock browser/tablet audio synchronously within click/tap gesture before await fetch()
+        this.audioPlayer.src = this.silentWav;
+        this.audioPlayer.volume = 0.01;
+        const unlockPromise = this.audioPlayer.play();
+        if (unlockPromise !== undefined) {
+            unlockPromise
+                .then(() => {
+                    if (this.requestId === reqId && this.audioPlayer.src === this.silentWav) {
+                        this.audioPlayer.pause();
+                        this.audioPlayer.currentTime = 0;
+                    }
+                })
+                .catch(() => {});
+        }
+
+        const controller = new AbortController();
+        this.abortController = controller;
 
         console.log("📡 Requesting narration from F5-TTS voice server...");
 
@@ -5440,13 +5495,16 @@ const MissionControlVoice = {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify({ text: text }),
+                signal: controller.signal
             });
 
+            if (this.requestId !== reqId) return;
             if (!response.ok) throw new Error(`HTTP response error: ${response.status}`);
 
-            // 2. Retrieve Blob and verify size
+            // 3. Retrieve Blob and verify size
             const audioBlob = await response.blob();
+            if (this.requestId !== reqId) return;
             console.log(`📦 Audio received. Size: ${audioBlob.size} bytes | Type: ${audioBlob.type}`);
 
             if (audioBlob.size === 0) {
@@ -5454,15 +5512,18 @@ const MissionControlVoice = {
                 return;
             }
 
-            // 3. Create WAV object URL, cache it, and initialize audio player
+            // 4. Create WAV object URL, cache it, and play on the unlocked single Audio instance
             const audioUrl = URL.createObjectURL(audioBlob);
             this.audioCache[text] = audioUrl;
 
-            this.audioPlayer = new Audio(audioUrl);
+            this.audioPlayer.src = audioUrl;
             this.audioPlayer.volume = 1.0;
+            this.audioPlayer.currentTime = 0;
 
             this.audioPlayer.onloadedmetadata = () => {
-                console.log(`⏱️ Audio duration: ${this.audioPlayer.duration.toFixed(2)} seconds`);
+                if (Number.isFinite(this.audioPlayer.duration)) {
+                    console.log(`⏱️ Audio duration: ${this.audioPlayer.duration.toFixed(2)} seconds`);
+                }
             };
 
             try {
@@ -5473,12 +5534,29 @@ const MissionControlVoice = {
             }
 
         } catch (error) {
+            if (error && error.name === 'AbortError') return;
             console.error("❌ Failed to communicate with Mars Voice server:", error);
+        } finally {
+            if (this.abortController === controller) {
+                this.abortController = null;
+            }
         }
     },
 
     stop: function() {
-        if (this.audioPlayer) this.audioPlayer.pause();
+        this.requestId++;
+        if (this.abortController) {
+            this.abortController.abort();
+            this.abortController = null;
+        }
+        if (this.audioPlayer) {
+            this.audioPlayer.pause();
+            try {
+                this.audioPlayer.currentTime = 0;
+            } catch {
+                // Ignore if media has not loaded metadata yet
+            }
+        }
     }
 };
 
