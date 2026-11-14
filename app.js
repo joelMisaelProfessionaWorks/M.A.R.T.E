@@ -113,7 +113,7 @@ function initMarsDashboard() {
           km: 0.0,
           coords: [18.28, 77.68],
           elev: -2540,
-          narration: 'You have arrived at Octavia Butler landing site. All rover systems operational. Initial touchdown zone on the Máaz Volcanic Unit. Skycrane retro-rocket blast marks visible in the surrounding regolith. Flat compacted regolith runway from which the first powered helicopter on another planet took off (72 flights completed). Vesicular basaltic rock coated with ferric dust and perchlorate salts. Indicates ancient volcanic activity followed by aqueous alteration.'
+          narration: 'You have arrived at Octavia Butler landing site. All rover systems operational.',
         },
         {
           name: 'Science Stop: Kodiak',
@@ -2370,8 +2370,7 @@ function initMarsDashboard() {
       elev: -2540,
       initialYaw: 18,
       initialPitch: 0,
-      narration: "You have arrived at Octavia Butler landing site. All rover systems operational.",
-      realPano: {
+        narration: "Welcome to the Octavia Butler landing site, where all rover systems are fully operational. You are standing right in our initial touchdown zone on the Maaz Volcanic Unit, where blast marks from the skycrane retro-rockets are still visible in the surrounding regolith. Just over there lies a flat, compacted runway from which the first powered helicopter on another planet took off, completing seventy-two historic flights. Nearby, you can also observe vesicular basaltic rocks coated in ferric dust and perchlorate salts, offering clear evidence of ancient volcanic activity followed by aqueous alteration.",      realPano: {
         piaId: 'PIA24264',
         sol: 'SOL 3 (MARS 2020)',
         localUrl: 'panoramas/PIA24264-landing.jpg',
@@ -2442,7 +2441,7 @@ function initMarsDashboard() {
       elev: -2490,
       initialYaw: 10,
       initialPitch: 0,
-      narration: "Arrived at Kodiak Mesa science stop. Geological analysis in progress.",
+      narration: "Welcome to our historic traverse across Gale Crater toward Mount Sharp. Following the tracks of the Curiosity rover from Bradbury Landing, we will journey across the dark basaltic sands of the Bagnold Dunes and climb past Vera Rubin Ridge, exploring ancient formations rich in hematite and sulfates.",
       realPano: {
         piaId: 'PIA24921',
         sol: 'SOL 466 (MARS 2020)',
@@ -2522,8 +2521,7 @@ function initMarsDashboard() {
       elev: -2435,
       initialYaw: 0,
       initialPitch: 0,
-      narration: "Approaching subsurface ice deposit. Resource utilization systems ready.",
-      realPano: {
+        narration: "We are now approaching our subsurface ice deposit, with all resource utilization systems ready. Right ahead along the sheltered northern delta slope, radar scans reveal a crystalline water ice lens exposed just one point two meters beneath the surface, a critical reserve for potable water and rocket propellant. Looking toward the ice trench, we estimate a capacity of forty-two thousand liters after thermal sublimation and perchlorate filtration, enough to completely refill all crew life support backpacks. Nearby stands our MOXIE processing plant, a surface generator producing two point four kilograms of breathable oxygen every hour directly from the Martian carbon dioxide atmosphere.",      realPano: {
         piaId: 'PIA26369',
         sol: 'SOL 1178 (NERETVA VALLIS)',
         localUrl: 'panoramas/PIA26369-bright-angel.jpg',
@@ -2602,8 +2600,7 @@ function initMarsDashboard() {
       elev: -2380,
       initialYaw: -10,
       initialPitch: 0,
-      narration: "Welcome to Base Camp Delta Prime. Radiation levels are stable.",
-      realPano: {
+        narration: "Welcome to Base Camp Delta Prime, where interior radiation levels are completely stable. Ahead stands our pressurized shelter, reinforced with sintered regolith shielding to protect the crew against cosmic and solar radiation, with airlocks ready for rover docking. Beside it is the main habitation dome, Ares Prime, built to sustain six astronauts for five hundred sols with a hydroponic greenhouse, medical lab, and Kilopower reactor. However, look toward the southwest horizon, where weather radar is tracking an active dust storm front rising twelve kilometers high, meaning all explorers must remain safely inside the habitat until it passes.",      realPano: {
         piaId: 'PIA26474',
         sol: 'SOL 1337 (JEZERO RIM SUMMIT)',
         localUrl: 'panoramas/PIA26474-rio-chiquito.jpg',
@@ -2682,8 +2679,7 @@ function initMarsDashboard() {
       elev: -4310,
       initialYaw: 5,
       initialPitch: 1,
-      narration: "Welcome to Gale Crater. Mount Sharp is visible ahead.",
-      realPano: {
+        narration: "Welcome to Gale Crater, where the massive central peak of Mount Sharp rises directly ahead. Towering five point five kilometers above the crater floor, its sedimentary layers preserve a geological timeline of Mars transitioning from an ancient, wet clay-forming era to the arid sulfate world we see today. Looking toward Vera Rubin Ridge, you can also spot hematite-rich outcrops laced with bright gypsum veins, formed long ago by the circulation of hydrothermal fluids.",      realPano: {
         piaId: 'PIA22545',
         sol: 'SOL 2137 / 4220 (CURIOSITY MSL)',
         localUrl: 'panoramas/PIA22545-gale-curiosity.jpg',
@@ -2751,8 +2747,7 @@ function initMarsDashboard() {
       elev: -3790,
       initialYaw: 0,
       initialPitch: 1,
-      narration: "Entering Coprates Chasma. Caution, extreme depth and steep cliffs.",
-      realPano: {
+        narration: "We are now entering Coprates Chasma in Valles Marineris, so please exercise extreme caution around this immense depth and steep cliff terrain. Towering directly above us, the exposed canyon walls reveal over six kilometers of primordial Martian crust alongside massive hydrated sulfate deposits. Look carefully toward the north wall, which rises at a critical slope of twenty-seven point six degrees. Due to recurrent debris fans and dark slope lineae, there is a high risk of regolith avalanches, and rover approach is strictly prohibited within fifty meters of the talus base.",      realPano: {
         piaId: 'PIA13077',
         sol: 'MRO HiRISE + VIKING',
         localUrl: 'panoramas/PIA13077-valles-marineris.jpg',
@@ -4885,8 +4880,8 @@ function initMarsDashboard() {
       coords: [18.4447, 77.4508],
       routeKey: 'jezero-alpha',
       stationId: 'scene-kodiak',
-      summary:
-        'Astrobiology laboratory powered by a 1,025 kg Multi-Mission Radioisotope Thermoelectric Generator (MMRTG). Landed on February 18, 2021 at Octavia E. Butler Landing with the mission to collect core rock samples from the ancient lake delta and validate critical technologies for human exploration.',
+      summary:'Astrobiology laboratory powered by a 1,025 kg Multi-Mission Radioisotope Thermoelectric Generator (MMRTG). Landed on February 18, 2021 at Octavia E. Butler Landing with the mission to collect core rock samples from the ancient lake delta and validate critical technologies for human exploration.',
+      narration:"Perseverance is a one thousand twenty-five kilogram astrobiology laboratory powered by a Multi-Mission Radioisotope Thermoelectric Generator. It landed on February eighteenth, twenty twenty-one, at Octavia Butler Landing, with the mission to collect core rock samples from Jezero's ancient lake delta and validate critical technologies for future human exploration.",
       specs: [
         { label: 'LANDING SITE', val: '18.4447°N, 77.4508°E' },
         { label: 'MOLA ALTITUDE', val: '-2,564 meters' },
@@ -4915,6 +4910,8 @@ function initMarsDashboard() {
       stationId: 'scene-landing',
       summary:
         'First powered aircraft to achieve controlled flight on another planet (April 19, 2021). Originally designed for only 5 test flights, it exceeded all expectations by completing 72 flights as an advance aerial scout for Perseverance in an atmosphere with barely 1% of Earth density.',
+      narration:
+        "Ingenuity was the first powered aircraft to achieve controlled flight on another planet, lifting off on April nineteenth, twenty twenty-one. Originally designed for just five test flights, it exceeded all expectations by completing seventy-two missions as an advance aerial scout for Perseverance, flying through a Martian atmosphere with barely one percent of Earth's density.",
       specs: [
         { label: 'HOME AIRFIELD', val: 'Wright Brothers Field' },
         { label: 'TOTAL FLIGHTS', val: '72 Successful Flights' },
@@ -4942,7 +4939,8 @@ function initMarsDashboard() {
       stationId: 'scene-gale',
       summary:
         'Operating on Mars since August 6, 2012. Curiosity has climbed over 800 vertical meters up the foothills of Mount Sharp (Aeolis Mons), confirming that the ancient Gale Crater lake held pH-neutral liquid water and all key chemical ingredients for life (C, H, N, O, P, S).',
-      specs: [
+      narration:
+        "Operating on Mars since August sixth, twenty twelve, the Curiosity rover has climbed over eight hundred vertical meters up the foothills of Mount Sharp, also known as Aeolis Mons. Its discoveries confirmed that the ancient Gale Crater lake once held pH-neutral liquid water along with all the key chemical ingredients for life, including carbon, hydrogen, nitrogen, oxygen, phosphorus, and sulfur.",      specs: [
         { label: 'LANDING SITE', val: 'Bradbury Landing (-4.58°S)' },
         { label: 'BASE ALTITUDE', val: '-4,501 meters (MOLA)' },
         { label: 'TOTAL ODOMETRY', val: '+32.4 kilometers' },
@@ -4969,6 +4967,8 @@ function initMarsDashboard() {
       stationId: null,
       summary:
         'First mission dedicated to investigating Mars deep interior. Revealed Martian crustal thickness (24 to 72 km), the size of its liquid iron-nickel core (radius ~1,830 km), and current meteorite impact rates, essential data for structural engineering of permanent bases.',
+      narration:
+        "This was the first mission dedicated to investigating the deep interior of Mars. Its seismic measurements revealed a Martian crustal thickness ranging from twenty-four to seventy-two kilometers, a liquid iron-nickel core with a radius of about one thousand eight hundred thirty kilometers, and current meteorite impact rates, providing essential data for the structural engineering of permanent bases.",
       specs: [
         { label: 'COORDINATES', val: '4.5024°N, 135.6234°E' },
         { label: 'MOLA ALTITUDE', val: '-2,613 meters' },
@@ -4995,6 +4995,8 @@ function initMarsDashboard() {
       stationId: null,
       summary:
         'Landed on July 20, 1976, transmitting the first sharp panoramic photographs from the Martian surface and operating for 2,245 sols (over 6 Earth years). Its regolith analyses established the presence of perchlorates and iron oxides that guide today EVA decontamination protocols.',
+      narration:
+        "Landing on July twentieth, nineteen seventy-six, this mission transmitted the first sharp panoramic photographs from the Martian surface and operated for two thousand two hundred forty-five sols, or over six Earth years. Its regolith analyses established the presence of perchlorates and iron oxides that directly guide today's extravehicular activity decontamination protocols.",
       specs: [
         { label: 'COORDINATES', val: '22.4800°N, 47.9500°W' },
         { label: 'MOLA ALTITUDE', val: '-3,627 meters' },
@@ -5021,7 +5023,8 @@ function initMarsDashboard() {
       stationId: 'scene-valles',
       summary:
         'Topographic, geological, and water-ice datasets powering the 5 layers of this application originate from the MOLA Laser Altimeter (Mars Global Surveyor) and HiRISE (25 cm/pixel), CTX, and SHARAD radar sensors aboard the Mars Reconnaissance Orbiter (MRO), including mapping of Olympus Mons (+21,229m) and Valles Marineris.',
-      specs: [
+      narration:
+        "The topographic, geological, and water-ice datasets powering the five layers of this application originate from the MOLA Laser Altimeter aboard Mars Global Surveyor, alongside the HiRISE camera capturing at twenty-five centimeters per pixel, and the CTX and SHARAD radar sensors aboard the Mars Reconnaissance Orbiter. Together, they provide high-resolution mapping of Valles Marineris and Olympus Mons, which rises twenty-one thousand two hundred twenty-nine meters high.",      specs: [
         { label: 'HIRISE RESOLUTION', val: '0.25 meters / pixel' },
         { label: 'MOLA VERTICAL ACCURACY', val: '±1.0 meter absolute' },
         { label: 'SHARAD RADAR (ICE)', val: 'Penetration up to 1 km' },
@@ -5217,6 +5220,15 @@ function initMarsDashboard() {
     if (ddpNameEl) ddpNameEl.textContent = m.name;
     if (ddpStatusEl) ddpStatusEl.textContent = m.status;
     if (ddpSummaryEl) ddpSummaryEl.textContent = m.summary;
+
+    const narrationText = m.narration || m.summary;
+    if (
+      narrationText &&
+      typeof MissionControlVoice !== 'undefined' &&
+      typeof MissionControlVoice.narrate === 'function'
+    ) {
+      MissionControlVoice.narrate(narrationText);
+    }
 
     if (ddpSpecsGridEl) {
       ddpSpecsGridEl.innerHTML = m.specs
