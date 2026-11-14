@@ -1,6 +1,6 @@
 Flask==3.0.0
 Flask-Cors==4.0.0
-torch
-torchaudio
-f5-tts
+gunicorn==23.0.0
+numpy
 soundfile
+f5-tts

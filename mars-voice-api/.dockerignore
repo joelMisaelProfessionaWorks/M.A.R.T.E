@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+_temp_mono_24k.wav
+test_voice.py
+.env
+audio_cache/
