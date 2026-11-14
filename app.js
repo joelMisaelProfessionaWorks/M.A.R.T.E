@@ -82,6 +82,165 @@ function initMarsDashboard() {
   // 1. CATÁLOGO CIENTÍFICO DE RUTAS MARCIANAS (ETAPA 3 — ESCALA TÁCTICA NÍTIDA)
   // ==========================================================================
   const ROUTES_CATALOG = {
+    'marswalk-boxwork': {
+      id: 'marswalk-boxwork',
+      scaleMode: 'marswalk',
+      defaultTransportMode: 'foot',
+      code: 'MW-BOXWORK',
+      title: 'Marswalk EVA: Mount Sharp Boxwork Ridge',
+      sector: 'Sector: Gediz Vallis / Boxwork Unit • Hyperlocal Foot EVA (1.2 km)',
+      desc: 'Hyperlocal astronaut spacewalk on foot exiting the pressurized rover airlock to sample 2025 Curiosity-discovered Boxwork fracture networks, detouring 18m around an unstable boulder apron before returning safely.',
+      difficulty: 'LOW (FOOT EVA)',
+      maxSlopeDeg: 11.4,
+      slopeStatus: 'SAFE',
+      avgSpeedKmh: 1.5,
+      totalDistKm: 1.2,
+      baseO2RatePerKm: 8.5,
+      baseBatteryPerKm: 6.2,
+      center: [-4.7785, 137.3145],
+      zoom: 13,
+      pathCoords: [
+        [-4.7820, 137.3120, -4192],
+        [-4.7810, 137.3133, -4188],
+        [-4.7798, 137.3136, -4184],
+        [-4.7785, 137.3148, -4177],
+        [-4.7772, 137.3154, -4171],
+        [-4.7760, 137.3168, -4165],
+        [-4.7750, 137.3178, -4160]
+      ],
+      obstacles: [
+        {
+          name: 'Angular Talus Boulder Field (>1.8m Blocks)',
+          code: 'OBSTACLE-BW01 // SUIT BOOT HAZARD',
+          coords: [-4.7801, 137.3124],
+          radius: 75,
+          blockedLine: [[-4.7820, 137.3120], [-4.7772, 137.3154]],
+          reason: 'Route detours +18m East onto consolidated sulfate bedrock to prevent spacesuit boot puncture and ankle slip.'
+        }
+      ],
+      waypoints: [
+        {
+          name: 'Rover Airlock Exit (Start)',
+          sub: 'Suit PLSS depressurization & tether check',
+          scienceObjective: 'Calibrate suit RAD dosimeter & verify baseline regolith background before Boxwork approach',
+          scienceTool: 'Suit RAD Dosimeter + Handheld XRF',
+          km: 0.0,
+          coords: [-4.7820, 137.3120],
+          elev: -4192,
+          narration: 'Airlock egress complete. Beginning hyperlocal Marswalk toward Mount Sharp Boxwork ridges.'
+        },
+        {
+          name: 'Boulder Field Detour (+350 m)',
+          sub: 'Avoid 1.8m sharp talus blocks • Safe corridor',
+          scienceObjective: 'Map angular sulfate boulders shed from Gediz Vallis channel and log safe suit corridor',
+          scienceTool: 'Helmet LiDAR HUD + Stereo NavCam',
+          km: 0.35,
+          coords: [-4.7798, 137.3136],
+          elev: -4184,
+          narration: 'Detouring eighteen meters east around angular talus boulders to protect spacesuit boots.'
+        },
+        {
+          name: 'Boxwork Fracture Crest (+780 m)',
+          sub: 'Curiosity 2025 mineralized ridge target',
+          scienceObjective: 'Extract core from Boxwork ridge crest to search for biosignatures in CaSO₄ groundwater veins',
+          scienceTool: 'Rotary Core Drill + Raman Spectrometer',
+          km: 0.78,
+          coords: [-4.7772, 137.3154],
+          elev: -4171,
+          narration: 'Arrived at Boxwork mineral ridge. Extracting sulfate vein core for biosignature analysis.'
+        },
+        {
+          name: 'Shadowed Alcove & Return (+1.2 km)',
+          sub: 'RAD radiation shelter & sample cache',
+          scienceObjective: 'Seal Boxwork vein cores in hermetic tubes and measure natural cliffside GCR attenuation',
+          scienceTool: 'Hermetic Sample Cache + ALSEP-RAD',
+          km: 1.2,
+          coords: [-4.7750, 137.3178],
+          elev: -4160,
+          narration: 'Marswalk sample collection complete. Returning to rover airlock with nominal oxygen reserve.'
+        }
+      ]
+    },
+
+    'marswalk-kodiak': {
+      id: 'marswalk-kodiak',
+      scaleMode: 'marswalk',
+      defaultTransportMode: 'foot',
+      code: 'MW-KODIAK',
+      title: 'Marswalk EVA: Kodiak Delta Bench',
+      sector: 'Sector: Southern Jezero Delta Remnant • Hyperlocal Foot EVA (0.9 km)',
+      desc: 'Short-range foot excursion from the Delta Habitat airlock around local megaripple sand traps to extract clay-rich mudstone cores at the base of Kodiak Butte.',
+      difficulty: 'LOW (FOOT EVA)',
+      maxSlopeDeg: 9.6,
+      slopeStatus: 'SAFE',
+      avgSpeedKmh: 1.5,
+      totalDistKm: 0.9,
+      baseO2RatePerKm: 8.2,
+      baseBatteryPerKm: 6.0,
+      center: [18.3822, 77.4924],
+      zoom: 13,
+      pathCoords: [
+        [18.3800, 77.4900, -2494],
+        [18.3809, 77.4914, -2492],
+        [18.3816, 77.4915, -2491],
+        [18.3826, 77.4926, -2488],
+        [18.3834, 77.4932, -2485],
+        [18.3848, 77.4950, -2479]
+      ],
+      obstacles: [
+        {
+          name: 'Loose Aeolian Megaripple Sand Trap (40cm Sinkage)',
+          code: 'OBSTACLE-KD01 // FOOT SINKAGE HAZARD',
+          coords: [18.3818, 77.4905],
+          radius: 65,
+          blockedLine: [[18.3800, 77.4900], [18.3834, 77.4932]],
+          reason: 'Astronaut detours 22m SE along firm basaltic rim to avoid deep dust sinkage and metabolic exhaustion.'
+        }
+      ],
+      waypoints: [
+        {
+          name: 'Delta Habitat Airlock (Start)',
+          sub: 'EVA suit umbilical disconnect',
+          scienceObjective: 'Verify suit perchlorate electrostatic dust-repellent seal and baseline MEDA wind telemetry',
+          scienceTool: 'MEDA Wrist Patch + Dust Tribo-Sensor',
+          km: 0.0,
+          coords: [18.3800, 77.4900],
+          elev: -2494,
+          narration: 'Exiting Delta Habitat airlock. Foot EVA walk initiated toward Kodiak outcrop.'
+        },
+        {
+          name: 'Megaripple Bypass (+280 m)',
+          sub: 'Skirt loose aeolian sand pocket',
+          scienceObjective: 'Measure grain-size cohesion of inactive aeolian megaripples along firm basaltic bypass',
+          scienceTool: 'Cone Penetrometer + Micro-Imager',
+          km: 0.28,
+          coords: [18.3816, 77.4915],
+          elev: -2491,
+          narration: 'Bypassing loose aeolian megaripple bedform on firm basaltic pavement.'
+        },
+        {
+          name: 'Kodiak Foreset Beds (+610 m)',
+          sub: 'SHERLOC UV scan & titanium tube #15',
+          scienceObjective: 'Scan fine-grained lacustrine mudstones for aromatic organic rings and smectite clays',
+          scienceTool: 'SHERLOC Deep-UV Raman + Coring Bit',
+          km: 0.61,
+          coords: [18.3834, 77.4932],
+          elev: -2485,
+          narration: 'Scanning ancient delta foreset beds for organic carbon and phyllosilicates.'
+        },
+        {
+          name: 'Ice Lens Trench (+900 m)',
+          sub: 'Shallow regolith H₂O probe & return',
+          scienceObjective: 'Assay pore-ice purity and isotopic D/H ratio at 0.9m depth under shaded scarp overhang',
+          scienceTool: 'Cryo-Auger Probe + Tunable Laser Spec',
+          km: 0.9,
+          coords: [18.3848, 77.4950],
+          elev: -2479,
+          narration: 'Subsurface ice probe verified at ninety centimeters depth. Marswalk objective complete.'
+        }
+      ]
+    },
+
     'jezero-alpha': {
       id: 'jezero-alpha',
       code: 'JEZERO-ALPHA',
@@ -99,17 +258,37 @@ function initMarsDashboard() {
       zoom: 8,
       pathCoords: [
         [18.28, 77.68, -2540],
-        [18.33, 77.59, -2518],
+        [18.34, 77.62, -2518],
         [18.38, 77.49, -2490],
-        [18.45, 77.41, -2465],
+        [18.43, 77.38, -2465],
         [18.52, 77.33, -2435],
-        [18.58, 77.24, -2405],
+        [18.59, 77.25, -2405],
         [18.64, 77.15, -2380]
+      ],
+      obstacles: [
+        {
+          name: 'Séítah Basaltic Boulder & Dune Field (>1.6m)',
+          code: 'OBSTACLE-JA01 // WHEEL ENTRAPMENT ZONE',
+          coords: [18.32, 77.56],
+          radius: 1700,
+          blockedLine: [[18.28, 77.68], [18.38, 77.49]],
+          reason: 'Rover detours NE around dense olivine boulder clusters and loose aeolian ripples to protect wheel suspension.'
+        },
+        {
+          name: 'Delta Front 26° Unstable Scarp',
+          code: 'OBSTACLE-JA02 // ROLLOVER SLOPE HAZARD',
+          coords: [18.46, 77.43],
+          radius: 1450,
+          blockedLine: [[18.38, 77.49], [18.52, 77.33]],
+          reason: 'Route bends SW to ascend via a gentle 14.2° alluvial ramp instead of the steep 26° delta scarp.'
+        }
       ],
       waypoints: [
         {
           name: 'Starting Point (Start)',
           sub: 'Octavia E. Butler Landing',
+          scienceObjective: 'Characterize Máaz basaltic floor mineralogy and calibrate RIMFAX ground-penetrating radar',
+          scienceTool: 'RIMFAX Subsurface Radar + SuperCam LIBS',
           km: 0.0,
           coords: [18.28, 77.68],
           elev: -2540,
@@ -118,6 +297,8 @@ function initMarsDashboard() {
         {
           name: 'Science Stop: Kodiak',
           sub: 'Fluvial stratigraphic analysis',
+          scienceObjective: 'Document ancient river delta foreset/topset beds and collect hydrated phyllosilicate cores',
+          scienceTool: 'Mastcam-Z Stereo + PIXL X-Ray Spectrometer',
           km: 4.8,
           coords: [18.38, 77.49],
           elev: -2490,
@@ -126,6 +307,8 @@ function initMarsDashboard() {
         {
           name: 'Subsurface Ice Deposit',
           sub: 'H₂O ISRU extraction',
+          scienceObjective: 'Extract subsurface water-ice core at 1.2m depth to validate ISRU O₂/H₂O propellant yield',
+          scienceTool: 'Honeybee Deep Drill + MOXIE-II Electrolyzer',
           km: 9.4,
           coords: [18.52, 77.33],
           elev: -2435,
@@ -134,6 +317,8 @@ function initMarsDashboard() {
         {
           name: 'Base Camp',
           sub: 'Delta Prime Habitat',
+          scienceObjective: 'Deploy long-term seismic and radiation beacon network at Delta Prime habitat perimeter',
+          scienceTool: 'SEIS-II Seismometer + Habitat RAD Array',
           km: 14.6,
           coords: [18.64, 77.15],
           elev: -2380,
@@ -159,16 +344,29 @@ function initMarsDashboard() {
       zoom: 8,
       pathCoords: [
         [18.28, 77.68, -2540],
-        [18.39, 77.55, -2495],
+        [18.41, 77.56, -2495],
         [18.49, 77.42, -2420],
+        [18.56, 77.36, -2390],
         [18.58, 77.28, -2365],
-        [18.66, 77.14, -2325],
+        [18.68, 77.15, -2325],
         [18.74, 76.98, -2295]
+      ],
+      obstacles: [
+        {
+          name: 'Belva Impact Ejecta Megablocks (>2.4m)',
+          code: 'OBSTACLE-JB01 // IMPASSABLE BRECCIA FIELD',
+          coords: [18.53, 77.33],
+          radius: 1650,
+          blockedLine: [[18.49, 77.42], [18.58, 77.28]],
+          reason: 'Traverse arcs around the northern crater rim to bypass jagged impact-ejected megablocks.'
+        }
       ],
       waypoints: [
         {
           name: 'Octavia E. Butler Landing',
           sub: 'Plains departure base',
+          scienceObjective: 'Sample olivine-carbonate cumulates along the Séítah contact zone before delta ascent',
+          scienceTool: 'Abrasion Tool + SHERLOC UV Fluorescence',
           km: 0.0,
           coords: [18.28, 77.68],
           elev: -2540,
@@ -177,6 +375,8 @@ function initMarsDashboard() {
         {
           name: 'Northern Delta Front',
           sub: 'Ascent via sedimentary slope',
+          scienceObjective: 'Analyze carbonate-coated boulders transported by high-energy late-stage lake floods',
+          scienceTool: 'SuperCam IR/LIBS + Micro-Context Imager',
           km: 6.1,
           coords: [18.49, 77.42],
           elev: -2420,
@@ -185,6 +385,8 @@ function initMarsDashboard() {
         {
           name: 'Belva Crater Overlook',
           sub: 'Impact exposes ancient strata',
+          scienceObjective: 'Survey 900m impact crater walls to log deep buried delta stratigraphy down to 45m depth',
+          scienceTool: 'Long-Range RMI Telescope + RIMFAX Radar',
           km: 12.8,
           coords: [18.58, 77.28],
           elev: -2365,
@@ -193,6 +395,8 @@ function initMarsDashboard() {
         {
           name: 'Neretva Vallis Mouth',
           sub: 'Advanced Hydrological Station',
+          scienceObjective: 'Core light-toned Bright Angel mudstones in feeder channel for ancient chemosynthetic biosignatures',
+          scienceTool: 'Rotary Corer + PIXL Elemental Map',
           km: 19.2,
           coords: [18.74, 76.98],
           elev: -2295,
@@ -204,9 +408,9 @@ function initMarsDashboard() {
     'gale-sharp': {
       id: 'gale-sharp',
       code: 'GALE-SHARP',
-      title: 'Historic Traverse: Gale Crater toward Aeolis Mons',
-      sector: 'Sector: Aeolis Palus • Foothills of Mount Sharp (5.5 km altitude)',
-      desc: 'Following the historic tracks of the Curiosity rover across dark basaltic dunes (Bagnold Dunes) and ridges rich in hematite and sulfates.',
+      title: 'Mount Sharp & Boxwork Formations (Curiosity 2025)',
+      sector: 'Sector: Aeolis Mons Foothills • Boxwork Ridge Network (Curiosity 2025)',
+      desc: 'Ascending Mount Sharp along Curiosity rover tracks across Bagnold Dunes and Vera Rubin Ridge to investigate the 2025 Boxwork Formations—polygonal ridges mineralized by ancient subsurface groundwater.',
       difficulty: 'HIGH',
       maxSlopeDeg: 23.4,
       slopeStatus: 'DEMANDING',
@@ -218,15 +422,38 @@ function initMarsDashboard() {
       zoom: 8,
       pathCoords: [
         [-4.42, 137.62, -4501],
+        [-4.49, 137.58, -4470],
         [-4.54, 137.50, -4440],
+        [-4.62, 137.45, -4380],
         [-4.68, 137.38, -4310],
-        [-4.81, 137.26, -4185],
+        [-4.79, 137.29, -4185],
+        [-4.88, 137.24, -4095],
         [-4.95, 137.14, -4011]
+      ],
+      obstacles: [
+        {
+          name: 'Bagnold Active Slip-Face Dune Trench',
+          code: 'OBSTACLE-GS01 // LOW TRACTION SAND TRAP',
+          coords: [-4.48, 137.53],
+          radius: 1900,
+          blockedLine: [[-4.42, 137.62], [-4.54, 137.50]],
+          reason: 'Route threads through the eastern bedrock gap to prevent wheel bogging in deep basaltic dunes.'
+        },
+        {
+          name: 'Gediz Vallis 25° Debris Chute & Yardang Cliff',
+          code: 'OBSTACLE-GS02 // STEEP TALUS OBSTACLE',
+          coords: [-4.82, 137.22],
+          radius: 2100,
+          blockedLine: [[-4.68, 137.38], [-4.95, 137.14]],
+          reason: 'Ascent switches back East of the unstable boulder chute before reaching the 2025 Boxwork Formations.'
+        }
       ],
       waypoints: [
         {
           name: 'Bradbury Landing (Start)',
           sub: 'MSL Curiosity landing site',
+          scienceObjective: 'Sample fluvial conglomerate pebbles at Peace Vallis fan to benchmark early Gale Lake hydrology',
+          scienceTool: 'ChemCam LIBS + MAHLI Hand Lens',
           km: 0.0,
           coords: [-4.42, 137.62],
           elev: -4501,
@@ -235,6 +462,8 @@ function initMarsDashboard() {
         {
           name: 'Bagnold Dune Field',
           sub: 'Active aeolian basaltic sand',
+          scienceObjective: 'Measure active basaltic dune migration rates and olivine/pyroxene wind-sorting mechanics',
+          scienceTool: 'CheMin X-Ray Diffraction + REMS Anemometer',
           km: 7.4,
           coords: [-4.54, 137.50],
           elev: -4440,
@@ -243,18 +472,22 @@ function initMarsDashboard() {
         {
           name: 'Vera Rubin Ridge',
           sub: 'Ferric oxide (Hematite) deposits',
+          scienceObjective: 'Drill crystalline red hematite mudstones to determine ancient redox gradients and diagenesis',
+          scienceTool: 'Percussive Drill + APXS Alpha-Proton X-Ray',
           km: 16.2,
           coords: [-4.68, 137.38],
           elev: -4310,
           narration: 'Arrived at Vera Rubin Ridge. Hematite deposits confirmed.'
         },
         {
-          name: 'Mount Sharp Sulfate Unit',
-          sub: 'Gale High-Altitude Camp',
+          name: 'Mount Sharp Boxwork Formations (2025)',
+          sub: 'Curiosity 2025 mineralized fracture network',
+          scienceObjective: 'Core Boxwork ridge crests & CaSO₄ veins formed by warm groundwater for preserved biosignatures',
+          scienceTool: 'Rotary Core Drill + SAM GCMS / Raman Spec',
           km: 24.8,
           coords: [-4.95, 137.14],
           elev: -4011,
-          narration: 'Reached Mount Sharp Sulfate Unit. High altitude camp established.'
+          narration: 'Reached Mount Sharp Boxwork Formations studied by Curiosity in 2025. Extracting mineralized ridge core.'
         }
       ]
     },
@@ -276,15 +509,29 @@ function initMarsDashboard() {
       zoom: 8,
       pathCoords: [
         [-13.62, -59.52, -4120],
+        [-13.70, -59.45, -4040],
         [-13.75, -59.35, -3960],
+        [-13.84, -59.29, -3875],
         [-13.88, -59.18, -3790],
-        [-14.01, -59.01, -3610],
+        [-13.99, -59.04, -3610],
         [-14.14, -58.84, -3440]
+      ],
+      obstacles: [
+        {
+          name: 'Coprates 28° Landslide Talus & Tectonic Fissure',
+          code: 'OBSTACLE-VM01 // ACTIVE ROCKFALL ZONE',
+          coords: [-13.80, -59.24],
+          radius: 2400,
+          blockedLine: [[-13.75, -59.35], [-13.88, -59.18]],
+          reason: 'Route detours South along the lower fault terrace to stay clear of recurring slope lineae and boulder avalanches.'
+        }
       ],
       waypoints: [
         {
           name: 'Coprates Floor Platform',
           sub: 'Abyssal canyon floor',
+          scienceObjective: 'Measure deep atmospheric pressure column (890 Pa) and deploy katabatic wind profiler',
+          scienceTool: 'Laser Doppler Lidar + Barometric Array',
           km: 0.0,
           coords: [-13.62, -59.52],
           elev: -4120,
@@ -293,6 +540,8 @@ function initMarsDashboard() {
         {
           name: 'Normal Fault Scarp 01',
           sub: 'Rocky 27.6° slope',
+          scienceObjective: 'Scan exposed 4-km tectonic fault wall for primordial Noachian crust and Recurring Slope Lineae',
+          scienceTool: 'Thermal IR Radiometer + Telephoto Spectral Cam',
           km: 10.5,
           coords: [-13.75, -59.35],
           elev: -3960,
@@ -301,6 +550,8 @@ function initMarsDashboard() {
         {
           name: 'Hydrated Sulfate Terrace',
           sub: 'Exposed mineral veins',
+          scienceObjective: 'Assay polyhydrated kieserite and ferric sulfate beds for bound structural water content',
+          scienceTool: 'Neutron Spectrometer + Thermal Pyrolysis Oven',
           km: 21.0,
           coords: [-13.88, -59.18],
           elev: -3790,
@@ -309,6 +560,8 @@ function initMarsDashboard() {
         {
           name: 'Subsurface Cliffside Shelter',
           sub: 'Lava tube / Shielded cavern',
+          scienceObjective: 'Map subterranean lava tube ceiling stability and verify 99% GCR/SPE radiation shielding',
+          scienceTool: '3D Cavern LiDAR + Tissue-Equivalent Dosimeter',
           km: 31.5,
           coords: [-14.14, -58.84],
           elev: -3440,
@@ -324,6 +577,8 @@ function initMarsDashboard() {
   let roverProgress = 33; // % (0 a 100)
   let isCustomDrawing = false;
   let simIntervalId = null;
+  let isSolarStormSpeActive = false;
+  let isHelmetHudActive = false;
 
   // ==========================================================================
   // 2. INICIALIZACIÓN DEL MOTOR CARTOGRÁFICO LEAFLET.JS (ETAPA 2 — ALTA NITIDEZ)
@@ -332,7 +587,7 @@ function initMarsDashboard() {
     center: JEZERO_CENTER,
     zoom: DEFAULT_ZOOM,
     minZoom: 2,
-    maxZoom: 10,
+    maxZoom: 15,
     zoomControl: false,
     attributionControl: true
   });
@@ -348,7 +603,7 @@ function initMarsDashboard() {
     opmMars: L.tileLayer(
       'https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-mars-basemap-v0-2/all/{z}/{x}/{y}.png',
       {
-        maxZoom: 10,
+        maxZoom: 15,
         maxNativeZoom: 6,
         keepBuffer: 6,
         updateWhenIdle: false,
@@ -360,7 +615,7 @@ function initMarsDashboard() {
       'https://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/mola-color/{z}/{x}/{y}.png',
       {
         tms: true,
-        maxZoom: 10,
+        maxZoom: 15,
         maxNativeZoom: 6,
         keepBuffer: 6,
         updateWhenIdle: false,
@@ -372,7 +627,7 @@ function initMarsDashboard() {
       'https://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/celestia_mars-shaded-16k_global/{z}/{x}/{y}.png',
       {
         tms: true,
-        maxZoom: 10,
+        maxZoom: 15,
         maxNativeZoom: 5,
         keepBuffer: 6,
         updateWhenIdle: false,
@@ -384,14 +639,14 @@ function initMarsDashboard() {
     usgsBlend: L.tileLayer.wms(USGS_MARS_WMS_URL, {
       layers: 'MOLA_THEMIS_blend',
       format: 'image/jpeg',
-      maxZoom: 10,
+      maxZoom: 15,
       zIndex: 3,
       attribution: 'USGS Astrogeology / NASA MGS MOLA + Odyssey THEMIS IR (100m)'
     }),
     usgsHrsc: L.tileLayer.wms(USGS_MARS_WMS_URL, {
       layers: 'HRSC_MOLA_Blend_Hillshade',
       format: 'image/jpeg',
-      maxZoom: 10,
+      maxZoom: 15,
       zIndex: 3,
       attribution: 'ESA Mars Express HRSC + NASA MGS MOLA Blended Hillshade'
     })
@@ -402,7 +657,7 @@ function initMarsDashboard() {
     'https://s3-eu-west-1.amazonaws.com/whereonmars.cartodb.net/mola-color/{z}/{x}/{y}.png',
     {
       tms: true,
-      maxZoom: 10,
+      maxZoom: 15,
       maxNativeZoom: 6,
       opacity: 0.42,
       zIndex: 5,
@@ -410,7 +665,7 @@ function initMarsDashboard() {
     }
   );
 
-  // Capa Procedural Táctica de Alta Definición (HiRISE/CTX Detail Grid) para evitar pixelado en zoom de Rover
+  // Capa Procedural Táctica de Alta Definición (HiRISE/CTX Detail Grid) para evitar pixelado en zoom de Rover y Marswalk
   const TacticalDetailGridLayer = L.GridLayer.extend({
     createTile: function (coords) {
       const tile = document.createElement('canvas');
@@ -426,16 +681,25 @@ function initMarsDashboard() {
       };
 
       // Retícula telemétrica fina de sub-sector orbital
-      ctx.strokeStyle = 'rgba(255, 107, 43, 0.14)';
+      ctx.strokeStyle = coords.z >= 11 ? 'rgba(0, 229, 255, 0.22)' : 'rgba(255, 107, 43, 0.14)';
       ctx.lineWidth = 0.75;
       ctx.strokeRect(0.5, 0.5, 255, 255);
 
-      ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
+      ctx.strokeStyle = coords.z >= 11 ? 'rgba(255, 107, 43, 0.14)' : 'rgba(0, 229, 255, 0.08)';
       ctx.beginPath();
       ctx.moveTo(128, 0);
       ctx.lineTo(128, 256);
       ctx.moveTo(0, 128);
       ctx.lineTo(256, 128);
+      if (coords.z >= 11) {
+        // Sub-retícula hiperlocal métrica (64px) para caminatas espaciales Marswalk
+        for (const step of [64, 192]) {
+          ctx.moveTo(step, 0);
+          ctx.lineTo(step, 256);
+          ctx.moveTo(0, step);
+          ctx.lineTo(256, step);
+        }
+      }
       ctx.stroke();
 
       // Micro-cráteres y anillos de relieve HiRISE nítidos a alto zoom
@@ -457,17 +721,18 @@ function initMarsDashboard() {
         ctx.stroke();
       }
 
-      // Etiqueta telemétrica de cuadrícula MRO CTX
-      ctx.fillStyle = 'rgba(255, 158, 102, 0.34)';
+      // Etiqueta telemétrica de cuadrícula MRO HiRISE / CTX
+      ctx.fillStyle = coords.z >= 11 ? 'rgba(0, 229, 255, 0.48)' : 'rgba(255, 158, 102, 0.34)';
       ctx.font = '9px "Share Tech Mono", monospace';
-      ctx.fillText(`CTX-${coords.z}:${coords.x}:${coords.y}`, 6, 14);
+      const prefix = coords.z >= 11 ? 'HIRISE-EVA' : 'CTX';
+      ctx.fillText(`${prefix}-${coords.z}:${coords.x}:${coords.y}`, 6, 14);
 
       return tile;
     }
   });
 
   const tacticalDetailGrid = new TacticalDetailGridLayer({
-    maxZoom: 10,
+    maxZoom: 15,
     zIndex: 6,
     opacity: 0.85
   });
@@ -500,6 +765,142 @@ function initMarsDashboard() {
   // Base de datos cartográfica regional para que las capas (Topography, Geology, Resources, Weather)
   // se actualicen automáticamente con el mapa al cambiar de ruta o sector marciano
   const REGIONAL_LAYERS_DB = {
+    'marswalk-boxwork': {
+      contours: [
+        {
+          elev: '-4,190m (Rover Airlock Bench)',
+          color: '#ff9e66',
+          dash: '4, 4',
+          coords: [[-4.7835, 137.3105], [-4.7810, 137.3135], [-4.7795, 137.3160]]
+        },
+        {
+          elev: '-4,170m (Boxwork Mineralized Ridge Crest)',
+          color: '#FF6B2B',
+          dash: null,
+          coords: [[-4.7805, 137.3118], [-4.7772, 137.3154], [-4.7755, 137.3190]]
+        }
+      ],
+      geology: [
+        {
+          name: 'Curiosity 2025 Boxwork Fracture Network (CaSO₄ Cemented Ridges)',
+          code: 'Hs-bw // Hyperlocal Biosignature Target',
+          desc: 'Polygonal ridges mineralized by ancient warm groundwater percolating through Mount Sharp bedrock fractures.',
+          color: '#ce93d8',
+          fillColor: '#9c27b0',
+          coords: [[-4.7788, 137.3138], [-4.7755, 137.3142], [-4.7758, 137.3175], [-4.7790, 137.3170]]
+        },
+        {
+          name: 'Unstable Angular Boulder Talus Apron (Suit Boot Hazard)',
+          code: 'Hz-tb // Local Foot EVA Obstacle (Detour Required)',
+          desc: 'Meter-scale sharp blocks shed from Gediz Vallis ridge. Caution: suit fabric puncture and ankle slip hazard.',
+          color: '#ef5350',
+          fillColor: '#c62828',
+          coords: [[-4.7812, 137.3122], [-4.7792, 137.3124], [-4.7794, 137.3144], [-4.7814, 137.3140]]
+        }
+      ],
+      resources: [
+        {
+          name: 'Hydrated Polyhydrated Sulfate Vein (ISRU-BW-MICRO)',
+          coords: [-4.7750, 137.3178],
+          radius: 180,
+          purity: '74% Gypsum / Bassanite Vein Hydration',
+          depth: '0.15m exposed in alcove wall',
+          yield: 'Estimated: 480 Liters local emergency EVA reserve'
+        }
+      ],
+      weather: {
+        coords: [-4.7740, 137.3115],
+        outerRadius: 420,
+        innerRadius: 180,
+        tag: 'LOCAL DOWNSLOPE GUST (&tau; 0.54 | 16.2 KM/H)',
+        title: 'Gediz Vallis Micro-Channel Wind',
+        desc: 'Localized katabatic breeze descending Mount Sharp trough at 16.2 km/h. Safe for Foot EVA.'
+      },
+      shelters: [
+        {
+          name: 'Gediz Alcove Overhang & Rover Airlock Shield',
+          coords: [-4.7752, 137.3176],
+          radius: 140,
+          attenuation: '-82% SPE Protons / -44% GCR (2.4m Bedrock Ledge + Water Bladder)',
+          type: 'Hyperlocal Cliff Alcove + Pressurized Rover Haven'
+        },
+        {
+          name: 'Curiosity Rover Pressurized Airlock Base',
+          coords: [-4.7810, 137.3115],
+          radius: 120,
+          attenuation: '-78% SPE Protons / -38% GCR (Aluminum-Lithium Hull + Polyethylene)',
+          type: 'Primary EVA Egress / Ingress Shelter'
+        }
+      ]
+    },
+    'marswalk-kodiak': {
+      contours: [
+        {
+          elev: '-2,494m (Delta Habitat Apron)',
+          color: '#ff9e66',
+          dash: '4, 4',
+          coords: [[18.3790, 77.4888], [18.3812, 77.4922], [18.3828, 77.4952]]
+        },
+        {
+          elev: '-2,480m (Kodiak Foreset Bench)',
+          color: '#FF6B2B',
+          dash: null,
+          coords: [[18.3822, 77.4905], [18.3838, 77.4935], [18.3855, 77.4960]]
+        }
+      ],
+      geology: [
+        {
+          name: 'Kodiak Lacustrine Foreset Mudstones (Smectite & Carbonates)',
+          code: 'Nh-kd // Ancient River Delta Outcrop',
+          desc: 'Finely laminated fluvial-lacustrine beds preserving ancient organic matter at finger-scale resolution.',
+          color: '#ce93d8',
+          fillColor: '#ab47bc',
+          coords: [[18.3824, 77.4920], [18.3852, 77.4924], [18.3850, 77.4956], [18.3822, 77.4950]]
+        },
+        {
+          name: 'Loose Aeolian Megaripple Sand Pocket',
+          code: 'Hz-mr // Foot EVA Sinkage Hazard',
+          desc: 'Unconsolidated fine dust and sand ripples up to 40cm deep. Skirt along eastern basaltic rim.',
+          color: '#ef5350',
+          fillColor: '#d32f2f',
+          coords: [[18.3806, 77.4902], [18.3822, 77.4904], [18.3820, 77.4922], [18.3804, 77.4918]]
+        }
+      ],
+      resources: [
+        {
+          name: 'Shallow Delta Permafrost Lens (ISRU-KD-MICRO)',
+          coords: [18.3848, 77.4950],
+          radius: 160,
+          purity: '86% Pore Ice in Shaded Scarp',
+          depth: '0.9m beneath overhang',
+          yield: 'Estimated: 620 Liters local EVA umbilical refill'
+        }
+      ],
+      weather: {
+        coords: [18.3792, 77.4945],
+        outerRadius: 380,
+        innerRadius: 150,
+        tag: 'THERMAL VORTEX (&tau; 0.62 | 19.0 KM/H)',
+        title: 'Local Dust Devil Track (East Kodiak)',
+        desc: 'Minor convective vortex passing 220m SE of habitat airlock.'
+      },
+      shelters: [
+        {
+          name: 'Kodiak Sandstone Alcove & Subsurface Ice Overhang',
+          coords: [18.3849, 77.4948],
+          radius: 135,
+          attenuation: '-85% SPE Protons / -48% GCR (3.1m Consolidated Sandstone Cliff)',
+          type: 'Natural Topographic Radiation Shield'
+        },
+        {
+          name: 'Jezero Outpost Habitat Airlock Storm Bay',
+          coords: [18.3795, 77.4895],
+          radius: 125,
+          attenuation: '-92% SPE Protons / -60% GCR (Regolith-Bagged Habitat Dome)',
+          type: 'Permanent Pressurized Base Shelter'
+        }
+      ]
+    },
     'jezero-alpha': {
       contours: [
         {
@@ -580,7 +981,23 @@ function initMarsDashboard() {
         tag: 'DUST STORM (&tau; 1.45 | 24.5 KM/H)',
         title: 'Regional Dust Storm Front (SW Jezero)',
         desc: 'Advancing ENE at 24.5 km/h. Atmospheric opacity Tau (&tau;) rising to 1.45. Recommended to complete traverse before 17:30 MTC.'
-      }
+      },
+      shelters: [
+        {
+          name: 'North Delta Escarpment Alcove (SPE Shelter Alpha)',
+          coords: [18.49, 77.33],
+          radius: 3400,
+          attenuation: '-86% SPE Protons / -50% GCR (Delta Cliff Topographic Shadow)',
+          type: 'Mid-Route Cliffside Radiation Shelter'
+        },
+        {
+          name: 'Delta Prime Base Camp Regolith-Shielded Bunker',
+          coords: [18.65, 77.14],
+          radius: 3000,
+          attenuation: '-95% SPE Protons / -74% GCR (3.5m Sintered Regolith Vault + H₂O Jacket)',
+          type: 'Class-A Habitat Storm Shelter'
+        }
+      ]
     },
     'jezero-beta': {
       contours: [
@@ -646,7 +1063,23 @@ function initMarsDashboard() {
         tag: 'BELVA TURBULENCE (&tau; 0.81 | 29.2 KM/H)',
         title: 'Dust Devil Swarm along Belva Rim',
         desc: 'Convective vortices detected by the MEDA-North sensor with gusts up to 29.2 km/h.'
-      }
+      },
+      shelters: [
+        {
+          name: 'Belva Crater Impact Breccia Overhang',
+          coords: [18.59, 77.27],
+          radius: 3100,
+          attenuation: '-84% SPE Protons / -49% GCR ( Megablock Impact Alcove)',
+          type: 'Crater Wall Topographic Shield'
+        },
+        {
+          name: 'Neretva Vallis Canyon Wall Cavern',
+          coords: [18.75, 76.96],
+          radius: 3400,
+          attenuation: '-93% SPE Protons / -68% GCR (Fluvial Gorge Undercut)',
+          type: 'Deep Gorge SPE Refuge'
+        }
+      ]
     },
     'gale-sharp': {
       contours: [
@@ -687,9 +1120,9 @@ function initMarsDashboard() {
           coords: [[-4.62, 137.24], [-4.80, 137.26], [-4.78, 137.46], [-4.60, 137.42]]
         },
         {
-          name: 'Sulfate-Bearing Unit (Mount Sharp / Gediz Vallis)',
-          code: 'Hs-ms // Kieserite and Magnesium Sulfates',
-          desc: 'Strata deposited during Mars climatic transition toward a more arid era.',
+          name: 'Boxwork Formations & Sulfate Unit (Mount Sharp / Curiosity 2025)',
+          code: 'Hs-bw // Curiosity 2025 Mineralized Fracture Ridges',
+          desc: 'Polygonal boxwork ridges cemented by ancient warm groundwater circulating through fractures in Mount Sharp sulfate strata, investigated by Curiosity in 2025.',
           color: '#ffb74d',
           fillColor: '#ef6c00',
           coords: [[-4.82, 137.04], [-5.02, 137.06], [-4.98, 137.28], [-4.80, 137.24]]
@@ -720,7 +1153,23 @@ function initMarsDashboard() {
         tag: 'GALE SLOPE WIND (&tau; 0.58 | 18.4 KM/H)',
         title: 'Downslope Flow from Aeolis Mons (Mount Sharp)',
         desc: 'NNW thermal flow at 18.4 km/h recorded by the Curiosity rover REMS station.'
-      }
+      },
+      shelters: [
+        {
+          name: 'Gediz Vallis Ridge Rock Alcove (Boxwork SPE Haven)',
+          coords: [-4.95, 137.12],
+          radius: 3600,
+          attenuation: '-89% SPE Protons / -58% GCR (Steep Mount Sharp Trough Wall)',
+          type: 'High-Altitude Topographic Radiation Shelter'
+        },
+        {
+          name: 'Vera Rubin Hematite Escarpment Ledge',
+          coords: [-4.72, 137.34],
+          radius: 3100,
+          attenuation: '-81% SPE Protons / -45% GCR (Dense Ferric Bedrock Overhang)',
+          type: 'Mid-Traverse Radiation Shelter'
+        }
+      ]
     },
     'valles-marineris': {
       contours: [
@@ -786,7 +1235,23 @@ function initMarsDashboard() {
         tag: '⚠ CANYON KATABATIC WIND (&tau; 1.32 | 64.8 KM/H)',
         title: 'Channeled Jet Stream in Coprates Chasma',
         desc: 'Severe gusts of 64.8 km/h along the canyon axis with suspended dust haze (&tau; 1.32).'
-      }
+      },
+      shelters: [
+        {
+          name: 'Coprates Subsurface Lava Tube & Glacier Cavern',
+          coords: [-14.15, -58.84],
+          radius: 4200,
+          attenuation: '-98% SPE Protons / -88% GCR (12m Basalt Roof + Buried Ice Wall)',
+          type: 'Class-A Subsurface Lava Tube Sanctuary'
+        },
+        {
+          name: 'Normal Fault Terrace Tectonic Overhang',
+          coords: [-13.86, -59.22],
+          radius: 3400,
+          attenuation: '-87% SPE Protons / -55% GCR (8km Canyon Wall Horizon Shielding)',
+          type: 'Tectonic Scarp Radiation Shelter'
+        }
+      ]
     }
   };
 
@@ -837,7 +1302,16 @@ function initMarsDashboard() {
         tag: 'REGIONAL AEOLIAN FRONT (&tau; 0.95 | 26.0 KM/H)',
         title: 'Regional Aeolian Activity Detected',
         desc: 'Surface winds monitored by NASA orbital sensors in the active sector.'
-      }
+      },
+      shelters: [
+        {
+          name: 'Subsurface Regolith-Shielded Alcove & Rover Haven',
+          coords: [centerLat + 0.04, centerLng + 0.04],
+          radius: 3200,
+          attenuation: '-88% SPE Protons / -52% GCR (Natural Bedrock Overhang)',
+          type: 'Emergency Radiation Shelter'
+        }
+      ]
     };
   }
 
@@ -928,21 +1402,22 @@ function initMarsDashboard() {
       nasaLayers.res.addLayer(centerMarker);
     });
 
-    // 4. Actualizar Frente Meteorológico Regional (Capa Weather)
+    // 4. Actualizar Frente Meteorológico Regional + Clima Espacial (SPE) y Refugios de Radiación (Capa Weather)
     nasaLayers.weather.clearLayers();
     const w = regionData.weather;
+    const speTagSuffix = isSolarStormSpeActive ? ' • ☢ SPE M4.2 FLARE (485 PFU)' : '';
     const dustStormZone = L.circle(w.coords, {
       radius: w.outerRadius,
-      color: '#ffab00',
+      color: isSolarStormSpeActive ? '#ff1744' : '#ffab00',
       weight: 2.5,
       dashArray: '10, 6',
-      fillColor: '#ff6b2b',
-      fillOpacity: 0.24
+      fillColor: isSolarStormSpeActive ? '#ff1744' : '#ff6b2b',
+      fillOpacity: isSolarStormSpeActive ? 0.3 : 0.24
     }).bindPopup(`
-      <div class="hud-popup-card warning-theme">
-        <div class="hp-kicker">ACTIVE WEATHER ALERT // SOL 1420</div>
-        <h4 class="hp-title"><i class="fa-solid fa-triangle-exclamation"></i> ${w.title}</h4>
-        <p class="hp-desc">${w.desc}</p>
+      <div class="hud-popup-card ${isSolarStormSpeActive ? 'danger-theme' : 'warning-theme'}">
+        <div class="hp-kicker">${isSolarStormSpeActive ? '☢ SPACE WEATHER SPE + ATMOSPHERIC ALERT' : 'ACTIVE WEATHER ALERT // SOL 1420'}</div>
+        <h4 class="hp-title"><i class="fa-solid ${isSolarStormSpeActive ? 'fa-radiation' : 'fa-triangle-exclamation'}"></i> ${w.title}</h4>
+        <p class="hp-desc">${w.desc}${isSolarStormSpeActive ? ' <strong>SOLAR PARTICLE EVENT (SPE) ACTIVE:</strong> Elevated proton flux (485 PFU) penetrating thin Martian atmosphere. Evacuate to nearest green Radiation Shelter radius.' : ''}</p>
       </div>
     `);
 
@@ -959,17 +1434,63 @@ function initMarsDashboard() {
         className: 'hud-custom-div-icon',
         html: `
           <div class="weather-map-tag">
-            <i class="fa-solid fa-wind"></i> ${w.tag}
+            <i class="fa-solid ${isSolarStormSpeActive ? 'fa-radiation' : 'fa-wind'}"></i> ${w.tag}${speTagSuffix}
           </div>
         `,
-        iconSize: [240, 28],
-        iconAnchor: [120, 14]
+        iconSize: [280, 28],
+        iconAnchor: [140, 14]
       })
     });
 
     nasaLayers.weather.addLayer(dustStormZone);
     nasaLayers.weather.addLayer(dustStormCore);
     nasaLayers.weather.addLayer(stormAlertBadge);
+
+    // 4B. Radio de Refugio Seguro contra Radiación Solar / SPE (Radiation Shelter Safe Radius)
+    if (Array.isArray(regionData.shelters)) {
+      regionData.shelters.forEach((sh) => {
+        const shelterCircle = L.circle(sh.coords, {
+          radius: sh.radius,
+          color: '#69f0ae',
+          weight: isSolarStormSpeActive ? 3 : 2,
+          dashArray: '6, 4',
+          fillColor: '#00e676',
+          fillOpacity: isSolarStormSpeActive ? 0.28 : 0.16
+        }).bindPopup(`
+          <div class="hud-popup-card shelter-theme">
+            <div class="hp-kicker"><i class="fa-solid fa-shield-heart"></i> RADIATION SHELTER SAFE RADIUS (${sh.radius >= 1000 ? (sh.radius / 1000).toFixed(1) + ' KM' : sh.radius + ' M'})</div>
+            <h4 class="hp-title">${sh.name}</h4>
+            <p class="hp-desc"><strong>Type:</strong> ${sh.type}</p>
+            <ul class="hp-list">
+              <li><strong>Shielding Attenuation:</strong> ${sh.attenuation}</li>
+              <li><strong>SPE Protocol:</strong> Immediate crew haven during Solar Particle Events (SPE) & Coronal Mass Ejections.</li>
+            </ul>
+          </div>
+        `);
+
+        const shelterIcon = L.divIcon({
+          className: 'hud-custom-div-icon',
+          html: `
+            <div class="hud-map-pin pin-shelter">
+              <i class="fa-solid fa-shield-heart"></i>
+              <span class="pin-pulse"></span>
+            </div>
+          `,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15]
+        });
+
+        const shelterMarker = L.marker(sh.coords, { icon: shelterIcon })
+          .bindTooltip(
+            `🛡 RADIATION SHELTER RADIUS: ${sh.name} (${sh.attenuation.split('(')[0].trim()})`,
+            { sticky: true, className: 'cyber-leaflet-tooltip' }
+          )
+          .bindPopup(shelterCircle.getPopup());
+
+        nasaLayers.weather.addLayer(shelterCircle);
+        nasaLayers.weather.addLayer(shelterMarker);
+      });
+    }
   }
 
   // Inicializar las capas regionales en Jezero al arrancar
@@ -1064,6 +1585,7 @@ function initMarsDashboard() {
   // ==========================================================================
   let liveRoverMarker = null;
   let routeTraveledLine = null;
+  let walkbackSafetyCircle = null;
 
   // Distancia Haversine ajustada al radio planetario de Marte (3,396.2 km)
   function computeMarsDistanceKm(coordA, coordB) {
@@ -1086,11 +1608,13 @@ function initMarsDashboard() {
   const evaCrewSelect = document.getElementById('eva-crew-size');
   const evaModeSelect = document.getElementById('eva-transport-mode');
   const evaWindowSelect = document.getElementById('eva-departure-window');
+  const evaPayloadSelect = document.getElementById('eva-payload-kit');
 
   let evaConfig = {
     crewSize: 2,
     transportMode: 'rover', // 'rover' | 'foot'
-    departureWindow: 'morning' // 'morning' | 'afternoon' | 'night'
+    departureWindow: 'morning', // 'morning' | 'afternoon' | 'night'
+    payloadKitKg: 14 // 8 | 14 | 22 kg
   };
 
   function saveMissionStateToStorage() {
@@ -1120,11 +1644,13 @@ function initMarsDashboard() {
           transportMode: saved.evaConfig.transportMode === 'foot' ? 'foot' : 'rover',
           departureWindow: ['morning', 'afternoon', 'night'].includes(saved.evaConfig.departureWindow)
             ? saved.evaConfig.departureWindow
-            : 'morning'
+            : 'morning',
+          payloadKitKg: Number(saved.evaConfig.payloadKitKg) || 14
         };
         if (evaCrewSelect) evaCrewSelect.value = String(evaConfig.crewSize);
         if (evaModeSelect) evaModeSelect.value = evaConfig.transportMode;
         if (evaWindowSelect) evaWindowSelect.value = evaConfig.departureWindow;
+        if (evaPayloadSelect) evaPayloadSelect.value = String(evaConfig.payloadKitKg);
       }
 
       const targetProgress =
@@ -1272,6 +1798,25 @@ function initMarsDashboard() {
     let cumDist = 0;
     let maxSlope = 4.0;
     const newPathCoords = [];
+    const generatedObstacles = [];
+
+    const customHazardCatalog = [
+      {
+        name: 'HiRISE Detected Boulder Field (>1.6m Angular Basalt)',
+        code: 'OBSTACLE // AUTO-RADAR BOULDER FIELD',
+        reason: 'Automated MRO HiRISE / LiDAR scan detected high-density angular basalt boulders on the direct line. Route auto-deflected around the hazard perimeter to prevent suit boot/rover wheel damage.'
+      },
+      {
+        name: 'Steep MOLA Scarp & Unconsolidated Talus (>24°)',
+        code: 'OBSTACLE // MOLA SLOPE HAZARD',
+        reason: 'Direct segment crosses a local MOLA topographic scarp exceeding safe EVA pitch limits. Route curves along the lower-gradient contour bench.'
+      },
+      {
+        name: 'Aeolian Megaripple & Fine Dust Sinkage Pocket',
+        code: 'OBSTACLE // THEMIS THERMAL DUST TRAP',
+        reason: 'Low thermal inertia pocket detected by THEMIS IR indicating unconsolidated dust ripples. Route detours over firm bedrock regolith.'
+      }
+    ];
 
     activeRouteData.waypoints.forEach((wp, i) => {
       const lat = Number(wp.coords[0]);
@@ -1280,20 +1825,70 @@ function initMarsDashboard() {
       wp.coords = [lat, lng];
       wp.elev = elev;
 
-      if (i > 0) {
+      if (i === 0) {
+        wp.km = 0;
+        newPathCoords.push([lat, lng, elev]);
+      } else {
         const prev = activeRouteData.waypoints[i - 1];
-        const segKm = computeMarsDistanceKm(prev.coords, wp.coords);
-        cumDist += segKm;
-        const dElev = Math.abs(elev - prev.elev);
-        const segMeters = Math.max(segKm * 1000, 1);
-        const localSlope = Math.min(35, ((Math.atan(dElev / segMeters) * 180) / Math.PI) * 2.2 + 3.2);
-        maxSlope = Math.max(maxSlope, localSlope);
+        const pLat = prev.coords[0];
+        const pLng = prev.coords[1];
+        const dLat = lat - pLat;
+        const dLng = lng - pLng;
+        const directKm = computeMarsDistanceKm(prev.coords, wp.coords);
+
+        // Si el segmento tiene longitud suficiente, evaluar obstáculo intermedio y generar desvío automático (Obstacle Avoidance)
+        if (directKm >= 0.08 && generatedObstacles.length < 3) {
+          const midLat = (pLat + lat) / 2;
+          const midLng = (pLng + lng) / 2;
+          const sideSign = i % 2 === 1 ? 1 : -1;
+          // Vector perpendicular para rodear el obstáculo situado en el punto medio directo
+          const perpLat = -dLng * 0.24 * sideSign;
+          const perpLng = dLat * 0.24 * sideSign;
+          const detourLat = Number((midLat + perpLat).toFixed(5));
+          const detourLng = Number((midLng + perpLng).toFixed(5));
+          const detourElev = estimateNumericAltitude(detourLat, detourLng);
+
+          const seg1Km = computeMarsDistanceKm([pLat, pLng], [detourLat, detourLng]);
+          const seg2Km = computeMarsDistanceKm([detourLat, detourLng], [lat, lng]);
+          cumDist += seg1Km + seg2Km;
+
+          const dElev = Math.abs(elev - prev.elev);
+          const segMeters = Math.max((seg1Km + seg2Km) * 1000, 1);
+          const localSlope = Math.min(35, ((Math.atan(dElev / segMeters) * 180) / Math.PI) * 2.2 + 3.2);
+          maxSlope = Math.max(maxSlope, localSlope);
+
+          const tpl = customHazardCatalog[(i - 1) % customHazardCatalog.length];
+          const obsRadius = Math.max(35, Math.min(2800, Math.round(directKm * 1000 * 0.14)));
+
+          generatedObstacles.push({
+            name: tpl.name,
+            code: `${tpl.code} (SEG 0${i})`,
+            coords: [Number(midLat.toFixed(5)), Number(midLng.toFixed(5))],
+            radius: obsRadius,
+            blockedLine: [
+              [pLat, pLng],
+              [lat, lng]
+            ],
+            reason: tpl.reason
+          });
+
+          newPathCoords.push([detourLat, detourLng, detourElev]);
+          newPathCoords.push([lat, lng, elev]);
+        } else {
+          cumDist += directKm;
+          const dElev = Math.abs(elev - prev.elev);
+          const segMeters = Math.max(directKm * 1000, 1);
+          const localSlope = Math.min(35, ((Math.atan(dElev / segMeters) * 180) / Math.PI) * 2.2 + 3.2);
+          maxSlope = Math.max(maxSlope, localSlope);
+          newPathCoords.push([lat, lng, elev]);
+        }
+
+        wp.km = cumDist;
       }
-      wp.km = cumDist;
-      newPathCoords.push([lat, lng, elev]);
     });
 
     activeRouteData.pathCoords = newPathCoords;
+    activeRouteData.obstacles = generatedObstacles;
     activeRouteData.totalDistKm = cumDist;
     activeRouteData.maxSlopeDeg = Number(maxSlope.toFixed(1));
     activeRouteData.slopeStatus =
@@ -1401,9 +1996,97 @@ function initMarsDashboard() {
     };
   }
 
-  // Dibuja la ruta activa y sus waypoints ARRASTRABLES (draggable: true) en el mapa de Leaflet
+  function formatEvaDist(kmVal) {
+    if (activeRouteData && activeRouteData.totalDistKm <= 2.5) {
+      return `${Math.round(kmVal * 1000)} m`;
+    }
+    return `${kmVal.toFixed(1)} km`;
+  }
+
+  function syncEvaCompactUiBadges() {
+    const isFoot = evaConfig.transportMode === 'foot';
+    const unitLabelEl = document.getElementById('progress-unit-label');
+    const unitIconEl = document.getElementById('progress-unit-icon');
+    const summaryBadgeEl = document.getElementById('eva-summary-badge');
+
+    if (unitLabelEl) unitLabelEl.textContent = isFoot ? 'FOOT EVA' : 'ROVER';
+    if (unitIconEl) {
+      unitIconEl.className = isFoot
+        ? 'fa-solid fa-person-walking text-orange'
+        : 'fa-solid fa-truck-monster text-orange';
+    }
+    if (summaryBadgeEl) {
+      summaryBadgeEl.textContent = `${evaConfig.crewSize} PAX • ${isFoot ? 'FOOT EVA' : 'ROVER'}`;
+    }
+
+    const isMarswalkRoute =
+      activeRouteData?.scaleMode === 'marswalk' || currentRouteKey.startsWith('marswalk-');
+    document.querySelectorAll('#scale-mode-switcher .scale-pill-btn').forEach((btn) => {
+      const mode = btn.getAttribute('data-scale-mode');
+      const active = (mode === 'marswalk' && isMarswalkRoute) || (mode === 'regional' && !isMarswalkRoute);
+      btn.classList.toggle('is-active', active);
+    });
+  }
+
+  // Dibuja la ruta activa, las Zonas de Obstáculo / Desvío y sus waypoints ARRASTRABLES en el mapa de Leaflet
   function renderRouteOnMap(flyToRoute = false) {
     dynamicRouteLayerGroup.clearLayers();
+
+    // 1. Dibujar Zonas de Obstáculo / Peligro Local y la línea directa bloqueada (Obstacle Avoidance)
+    if (Array.isArray(activeRouteData.obstacles)) {
+      activeRouteData.obstacles.forEach((obs) => {
+        if (Array.isArray(obs.blockedLine) && obs.blockedLine.length >= 2) {
+          L.polyline(obs.blockedLine, {
+            color: '#ff1744',
+            weight: 2.2,
+            opacity: 0.78,
+            dashArray: '4, 7'
+          })
+            .bindTooltip(`⛔ BLOCKED DIRECT PATH // DETOUR AROUND: ${obs.name}`, {
+              sticky: true,
+              className: 'cyber-leaflet-tooltip'
+            })
+            .addTo(dynamicRouteLayerGroup);
+        }
+
+        const hazardCircle = L.circle(obs.coords, {
+          radius: obs.radius || 300,
+          color: '#ff5252',
+          weight: 2,
+          dashArray: '5, 5',
+          fillColor: '#ff1744',
+          fillOpacity: 0.24
+        }).bindPopup(`
+          <div class="hud-popup-card danger-theme">
+            <div class="hp-kicker"><i class="fa-solid fa-triangle-exclamation"></i> ${obs.code || 'SURFACE OBSTACLE // ROUTE DETOUR'}</div>
+            <h4 class="hp-title">${obs.name}</h4>
+            <p class="hp-desc"><strong>Why Route Detours Here:</strong> ${obs.reason}</p>
+          </div>
+        `);
+
+        const dangerIcon = L.divIcon({
+          className: 'hud-custom-div-icon',
+          html: `
+            <div class="hud-map-pin pin-danger" title="${obs.name}">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <span class="pin-pulse"></span>
+            </div>
+          `,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15]
+        });
+
+        const dangerMarker = L.marker(obs.coords, { icon: dangerIcon })
+          .bindTooltip(
+            `⚠ OBSTACLE AVOIDANCE: ${obs.name} — ${obs.reason}`,
+            { sticky: true, className: 'cyber-leaflet-tooltip' }
+          )
+          .bindPopup(hazardCircle.getPopup());
+
+        dynamicRouteLayerGroup.addLayer(hazardCircle);
+        dynamicRouteLayerGroup.addLayer(dangerMarker);
+      });
+    }
 
     const latLngs = activeRouteData.pathCoords.map((p) => [p[0], p[1]]);
 
@@ -1421,7 +2104,7 @@ function initMarsDashboard() {
         opacity: 0.9,
         dashArray: '10, 8'
       })
-        .bindTooltip(`ACTIVE ROUTE: ${activeRouteData.code} (${activeRouteData.totalDistKm.toFixed(1)} km)`, {
+        .bindTooltip(`ACTIVE ROUTE (OBSTACLE-SAFE): ${activeRouteData.code} (${formatEvaDist(activeRouteData.totalDistKm)})`, {
           sticky: true,
           className: 'cyber-leaflet-tooltip'
         })
@@ -1432,6 +2115,24 @@ function initMarsDashboard() {
         weight: 4,
         opacity: 0.95
       }).addTo(dynamicRouteLayerGroup);
+
+      // Anillo dinámico de Límite de Retorno Seguro (Walkback Safety Radius) centrado en el punto de partida / esclusa
+      const startCoord = activeRouteData.waypoints[0]?.coords || latLngs[0];
+      const initialRadiusM = Math.max(120, Math.round(activeRouteData.totalDistKm * 1000 * 0.85));
+      walkbackSafetyCircle = L.circle(startCoord, {
+        radius: initialRadiusM,
+        color: '#00e5ff',
+        weight: 1.5,
+        dashArray: '8, 6',
+        fillColor: '#00e5ff',
+        fillOpacity: 0.04,
+        interactive: true
+      })
+        .bindTooltip('🛡 WALKBACK SAFETY RADIUS: Max safe return range to Airlock/Rover with current Suit O₂ reserve', {
+          sticky: true,
+          className: 'cyber-leaflet-tooltip cyan'
+        })
+        .addTo(dynamicRouteLayerGroup);
     }
 
     const canDeleteWp = activeRouteData.waypoints.length > 2;
@@ -1441,6 +2142,11 @@ function initMarsDashboard() {
       const isEnd = index === activeRouteData.waypoints.length - 1 && activeRouteData.waypoints.length > 1;
       const markerType = isStart ? 'start' : isEnd ? 'base' : 'waypoint';
       const iconClass = isStart ? 'fa-rocket' : isEnd ? 'fa-campground' : 'fa-flask';
+
+      const sciObj =
+        wp.scienceObjective ||
+        'Collect regolith & bedrock samples to verify local mineralogy and astrobiological potential';
+      const sciTool = wp.scienceTool || 'Rotary Core Drill + Raman Spectrometer';
 
       const wpMarker = L.marker(wp.coords, {
         draggable: true,
@@ -1461,8 +2167,12 @@ function initMarsDashboard() {
           <div class="hp-kicker">WAYPOINT 0${index + 1} // DRAGGABLE ON MAP</div>
           <h4 class="hp-title">${wp.name}</h4>
           <p class="hp-desc">${wp.sub}</p>
+          <div class="hp-science-box">
+            <div class="hp-sci-tool"><i class="fa-solid fa-microscope"></i> <strong>TOOL:</strong> ${sciTool}</div>
+            <div class="hp-sci-obj"><strong>OBJECTIVE:</strong> ${sciObj}</div>
+          </div>
           <div class="hp-meta">
-            <span>KM: ${wp.km.toFixed(1)}</span>
+            <span>DIST: ${formatEvaDist(wp.km)}</span>
             <span>ALT: ${wp.elev.toLocaleString('en-US')}m</span>
           </div>
           <button type="button" class="hp-action-btn" data-open-360="wp-${index}">
@@ -1500,6 +2210,10 @@ function initMarsDashboard() {
     });
 
     const roverPos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
+    const isFootUnit = evaConfig.transportMode === 'foot';
+    const unitTag = isFootUnit ? 'FOOT EVA' : 'ROVER';
+    const unitIcon = isFootUnit ? 'fa-person-walking' : 'fa-truck-monster';
+
     liveRoverMarker = L.marker([roverPos.lat, roverPos.lng], {
       zIndexOffset: 1000,
       icon: L.divIcon({
@@ -1507,8 +2221,8 @@ function initMarsDashboard() {
         html: `
           <div class="hud-site-marker marker-rover">
             <div class="hsm-ring"></div>
-            <div class="hsm-core"><i class="fa-solid fa-truck-monster"></i></div>
-            <span class="hsm-label">ROVER (${roverProgress}%)</span>
+            <div class="hsm-core"><i class="fa-solid ${unitIcon}"></i></div>
+            <span class="hsm-label">${unitTag} (${roverProgress}%)</span>
           </div>
         `,
         iconSize: [42, 42],
@@ -1517,10 +2231,10 @@ function initMarsDashboard() {
     }).bindPopup(`
       <div class="hud-popup-card cyan-theme">
         <div class="hp-kicker">LIVE MOBILE UNIT TELEMETRY</div>
-        <h4 class="hp-title">EVA Unit M.A.R.T.E 01</h4>
+        <h4 class="hp-title">EVA Unit M.A.R.T.E 01 (${unitTag})</h4>
         <p class="hp-desc">Current progress: ${roverProgress}% of route ${activeRouteData.code}. Crew: ${evaConfig.crewSize} astronauts.</p>
         <button type="button" class="hp-action-btn" data-open-360="rover-live">
-          <i class="fa-solid fa-vr-cardboard"></i> OPEN ROVER 360° CAMERA
+          <i class="fa-solid fa-vr-cardboard"></i> OPEN 360° VISOR CAMERA
         </button>
       </div>
     `);
@@ -1545,7 +2259,10 @@ function initMarsDashboard() {
   // Renderiza la lista de Waypoints con botón individual de borrado (×)
   function renderWaypointsTimeline() {
     if (!waypointsListEl) return;
-    const traveledKm = (roverProgress / 100) * activeRouteData.totalDistKm;
+    const totalDist = Math.max(0.1, activeRouteData.totalDistKm);
+    const traveledKm = (roverProgress / 100) * totalDist;
+    const doneThresholdKm = Math.max(0.03, totalDist * 0.03);
+    const activeThresholdKm = Math.max(0.08, totalDist * 0.12);
     const canDelete = activeRouteData.waypoints.length > 2;
 
     waypointsListEl.innerHTML = '';
@@ -1556,15 +2273,20 @@ function initMarsDashboard() {
       let badgeClass = isLast ? 'target' : 'next';
       let badgeText = isLast ? 'DESTINATION' : 'PENDING';
 
-      if (traveledKm >= wp.km + 0.4 || (roverProgress === 100 && isLast)) {
+      if (traveledKm >= wp.km + doneThresholdKm || (roverProgress === 100 && isLast)) {
         nodeStatus = 'status-completed';
         badgeClass = 'done';
         badgeText = 'COMPLETED';
-      } else if (Math.abs(traveledKm - wp.km) <= 2.2) {
+      } else if (Math.abs(traveledKm - wp.km) <= activeThresholdKm) {
         nodeStatus = 'status-active';
         badgeClass = 'current';
         badgeText = 'CURRENT POSITION';
       }
+
+      const sciObj =
+        wp.scienceObjective ||
+        'Collect regolith & bedrock core samples for astrobiological and geochemical assay';
+      const sciTool = wp.scienceTool || 'Rotary Core Drill + Raman Spec';
 
       const li = document.createElement('li');
       li.className = `waypoint-node ${nodeStatus}`;
@@ -1585,7 +2307,11 @@ function initMarsDashboard() {
               }
             </span>
           </div>
-          <span class="wp-sub">${wp.sub} &bull; KM ${wp.km.toFixed(1)} (${wp.elev}m)</span>
+          <span class="wp-sub">${wp.sub} &bull; ${formatEvaDist(wp.km)} (${wp.elev}m)</span>
+          <div class="wp-science-chip">
+            <span class="wp-tool-tag"><i class="fa-solid fa-microscope"></i> ${sciTool}</span>
+            <span class="wp-obj-text">${sciObj}</span>
+          </div>
         </div>
       `;
 
@@ -1605,7 +2331,7 @@ function initMarsDashboard() {
             ? Math.round((wp.km / activeRouteData.totalDistKm) * 100)
             : 0;
         updateRoverProgress(targetPct);
-        marsMap.flyTo(wp.coords, 6, { duration: 0.85 });
+        marsMap.flyTo(wp.coords, activeRouteData.zoom || 8, { duration: 0.85 });
         if (
           wp.narration &&
           typeof MissionControlVoice !== 'undefined' &&
@@ -1680,10 +2406,11 @@ function initMarsDashboard() {
       elevRoverDot.setAttribute('cy', roverY);
     }
     if (elevRoverLabel) {
-      const traveledKm = ((roverProgress / 100) * activeRouteData.totalDistKm).toFixed(1);
+      const traveledKmVal = (roverProgress / 100) * activeRouteData.totalDistKm;
+      const unitPrefix = evaConfig.transportMode === 'foot' ? 'FOOT EVA' : 'ROVER';
       const labelX = roverX > 390 ? roverX - 185 : roverX + 8;
       elevRoverLabel.setAttribute('x', Math.max(8, labelX));
-      elevRoverLabel.textContent = `CURRENT ROVER (KM ${traveledKm} | ${roverPos.elev.toLocaleString('en-US')}m)`;
+      elevRoverLabel.textContent = `${unitPrefix} (${formatEvaDist(traveledKmVal)} | ${roverPos.elev.toLocaleString('en-US')}m)`;
     }
   }
 
@@ -1703,6 +2430,27 @@ function initMarsDashboard() {
     const modeO2Mult = isFootEva ? 1.55 : 1.0;
     const modeBattMult = isFootEva ? 0.65 : 1.0; // PLSS de traje vs tracción de Rover
     const speedBase = isFootEva ? 1.45 : activeRouteData.avgSpeedKmh;
+
+    // 0. Impacto del Equipo Científico y Muestras Recolectadas en Gravedad Marciana (0.38g) sobre Movilidad
+    const doneStopThresholdKm = Math.max(0.02, totalKm * 0.02);
+    const completedStops = Math.max(
+      1,
+      activeRouteData.waypoints.filter((wp) => traveledKm >= wp.km - doneStopThresholdKm).length
+    );
+    const baseKitKg = Number(evaConfig.payloadKitKg || evaPayloadSelect?.value || 14);
+    const samplesMassKg = Number((completedStops * 1.5).toFixed(1)); // 1.5 kg por parada científica (núcleos + tubos de titanio)
+    const totalPayloadEarthKg = Number((baseKitKg + samplesMassKg).toFixed(1));
+    const marsEffectiveWeightKg = Number((totalPayloadEarthKg * 0.38).toFixed(1)); // Gravedad superficial de Marte = 0.38g
+
+    // Penalización de velocidad y carga metabólica/O₂ por transportar equipo + muestras en traje espacial
+    const payloadSpeedMult = isFootEva
+      ? Math.max(0.76, 1 - totalPayloadEarthKg * 0.0042)
+      : Math.max(0.92, 1 - totalPayloadEarthKg * 0.0012);
+    const payloadO2Mult = isFootEva
+      ? 1 + totalPayloadEarthKg * 0.0052
+      : 1 + totalPayloadEarthKg * 0.0014;
+    const speedLossPct = Math.round((1 - payloadSpeedMult) * 100);
+    const o2LoadExtraPct = Math.round((payloadO2Mult - 1) * 100);
 
     const departureSolarMult =
       evaConfig.departureWindow === 'morning'
@@ -1724,19 +2472,28 @@ function initMarsDashboard() {
     const isruBattBonusPct = env.reachedIsruDepot ? 8 : 0;
 
     const effectiveSpeedKmh = Math.max(
-      0.8,
-      speedBase * (env.crossesStormCore ? 0.82 : 1.0) * (env.crossesHazardGeol ? 0.88 : 1.0)
+      0.7,
+      speedBase *
+        payloadSpeedMult *
+        (env.crossesStormCore ? 0.82 : 1.0) *
+        (env.crossesHazardGeol ? 0.88 : 1.0)
     );
 
     // 1. Oxígeno Consumido (%)
     const slopeFactor = 1 + Math.max(0, activeRouteData.maxSlopeDeg - 10) * (isFootEva ? 0.042 : 0.025);
     const rawO2Consumed =
       4 +
-      traveledKm * activeRouteData.baseO2RatePerKm * slopeFactor * crewFactor * modeO2Mult * geolTractionPenalty -
+      traveledKm *
+        activeRouteData.baseO2RatePerKm *
+        slopeFactor *
+        crewFactor *
+        modeO2Mult *
+        payloadO2Mult *
+        geolTractionPenalty -
       isruO2BonusPct;
     const o2ConsumedPct = Math.max(2, Math.min(99, Math.round(rawO2Consumed)));
     const o2ReservePct = Math.max(1, 100 - o2ConsumedPct);
-    const o2KgRate = (0.42 * evaConfig.crewSize * slopeFactor * modeO2Mult).toFixed(2);
+    const o2KgRate = (0.42 * evaConfig.crewSize * slopeFactor * modeO2Mult * payloadO2Mult).toFixed(2);
 
     if (metricOxygen) metricOxygen.textContent = o2ConsumedPct;
     if (metricOxygenReserve) {
@@ -1776,8 +2533,8 @@ function initMarsDashboard() {
 
     // 3. Distance (km)
     if (metricDistance) metricDistance.textContent = totalKm.toFixed(1);
-    if (metricDistanceTraveled) metricDistanceTraveled.textContent = `TRAVELED: ${traveledKm.toFixed(1)} KM`;
-    if (metricDistanceRemaining) metricDistanceRemaining.textContent = `Remaining: ${remainingKm.toFixed(1)} km`;
+    if (metricDistanceTraveled) metricDistanceTraveled.textContent = `TRAVELED: ${formatEvaDist(traveledKm).toUpperCase()}`;
+    if (metricDistanceRemaining) metricDistanceRemaining.textContent = `Remaining: ${formatEvaDist(remainingKm)}`;
     if (barDistance) barDistance.style.width = `${roverProgress}%`;
 
     // 4. Estimated Time
@@ -1823,13 +2580,14 @@ function initMarsDashboard() {
         : 1.15; // Midday / Peak solar exposure
 
     // Particle spike if crossing storm core or active SPE event
-    const speSpike = env.crossesStormCore ? 0.16 : env.crossesStormOuter ? 0.06 : 0;
+    const speStormAdd = isSolarStormSpeActive ? 0.42 : 0;
+    const speSpike = (env.crossesStormCore ? 0.16 : env.crossesStormOuter ? 0.06 : 0) + speStormAdd;
 
     // Effective absorbed crew rate (mSv/h) and accumulated dose (mSv)
     const radiationRateMsvH = Number(((baseGcrRate * solarWindowMult + speSpike) * shieldingMult).toFixed(3));
     const accumulatedDoseMsv = Number((radiationRateMsvH * elapsedHours).toFixed(2));
     const projectedTotalDoseMsv = Number((accumulatedDoseMsv + radiationRateMsvH * remHours).toFixed(2));
-    const isRadiationCritical = radiationRateMsvH >= 0.08 || projectedTotalDoseMsv >= 2.5;
+    const isRadiationCritical = isSolarStormSpeActive || radiationRateMsvH >= 0.08 || projectedTotalDoseMsv >= 2.5;
 
     // Update the right-hand weather panel radiation reading
     const metricRadEl =
@@ -1838,6 +2596,171 @@ function initMarsDashboard() {
       document.querySelector('[data-metric="radiation"]');
     if (metricRadEl) {
       metricRadEl.textContent = `${radiationRateMsvH.toFixed(2)} mSv/h`;
+    }
+
+    // 4.6. Space Weather (SPE / Proton Flux / KP-Mars) & Nearest Radiation Shelter Distance
+    const livePos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
+    const regionKey = REGIONAL_LAYERS_DB[currentRouteKey] ? currentRouteKey : 'jezero-alpha';
+    const regionData =
+      currentRouteKey === 'custom' && !REGIONAL_LAYERS_DB[currentRouteKey]
+        ? buildProceduralSectorLayers(livePos.lat, livePos.lng)
+        : REGIONAL_LAYERS_DB[regionKey];
+
+    let nearestShelterDistKm = 0.24;
+    let nearestShelterName = 'Pressurized Rover Airlock';
+    if (Array.isArray(regionData?.shelters) && regionData.shelters.length > 0) {
+      let minD = Infinity;
+      regionData.shelters.forEach((sh) => {
+        const d = computeMarsDistanceKm([livePos.lat, livePos.lng], sh.coords);
+        if (d < minD) {
+          minD = d;
+          nearestShelterName = sh.name;
+        }
+      });
+      if (Number.isFinite(minD)) nearestShelterDistKm = minD;
+    }
+    const shelterDistFormatted =
+      nearestShelterDistKm < 1.5
+        ? `${Math.max(15, Math.round(nearestShelterDistKm * 1000))} m`
+        : `${nearestShelterDistKm.toFixed(1)} km`;
+
+    const wcSpeBadgeEl = document.getElementById('wc-spe-badge');
+    const wcProtonValEl = document.getElementById('wc-proton-val');
+    const wcKpValEl = document.getElementById('wc-kp-val');
+    const wcShelterDistEl = document.getElementById('wc-shelter-dist');
+
+    const speStateAlert = isSolarStormSpeActive || env.crossesStormCore;
+    if (wcSpeBadgeEl) {
+      wcSpeBadgeEl.textContent = isSolarStormSpeActive
+        ? '☢ M4.2 SOLAR FLARE (SPE ALERT)'
+        : env.crossesStormCore
+        ? '⚠ ELEVATED SEP FLUX'
+        : 'NOMINAL (GCR BASELINE)';
+      wcSpeBadgeEl.classList.toggle('is-alert', speStateAlert);
+    }
+    if (wcProtonValEl) {
+      wcProtonValEl.textContent = isSolarStormSpeActive
+        ? '485 PFU (>10 MeV)'
+        : env.crossesStormCore
+        ? '42.0 PFU (>10 MeV)'
+        : '1.4 PFU (>10 MeV)';
+    }
+    if (wcKpValEl) {
+      wcKpValEl.textContent = isSolarStormSpeActive
+        ? 'KP 7.4 (SOLAR STORM)'
+        : env.crossesStormCore
+        ? 'KP 4.6 (ACTIVE)'
+        : 'KP 1.8 (QUIET)';
+    }
+    if (wcShelterDistEl) {
+      wcShelterDistEl.textContent = `${shelterDistFormatted} (${nearestShelterName.split(' ')[0]})`;
+    }
+
+    // 4.7. Spacesuit Helmet Visor HUD Live Biometrics & Science Target Readout (360° Mode)
+    const hvO2ValEl = document.getElementById('hv-o2-val');
+    const hvO2SubEl = document.getElementById('hv-o2-sub');
+    const hvHrValEl = document.getElementById('hv-hr-val');
+    const hvMetabolicSubEl = document.getElementById('hv-metabolic-sub');
+    const hvSpaceWeatherTagEl = document.getElementById('hv-space-weather-tag');
+    const hvRadValEl = document.getElementById('hv-rad-val');
+    const hvShelterValEl = document.getElementById('hv-shelter-val');
+    const hvTargetNameEl = document.getElementById('hv-target-name');
+    const hvTargetToolEl = document.getElementById('hv-target-tool');
+
+    const heartRateBpm = Math.min(
+      166,
+      Math.round(
+        (isFootEva ? 94 : 74) +
+          Math.max(0, activeRouteData.maxSlopeDeg - 6) * (isFootEva ? 1.8 : 0.7) +
+          Math.round(totalPayloadEarthKg * (isFootEva ? 0.55 : 0.15)) +
+          (roverProgress > 60 ? 6 : 0) +
+          (speStateAlert ? 12 : 0)
+      )
+    );
+    const metabolicKcalH = Math.round(heartRateBpm * (isFootEva ? 3.25 : 2.1) * payloadO2Mult);
+
+    // 4.8. Walkback Safety Limit (Point of No Return) & Payload (0.38g) Strip
+    const returnO2RatePerKm = Math.max(
+      0.65,
+      activeRouteData.baseO2RatePerKm * crewFactor * modeO2Mult * payloadO2Mult * 0.85
+    );
+    const o2NeededForWalkbackPct = Math.min(99, Math.ceil(traveledKm * returnO2RatePerKm));
+    const maxSafeWalkbackKm = Math.max(0.15, (o2ReservePct - 8) / returnO2RatePerKm);
+    const isWalkbackSafe = o2ReservePct >= o2NeededForWalkbackPct + 8 && batteryRemainingPct >= 15;
+
+    const pwSamplesBadgeEl = document.getElementById('pw-samples-badge');
+    const pwMassValEl = document.getElementById('pw-mass-val');
+    const pwMobilityImpactEl = document.getElementById('pw-mobility-impact');
+    const pwWalkbackBadgeEl = document.getElementById('pw-walkback-badge');
+    const pwWalkbackDetailEl = document.getElementById('pw-walkback-detail');
+
+    const totalStopsCount = activeRouteData.waypoints.length;
+    if (pwSamplesBadgeEl) {
+      pwSamplesBadgeEl.textContent = `${completedStops}/${totalStopsCount} CORES (+${samplesMassKg.toFixed(1)} KG)`;
+    }
+    if (pwMassValEl) {
+      pwMassValEl.innerHTML = `${baseKitKg.toFixed(1)} kg Kit + ${samplesMassKg.toFixed(1)} kg Samples = ${totalPayloadEarthKg.toFixed(1)} kg &rarr; <strong>${marsEffectiveWeightKg.toFixed(1)} kg @ 0.38g</strong>`;
+    }
+    if (pwMobilityImpactEl) {
+      pwMobilityImpactEl.textContent = `Mobility Impact: Speed -${speedLossPct}% (${effectiveSpeedKmh.toFixed(1)} km/h) • O₂ Load +${o2LoadExtraPct}% • ${metabolicKcalH} kcal/h`;
+    }
+    if (pwWalkbackBadgeEl) {
+      pwWalkbackBadgeEl.textContent = isWalkbackSafe
+        ? `✓ SAFE RETURN (+${Math.max(0, o2ReservePct - o2NeededForWalkbackPct)}% O₂)`
+        : '⚠ WALKBACK LIMIT CRITICAL';
+      pwWalkbackBadgeEl.classList.toggle('is-safe', isWalkbackSafe);
+      pwWalkbackBadgeEl.classList.toggle('is-warning', !isWalkbackSafe);
+    }
+    if (pwWalkbackDetailEl) {
+      pwWalkbackDetailEl.textContent = `Return to Airlock: ${formatEvaDist(traveledKm)} (Needs ${o2NeededForWalkbackPct}% O₂ • Reserve: ${o2ReservePct}%)`;
+    }
+
+    if (walkbackSafetyCircle) {
+      const startCoord = activeRouteData.waypoints[0]?.coords;
+      if (startCoord) walkbackSafetyCircle.setLatLng(startCoord);
+      const safeRadiusMeters = Math.max(
+        80,
+        Math.min(35000, Math.round(maxSafeWalkbackKm * 1000))
+      );
+      walkbackSafetyCircle.setRadius(safeRadiusMeters);
+      walkbackSafetyCircle.setStyle({
+        color: isWalkbackSafe ? '#00e5ff' : '#ff5252',
+        fillColor: isWalkbackSafe ? '#00e5ff' : '#ff1744'
+      });
+    }
+
+    // Find next upcoming science waypoint along the route
+    const nextWp =
+      activeRouteData.waypoints.find((wp) => wp.km > traveledKm + 0.02) ||
+      activeRouteData.waypoints[activeRouteData.waypoints.length - 1];
+    const distToNextWpKm = Math.max(0, (nextWp?.km || totalKm) - traveledKm);
+    const nextWpDistLabel = formatEvaDist(distToNextWpKm);
+
+    if (hvO2ValEl) hvO2ValEl.textContent = `${o2ReservePct}% (4.3 PSI)`;
+    if (hvO2SubEl) {
+      hvO2SubEl.textContent = `Flow: ${o2KgRate} kg/h • Walkback: ${isWalkbackSafe ? 'SAFE' : 'LIMIT!'}`;
+    }
+    if (hvHrValEl) hvHrValEl.textContent = `${heartRateBpm} BPM`;
+    if (hvMetabolicSubEl) {
+      hvMetabolicSubEl.textContent = `${metabolicKcalH} kcal/h • Payload: ${marsEffectiveWeightKg.toFixed(1)}kg (0.38g)`;
+    }
+    if (hvSpaceWeatherTagEl) {
+      hvSpaceWeatherTagEl.innerHTML = isSolarStormSpeActive
+        ? `<i class="fa-solid fa-radiation"></i> ☢ SOLAR STORM SPE ALERT: M4.2 FLARE (485 PFU) // SEEK SHELTER (${shelterDistFormatted})`
+        : `<i class="fa-solid fa-satellite-dish"></i> SPACE WEATHER: GCR NOMINAL (KP 1.8 • 1.4 PFU) // SUIT SHIELDING: ACTIVE`;
+      hvSpaceWeatherTagEl.classList.toggle('is-spe-alert', isSolarStormSpeActive);
+    }
+    if (hvRadValEl) {
+      hvRadValEl.textContent = `${radiationRateMsvH.toFixed(3)} mSv/h (${isSolarStormSpeActive ? 'SPE STORM' : 'GCR + UV'})`;
+    }
+    if (hvShelterValEl) {
+      hvShelterValEl.textContent = `Shelter Radius: ${shelterDistFormatted} (${nearestShelterName.split(' ').slice(0, 2).join(' ')})`;
+    }
+    if (hvTargetNameEl && nextWp) {
+      hvTargetNameEl.textContent = `${nextWp.name} (${nextWpDistLabel})`;
+    }
+    if (hvTargetToolEl && nextWp) {
+      hvTargetToolEl.textContent = `Tool: ${nextWp.scienceTool || 'Rotary Core Drill + Raman Spec'}`;
     }
 
     // 5. Intelligent Dynamic Directive based on NASA Layer Intersections
@@ -1924,7 +2847,8 @@ function initMarsDashboard() {
       liveRoverMarker.setLatLng([pos.lat, pos.lng]);
       const labelSpan = liveRoverMarker.getElement()?.querySelector('.hsm-label');
       if (labelSpan) {
-        labelSpan.textContent = `ROVER (${roverProgress}%)`;
+        const unitTag = evaConfig.transportMode === 'foot' ? 'FOOT EVA' : 'ROVER';
+        labelSpan.textContent = `${unitTag} (${roverProgress}%)`;
       }
     }
 
@@ -1966,6 +2890,14 @@ function initMarsDashboard() {
 
     activeRouteData = structuredClone(ROUTES_CATALOG[routeKey] || ROUTES_CATALOG['jezero-alpha']);
 
+    // Sincronizar automáticamente el modo de transporte (Foot EVA para Marswalks, Rover para travesías regionales)
+    const recommendedMode =
+      activeRouteData.defaultTransportMode ||
+      (activeRouteData.scaleMode === 'marswalk' || routeKey.startsWith('marswalk-') ? 'foot' : 'rover');
+    evaConfig.transportMode = recommendedMode;
+    if (evaModeSelect) evaModeSelect.value = recommendedMode;
+    syncEvaCompactUiBadges();
+
     if (routeDifficultyEl) routeDifficultyEl.textContent = activeRouteData.difficulty;
     if (routeMaxSlopeEl) {
       routeMaxSlopeEl.textContent = `${activeRouteData.maxSlopeDeg.toFixed(1)}° (${activeRouteData.slopeStatus})`;
@@ -1995,20 +2927,33 @@ function initMarsDashboard() {
     });
   }
 
+  // Conmutador rápido de escala: MARSWALK (FOOT) vs. REGIONAL ROVER
+  document.querySelectorAll('#scale-mode-switcher .scale-pill-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.getAttribute('data-scale-mode');
+      const targetRoute = mode === 'marswalk' ? 'marswalk-boxwork' : 'jezero-alpha';
+      if (routeSelector) routeSelector.value = targetRoute;
+      loadRoute(targetRoute, true);
+    });
+  });
+
   // Eventos de los Parámetros Configurables de Misión EVA
   const onEvaConfigChange = () => {
     evaConfig = {
       crewSize: Number(evaCrewSelect?.value || 2),
       transportMode: evaModeSelect?.value || 'rover',
-      departureWindow: evaWindowSelect?.value || 'morning'
+      departureWindow: evaWindowSelect?.value || 'morning',
+      payloadKitKg: Number(evaPayloadSelect?.value || 14)
     };
-    updateSurvivalTelemetry();
-    saveMissionStateToStorage();
+    syncEvaCompactUiBadges();
+    renderRouteOnMap(false);
+    updateRoverProgress(roverProgress);
     if (typeof playHudTone === 'function') playHudTone(660, 0.05, 'sine');
   };
   evaCrewSelect?.addEventListener('change', onEvaConfigChange);
   evaModeSelect?.addEventListener('change', onEvaConfigChange);
   evaWindowSelect?.addEventListener('change', onEvaConfigChange);
+  evaPayloadSelect?.addEventListener('change', onEvaConfigChange);
 
   if (roverSlider) {
     roverSlider.addEventListener('input', (e) => {
@@ -2160,6 +3105,8 @@ function initMarsDashboard() {
           {
             name: 'EVA Starting Point',
             sub: `LAT ${startPt[0].toFixed(3)}° LON ${startPt[1].toFixed(3)}°`,
+            scienceObjective: 'Establish baseline environmental & radiation telemetry before custom traverse',
+            scienceTool: 'Suit RAD Dosimeter + Portable XRF',
             km: 0.0,
             coords: [startPt[0], startPt[1]],
             elev: startPt[2]
@@ -2172,6 +3119,8 @@ function initMarsDashboard() {
     activeRouteData.waypoints.push({
       name: `Tactical EVA Point ${String(wpNumber).padStart(2, '0')}`,
       sub: `LAT ${lat.toFixed(3)}° LON ${lng.toFixed(3)}°`,
+      scienceObjective: 'Extract regolith & bedrock core sample to assay hydration and mineral veins',
+      scienceTool: 'Rotary Core Drill + Raman Spectrometer',
       km: 0,
       coords: [lat, lng],
       elev
@@ -2266,7 +3215,7 @@ function initMarsDashboard() {
   if (btnCenterRover) {
     btnCenterRover.addEventListener('click', () => {
       if (liveRoverMarker) {
-        marsMap.flyTo(liveRoverMarker.getLatLng(), 6, { duration: 1.0 });
+        marsMap.flyTo(liveRoverMarker.getLatLng(), activeRouteData.zoom || 8, { duration: 1.0 });
         setTimeout(() => liveRoverMarker.openPopup(), 1050);
       } else {
         marsMap.flyTo(JEZERO_CENTER, DEFAULT_ZOOM, { duration: 1.0 });
@@ -2736,6 +3685,17 @@ function initMarsDashboard() {
           desc: 'Hematite-rich outcrops on Vera Rubin Ridge and bright gypsum veins formed by hydrothermal fluid circulation.',
           dist: 'DIST: 4.2 km',
           comp: 'Fe₂O₃ / CaSO₄·2H₂O'
+        },
+        {
+          pitch: -5,
+          yaw: -26,
+          kind: 'science',
+          icon: 'fa-microscope',
+          label: 'Boxwork Formations (Curiosity 2025)',
+          kicker: 'ASTROBIOLOGY TARGET // CURIOSITY 2025 DISCOVERY',
+          desc: 'Polygonal network of mineralized fracture ridges cemented by warm ancient groundwater on Mount Sharp—prime target for rotary core drilling and Raman biosignature scans.',
+          dist: 'DIST: 18.5 m',
+          comp: 'CaSO₄ Veins / Mg-Sulfate Matrix'
         }
       ]
     },
@@ -2809,7 +3769,7 @@ function initMarsDashboard() {
   const panoCanvasCache = {};
   const realPanoCanvasCache = {};
   let currentStationId = 'scene-kodiak';
-  let isAutoRotating = true;
+  let isAutoRotating = false;
   let render360Mode = 'real'; // 'real' (VISTA REAL) | 'sim2d' (VISTA 2D) — sin superposición
   let needs360Redraw = true;
 
@@ -2821,7 +3781,6 @@ function initMarsDashboard() {
   const btnReopenInspector = document.getElementById('btn-sv-reopen-inspector');
   const btn360ZoomIn = document.getElementById('btn-360-zoom-in');
   const btn360ZoomOut = document.getElementById('btn-360-zoom-out');
-  const btn360Fit = document.getElementById('btn-360-fit');
   const btn360ResetCam = document.getElementById('btn-360-reset-cam');
   const svOverviewCanvas = document.getElementById('sv-overview-canvas');
   let svOverviewCtx = svOverviewCanvas ? svOverviewCanvas.getContext('2d') : null;
@@ -4275,14 +5234,6 @@ function initMarsDashboard() {
       needs360Redraw = true;
     });
   }
-  if (btn360Fit) {
-    btn360Fit.addEventListener('click', () => {
-      targetFov = 125;
-      targetPitch = 0;
-      needs360Redraw = true;
-      if (typeof playHudTone === 'function') playHudTone(720, 0.06, 'sine');
-    });
-  }
   if (btn360ResetCam) {
     btn360ResetCam.addEventListener('click', () => {
       const st = STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
@@ -4463,7 +5414,7 @@ function initMarsDashboard() {
     lastKnownHfov = hfovDeg;
 
     const pos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
-    const coneRadiusKm = 6.5;
+    const coneRadiusKm = activeRouteData.totalDistKm <= 2.5 ? 0.18 : 6.5;
     const halfFov = Math.max(20, Math.min(65, hfovDeg / 2));
 
     const pts = [[pos.lat, pos.lng]];
@@ -4496,8 +5447,10 @@ function initMarsDashboard() {
     if (isInternalStationSync || streetContainer.classList.contains('is-hidden')) return;
 
     let targetScene = null;
-    if (currentRouteKey === 'gale-sharp') {
+    if (currentRouteKey === 'gale-sharp' || currentRouteKey === 'marswalk-boxwork') {
       targetScene = 'scene-gale';
+    } else if (currentRouteKey === 'marswalk-kodiak') {
+      targetScene = 'scene-kodiak';
     } else if (currentRouteKey === 'valles-marineris') {
       targetScene = 'scene-valles';
     } else {
@@ -4875,6 +5828,40 @@ function initMarsDashboard() {
   // 12. DYNAMIC WEATHER BY PLANETARY REGION (STAGE 5)
   // ==========================================================================
   const REGIONAL_WEATHER_DATA = {
+    'marswalk-boxwork': {
+      kicker: 'REMS-EVA SUIT TELEMETRY // HYPERLOCAL REPORT',
+      title: 'WEATHER AT BOXWORK RIDGE',
+      sol: 'SOL 4412',
+      temp: '-52°C',
+      max: '-8°C',
+      min: '-78°C',
+      wind: '16.2 <small>km/h</small>',
+      windDir: 'Direction: NNW (342°)',
+      press: '838 <small>Pa</small>',
+      pressSub: 'Mount Sharp Foothills',
+      tau: '&tau; 0.54',
+      uv: '0.22 <small>mSv/h</small>',
+      alertTitle: 'SAFE FOOT EVA WINDOW',
+      alertDesc:
+        'Low atmospheric opacity (τ 0.54) and calm 16.2 km/h slope breeze. Optimal conditions for 1.2 km Mount Sharp Boxwork Marswalk.'
+    },
+    'marswalk-kodiak': {
+      kicker: 'MEDA-EVA SUIT TELEMETRY // HYPERLOCAL REPORT',
+      title: 'WEATHER AT KODIAK BENCH',
+      sol: 'SOL 1420',
+      temp: '-60°C',
+      max: '-17°C',
+      min: '-83°C',
+      wind: '19.0 <small>km/h</small>',
+      windDir: 'Direction: ENE (64°)',
+      press: '721 <small>Pa</small>',
+      pressSub: 'Southern Delta Bench',
+      tau: '&tau; 0.62',
+      uv: '0.23 <small>mSv/h</small>',
+      alertTitle: 'LOCAL THERMAL VORTEX 220M SE',
+      alertDesc:
+        'Minor dust devil track passing 220m SE of Delta Habitat airlock. Foot EVA corridor along Kodiak foreset beds remains clear.'
+    },
     'jezero-alpha': {
       kicker: 'MEDA STATION // METEOROLOGICAL REPORT',
       title: 'WEATHER AT JEZERO CRATER',
@@ -5082,7 +6069,7 @@ function initMarsDashboard() {
       routeKey: 'gale-sharp',
       stationId: 'scene-gale',
       summary:
-        'Operating on Mars since August 6, 2012. Curiosity has climbed over 800 vertical meters up the foothills of Mount Sharp (Aeolis Mons), confirming that the ancient Gale Crater lake held pH-neutral liquid water and all key chemical ingredients for life (C, H, N, O, P, S).',
+        'Operating on Mars since August 6, 2012. Curiosity has climbed over 800 vertical meters up the foothills of Mount Sharp (Aeolis Mons), confirming ancient habitable lakes and, in 2025, exploring the polygonal Boxwork Formations—mineralized fracture ridges cemented by warm subsurface groundwater.',
       specs: [
         { label: 'LANDING SITE', val: 'Bradbury Landing (-4.58°S)' },
         { label: 'BASE ALTITUDE', val: '-4,501 meters (MOLA)' },
@@ -5244,7 +6231,9 @@ function initMarsDashboard() {
         order: idx + 1,
         name: wp.name,
         sub: wp.sub || '',
-        distanceKm: Number(wp.km.toFixed(1)),
+        scienceObjective: wp.scienceObjective || 'Collect regolith & bedrock core samples for geochemical assay',
+        scienceTool: wp.scienceTool || 'Rotary Core Drill + Raman Spectrometer',
+        distanceKm: Number(wp.km.toFixed(2)),
         elevationMeters: wp.elev,
         coords: wp.coords
       }))
@@ -5298,6 +6287,8 @@ function initMarsDashboard() {
           waypoints: parsed.waypoints.map((w, i) => ({
             name: w.name || `EVA Waypoint 0${i + 1}`,
             sub: w.sub || `LAT ${Number(w.coords[0]).toFixed(3)}° LON ${Number(w.coords[1]).toFixed(3)}°`,
+            scienceObjective: w.scienceObjective || 'Collect regolith & bedrock core samples for geochemical assay',
+            scienceTool: w.scienceTool || 'Rotary Core Drill + Raman Spectrometer',
             km: Number(w.distanceKm || 0),
             coords: [Number(w.coords[0]), Number(w.coords[1])],
             elev: typeof w.elevationMeters === 'number'
@@ -5546,6 +6537,36 @@ function initMarsDashboard() {
     });
   }
 
+  // Botón de simulación de Clima Espacial / Tormenta Solar (SPE M4.2 Flare)
+  const btnSimSpe = document.getElementById('btn-sim-spe');
+  if (btnSimSpe) {
+    btnSimSpe.addEventListener('click', () => {
+      isSolarStormSpeActive = !isSolarStormSpeActive;
+      btnSimSpe.classList.toggle('is-active', isSolarStormSpeActive);
+      btnSimSpe.setAttribute('aria-pressed', String(isSolarStormSpeActive));
+      btnSimSpe.innerHTML = isSolarStormSpeActive
+        ? '<i class="fa-solid fa-radiation"></i> CLEAR SOLAR STORM (SPE ACTIVE)'
+        : '<i class="fa-solid fa-radiation"></i> SIMULATE SOLAR STORM (SPE)';
+      rebuildRegionalNasaLayers(currentRouteKey);
+      updateSurvivalTelemetry();
+      playHudTone(isSolarStormSpeActive ? 410 : 720, 0.09, isSolarStormSpeActive ? 'sawtooth' : 'sine');
+    });
+  }
+
+  // Botón de modo "HELMET VISOR HUD" en el visor 360°
+  const btnSvHelmetHud = document.getElementById('btn-sv-helmet-hud');
+  const svHelmetVisorOverlay = document.getElementById('sv-helmet-visor-overlay');
+  if (btnSvHelmetHud && svHelmetVisorOverlay) {
+    btnSvHelmetHud.addEventListener('click', () => {
+      isHelmetHudActive = !isHelmetHudActive;
+      btnSvHelmetHud.classList.toggle('is-active', isHelmetHudActive);
+      btnSvHelmetHud.setAttribute('aria-pressed', String(isHelmetHudActive));
+      svHelmetVisorOverlay.classList.toggle('is-hidden', !isHelmetHudActive);
+      updateSurvivalTelemetry();
+      playHudTone(isHelmetHudActive ? 880 : 540, 0.07, 'sine');
+    });
+  }
+
   // Initialize restored or default route (JEZERO-ALPHA), vision cone, and Street View on startup
   loadStreetViewStation('scene-kodiak', true, false);
   if (!restoreMissionStateFromStorage()) {
@@ -5560,13 +6581,13 @@ function initMarsDashboard() {
           .keys()
           .then((keys) => {
             keys
-              .filter((k) => k !== 'marte-hud-offline-v23')
+              .filter((k) => k !== 'marte-hud-offline-v29')
               .forEach((k) => caches.delete(k));
           })
           .catch(() => {});
       }
       navigator.serviceWorker
-        .register('./sw.js?v=23')
+        .register('./sw.js?v=29')
         .then((reg) => {
           if (reg && typeof reg.update === 'function') reg.update().catch(() => {});
         })

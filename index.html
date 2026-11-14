@@ -15,7 +15,7 @@
   <!-- Leaflet.js Cartographic Engine (Stage 2) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <!-- Main HUD Stylesheet (v20 Mobile Google Maps / Waze Mode + Sidebars) -->
-  <link rel="stylesheet" href="styles.css?v=23">
+  <link rel="stylesheet" href="styles.css?v=29">
   <!-- Offline / PWA Support -->
   <meta name="theme-color" content="#07090e">
   <link rel="manifest" href="manifest.webmanifest">
@@ -133,23 +133,42 @@
 
       <!-- Route Selector & Tactical Planner (Stage 3) -->
       <section class="hud-card">
+        <div class="scale-mode-switcher" id="scale-mode-switcher" role="group" aria-label="Exploration Scale Switcher">
+          <button type="button" class="scale-pill-btn" data-scale-mode="marswalk" title="Hyperlocal Foot EVA Marswalk (0.9–1.2 km, Zoom 13–15)">
+            <i class="fa-solid fa-person-walking"></i>
+            <span>MARSWALK (FOOT)</span>
+          </button>
+          <button type="button" class="scale-pill-btn is-active" data-scale-mode="regional" title="Regional Pressurized Rover Traverse (14–31 km, Zoom 7–10)">
+            <i class="fa-solid fa-truck-monster"></i>
+            <span>REGIONAL ROVER</span>
+          </button>
+        </div>
+
         <label for="route-selector" class="card-section-title">
           <i class="fa-solid fa-compass"></i> SELECT EXPLORATION ROUTE
         </label>
         <div class="select-cyber-wrapper">
           <select id="route-selector" class="cyber-select">
-            <option value="jezero-alpha" selected>SUGGESTED ROUTE: JEZERO-ALPHA (DELTA)</option>
-            <option value="jezero-beta">ALTERNATE ROUTE: JEZERO-BETA (BELVA CRATER)</option>
-            <option value="gale-sharp">HISTORIC ROUTE: GALE - MOUNT SHARP</option>
-            <option value="valles-marineris">EXTREME ROUTE: SOUTH VALLES MARINERIS</option>
-            <option value="custom">FREE MODE: CUSTOM ROUTE</option>
+            <optgroup label="🥾 HYPERLOCAL MARSWALK (FOOT EVA • 0.9–1.2 KM)">
+              <option value="marswalk-boxwork">MARSWALK 01: MOUNT SHARP BOXWORK (1.2 KM)</option>
+              <option value="marswalk-kodiak">MARSWALK 02: KODIAK DELTA WALK (0.9 KM)</option>
+            </optgroup>
+            <optgroup label="🚜 REGIONAL ROVER TRAVERSES (14–31 KM)">
+              <option value="jezero-alpha" selected>ROVER 01: JEZERO-ALPHA DELTA (14.6 KM)</option>
+              <option value="jezero-beta">ROVER 02: JEZERO-BETA BELVA (19.2 KM)</option>
+              <option value="gale-sharp">ROVER 03: MOUNT SHARP &amp; BOXWORK (24.8 KM)</option>
+              <option value="valles-marineris">ROVER 04: VALLES MARINERIS (31.5 KM)</option>
+            </optgroup>
+            <optgroup label="✏️ TACTICAL FREE MODE">
+              <option value="custom">FREE MODE: CUSTOM ROUTE</option>
+            </optgroup>
           </select>
           <i class="fa-solid fa-chevron-down select-arrow"></i>
         </div>
 
         <div class="route-quick-stats">
           <div class="rq-box">
-            <span class="rq-label">DIFFICULTY</span>
+            <span class="rq-label">SCALE / DIFF.</span>
             <span class="rq-val badge-warning" id="route-difficulty">MEDIUM</span>
           </div>
           <div class="rq-box">
@@ -158,57 +177,11 @@
           </div>
         </div>
 
-        <!-- Tactical Map Drawing & Editing Tools -->
-        <div class="planner-action-row planner-action-row-3">
-          <button id="btn-custom-draw" class="planner-btn" type="button" title="Click on the map to add points and drag markers to adjust">
-            <i class="fa-solid fa-pen-ruler"></i> <span>+ DRAW</span>
-          </button>
-          <button id="btn-undo-point" class="planner-btn secondary" type="button" title="Undo last point (Ctrl+Z)">
-            <i class="fa-solid fa-backward-step"></i> <span>UNDO</span>
-          </button>
-          <button id="btn-reset-route" class="planner-btn secondary" type="button" title="Restore original route">
-            <i class="fa-solid fa-rotate-left"></i> <span>RESET</span>
-          </button>
-        </div>
-
-        <!-- Configurable EVA Mission & Crew Parameters -->
-        <div class="eva-config-panel">
-          <div class="card-section-title" style="margin-bottom: 0.35rem;">
-            <i class="fa-solid fa-user-astronaut text-cyan"></i> EVA MISSION PARAMETERS
-          </div>
-          <div class="eva-config-grid">
-            <label class="eva-cfg-field">
-              <span>CREW</span>
-              <select id="eva-crew-size" class="cyber-select compact">
-                <option value="2" selected>2 Astronauts</option>
-                <option value="3">3 Astronauts</option>
-                <option value="4">4 Astronauts</option>
-                <option value="6">6 Astronauts</option>
-              </select>
-            </label>
-            <label class="eva-cfg-field">
-              <span>MODE</span>
-              <select id="eva-transport-mode" class="cyber-select compact">
-                <option value="rover" selected>Pressurized Rover</option>
-                <option value="foot">Foot EVA Walk</option>
-              </select>
-            </label>
-            <label class="eva-cfg-field full">
-              <span>MARTIAN DEPARTURE WINDOW (SOLAR &amp; THERMAL IMPACT)</span>
-              <select id="eva-departure-window" class="cyber-select compact">
-                <option value="morning" selected>08:00 MTC — Peak Solar Harvesting (+12%)</option>
-                <option value="afternoon">14:00 MTC — Nominal Afternoon (Standard)</option>
-                <option value="night">19:30 MTC — Night Ops / Critical Heating (-84°C)</option>
-              </select>
-            </label>
-          </div>
-        </div>
-
         <!-- Traverse Progress Slider (Reactive Telemetry) -->
         <div class="rover-sim-control">
           <div class="rsc-header">
             <label for="rover-progress-slider">
-              <i class="fa-solid fa-truck-monster text-cyan"></i> ROVER PROGRESS: <strong id="rover-progress-pct" class="text-cyan">33%</strong>
+              <i class="fa-solid fa-truck-monster text-cyan" id="progress-unit-icon"></i> <span id="progress-unit-label">PROGRESS</span>: <strong id="rover-progress-pct" class="text-cyan">33%</strong>
             </label>
             <button id="btn-play-sim" class="sim-play-btn" type="button">
               <i class="fa-solid fa-play"></i> <span>SIMULATE</span>
@@ -225,13 +198,66 @@
             aria-valuetext="33 percent of route completed"
           >
         </div>
+
+        <!-- Collapsible EVA Parameters & Map Drawing Tools to reduce visual noise -->
+        <details class="hud-disclosure">
+          <summary class="hud-disclosure-summary">
+            <span><i class="fa-solid fa-sliders text-cyan"></i> CREW, MODE &amp; ROUTE TOOLS</span>
+            <span class="hud-disclosure-badge" id="eva-summary-badge">2 PAX • ROVER</span>
+          </summary>
+          <div class="hud-disclosure-body">
+            <div class="eva-config-grid">
+              <label class="eva-cfg-field">
+                <span>CREW</span>
+                <select id="eva-crew-size" class="cyber-select compact">
+                  <option value="2" selected>2 Astronauts</option>
+                  <option value="3">3 Astronauts</option>
+                  <option value="4">4 Astronauts</option>
+                  <option value="6">6 Astronauts</option>
+                </select>
+              </label>
+              <label class="eva-cfg-field">
+                <span>MODE</span>
+                <select id="eva-transport-mode" class="cyber-select compact">
+                  <option value="rover" selected>Pressurized Rover</option>
+                  <option value="foot">Foot EVA Walk</option>
+                </select>
+              </label>
+              <label class="eva-cfg-field">
+                <span>DEPARTURE</span>
+                <select id="eva-departure-window" class="cyber-select compact">
+                  <option value="morning" selected>08:00 MTC — Peak Solar (+12%)</option>
+                  <option value="afternoon">14:00 MTC — Nominal Afternoon</option>
+                  <option value="night">19:30 MTC — Night Ops (-84°C)</option>
+                </select>
+              </label>
+              <label class="eva-cfg-field">
+                <span>SCIENCE KIT</span>
+                <select id="eva-payload-kit" class="cyber-select compact">
+                  <option value="8">Light Kit (8 kg // XRF)</option>
+                  <option value="14" selected>Standard (14 kg // Drill+Raman)</option>
+                  <option value="22">Heavy Rig (22 kg // Deep Core)</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="planner-action-row planner-action-row-3" style="margin-top: 0.45rem;">
+              <button id="btn-custom-draw" class="planner-btn" type="button" title="Click on the map to add points and drag markers to adjust">
+                <i class="fa-solid fa-pen-ruler"></i> <span>+ DRAW</span>
+              </button>
+              <button id="btn-undo-point" class="planner-btn secondary" type="button" title="Undo last point (Ctrl+Z)">
+                <i class="fa-solid fa-backward-step"></i> <span>UNDO</span>
+              </button>
+              <button id="btn-reset-route" class="planner-btn secondary" type="button" title="Restore original route">
+                <i class="fa-solid fa-rotate-left"></i> <span>RESET</span>
+              </button>
+            </div>
+          </div>
+        </details>
       </section>
 
       <!-- Current Mission Briefing -->
       <section class="hud-card mission-brief-card">
-        <div class="card-section-title">
-          <i class="fa-solid fa-flag"></i> CURRENT MISSION BRIEFING
-        </div>
         <div class="mission-banner">
           <div class="mission-banner-icon">
             <i class="fa-solid fa-person-rays"></i>
@@ -241,12 +267,41 @@
             <span id="mission-sector-text">Sector: Western Alluvial Fan &bull; Syrtis Major Quadrangle</span>
           </div>
         </div>
-        <p class="mission-description" id="mission-desc-text">
-          Planned traverse for astronauts and pressurized rover from the landing site to the ancient lake delta. Priority: hydrated regolith extraction and Base Camp establishment.
-        </p>
+
+        <details class="hud-disclosure compact-brief-disclosure">
+          <summary class="hud-disclosure-summary">
+            <span><i class="fa-solid fa-circle-info text-orange"></i> MISSION OBJECTIVE &amp; BRIEFING</span>
+            <span class="hud-disclosure-badge">READ</span>
+          </summary>
+          <div class="hud-disclosure-body">
+            <p class="mission-description" id="mission-desc-text">
+              Planned traverse for astronauts and pressurized rover from the landing site to the ancient lake delta. Priority: hydrated regolith extraction and Base Camp establishment.
+            </p>
+          </div>
+        </details>
+
+        <!-- Suit Mobility, Science Payload (0.38g) & Walkback Safety Limit -->
+        <div class="payload-walkback-strip" id="eva-payload-walkback-strip" aria-live="polite">
+          <div class="pws-block">
+            <div class="pws-header">
+              <span class="pws-title"><i class="fa-solid fa-weight-hanging text-orange"></i> SUIT PAYLOAD &amp; SAMPLES (0.38g)</span>
+              <span class="pws-chip" id="pw-samples-badge">2 CORES (+3.0 KG)</span>
+            </div>
+            <div class="pws-main-val" id="pw-mass-val">14.0 kg Kit + 3.0 kg Samples = 17.0 kg &rarr; <strong>6.5 kg @ 0.38g</strong></div>
+            <div class="pws-sub-val" id="pw-mobility-impact">Mobility Impact: Speed -6% &bull; O₂ Load +8% &bull; 312 kcal/h</div>
+          </div>
+          <div class="pws-divider"></div>
+          <div class="pws-block">
+            <div class="pws-header">
+              <span class="pws-title"><i class="fa-solid fa-person-walking-arrow-loop-left text-cyan"></i> WALKBACK SAFETY LIMIT</span>
+              <span class="pws-chip is-safe" id="pw-walkback-badge">✓ SAFE RETURN</span>
+            </div>
+            <div class="pws-sub-val" id="pw-walkback-detail">Airlock Return: 4.8 km (Needs 18% O₂ &bull; Reserve: 78%)</div>
+          </div>
+        </div>
 
         <!-- Route Waypoints / Checkpoints List -->
-        <div class="card-section-title" style="margin-top: 0.5rem;">
+        <div class="card-section-title" style="margin-top: 0.35rem;">
           <i class="fa-solid fa-location-dot"></i> WAYPOINTS (CHECKPOINTS)
         </div>
 
@@ -416,6 +471,9 @@
           </div>
 
           <div class="vtb-right">
+            <button id="btn-sv-helmet-hud" class="sv-tool-pill" type="button" aria-pressed="false" title="Toggle Spacesuit Helmet Visor HUD overlay">
+              <i class="fa-solid fa-user-astronaut text-cyan"></i> HELMET HUD
+            </button>
             <button id="btn-sv-photo-popup" class="sv-tool-pill" type="button" title="Open clean photo popup">
               <i class="fa-solid fa-image text-orange"></i> PHOTO
             </button>
@@ -425,7 +483,7 @@
             <button id="btn-sv-reopen-inspector" class="sv-tool-pill" type="button" title="Show or hide scientific card">
               <i class="fa-solid fa-circle-info"></i> INFO
             </button>
-            <button id="btn-sv-autorotate" class="sv-tool-pill is-active" type="button" title="Toggle auto-rotation">
+            <button id="btn-sv-autorotate" class="sv-tool-pill" type="button" title="Toggle auto-rotation">
               <i class="fa-solid fa-rotate"></i> SPIN
             </button>
             <button id="btn-close-streetview" class="sv-return-btn" type="button">
@@ -455,6 +513,48 @@
           <div id="pannellum-viewer" class="pannellum-hud-mount">
             <canvas id="mars-360-canvas" class="mars-360-canvas" aria-label="Interactive 360-degree panorama of the Martian surface"></canvas>
             <div id="mars-360-hotspots" class="mars-360-hotspots"></div>
+
+            <!-- Spacesuit Helmet Visor HUD Overlay (Projected Biometrics, Radiation & Next Target) -->
+            <div id="sv-helmet-visor-overlay" class="sv-helmet-visor-overlay is-hidden" aria-hidden="true">
+              <div class="hv-curved-frame">
+                <!-- Top Visor Telemetry Arc -->
+                <div class="hv-top-arc">
+                  <div class="hv-pill">
+                    <span class="hv-label"><i class="fa-solid fa-lungs text-cyan"></i> SUIT PLSS O₂</span>
+                    <strong class="hv-val text-cyan" id="hv-o2-val">78% RESERVE</strong>
+                    <span class="hv-sub" id="hv-o2-sub">4.3 PSI • 0.84 kg/h</span>
+                  </div>
+                  <div class="hv-visor-center-badge">
+                    <span class="hv-visor-title"><i class="fa-solid fa-user-astronaut"></i> xEMU HELMET VISOR HUD // EVA LINK ACTIVE</span>
+                    <span class="hv-visor-sub" id="hv-space-weather-tag">SPACE WEATHER: GCR NOMINAL • KP-MARS 2.8</span>
+                  </div>
+                  <div class="hv-pill">
+                    <span class="hv-label"><i class="fa-solid fa-heart-pulse text-orange"></i> BIOMETRICS</span>
+                    <strong class="hv-val text-orange" id="hv-hr-val">96 BPM</strong>
+                    <span class="hv-sub" id="hv-metabolic-sub">310 kcal/h • CO₂ 1.2 mmHg</span>
+                  </div>
+                </div>
+
+                <!-- Center Visor Crosshair Reticle -->
+                <div class="hv-center-reticle">
+                  <span class="hv-reticle-ring"></span>
+                </div>
+
+                <!-- Bottom Visor Telemetry Arc -->
+                <div class="hv-bottom-arc">
+                  <div class="hv-pill hv-pill-wide">
+                    <span class="hv-label"><i class="fa-solid fa-radiation text-warning"></i> RADIATION &amp; SHELTER</span>
+                    <strong class="hv-val" id="hv-rad-val">0.03 mSv/h (SAFE)</strong>
+                    <span class="hv-sub" id="hv-shelter-val">Nearest Shelter: 420 m (-85% Dose)</span>
+                  </div>
+                  <div class="hv-pill hv-pill-wide">
+                    <span class="hv-label"><i class="fa-solid fa-microscope text-cyan"></i> NEXT SCIENCE TARGET</span>
+                    <strong class="hv-val text-cyan" id="hv-target-name">Boxwork Fracture Crest (+420 m)</strong>
+                    <span class="hv-sub" id="hv-target-tool">Tool: Rotary Core Drill + Raman Spec</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <!-- Official NASA JPL Photojournal Real Archive Badge (Hidden per clean 3D view requirement) -->
             <div class="sv-real-photo-badge" id="sv-real-photo-badge" hidden>
@@ -509,7 +609,6 @@
             <div class="sv-floating-controls">
               <button id="btn-360-zoom-in" class="map-tool-btn" type="button" title="Zoom In (mouse wheel)"><i class="fa-solid fa-plus"></i></button>
               <button id="btn-360-zoom-out" class="map-tool-btn" type="button" title="Zoom Out (mouse wheel)"><i class="fa-solid fa-minus"></i></button>
-              <button id="btn-360-fit" class="map-tool-btn" type="button" title="Fit entire panorama (zoom out max)"><i class="fa-solid fa-expand text-orange"></i></button>
               <button id="btn-360-reset-cam" class="map-tool-btn" type="button" title="Center Horizon"><i class="fa-solid fa-compass text-cyan"></i></button>
             </div>
           </div>
@@ -637,13 +736,13 @@
             </div>
           </label>
 
-          <!-- 4. Weather -->
+          <!-- 4. Weather & Space Radiation -->
           <label class="layer-toggle-item" for="toggle-weather">
             <div class="lt-left">
-              <span class="lt-icon text-warning"><i class="fa-solid fa-wind"></i></span>
+              <span class="lt-icon text-warning"><i class="fa-solid fa-radiation"></i></span>
               <div class="lt-text">
-                <strong>Weather</strong>
-                <span>Dust Fronts &amp; Surface Winds</span>
+                <strong>Weather &amp; Space Rad</strong>
+                <span>Dust, Solar SPE &amp; Rad Shelters</span>
               </div>
             </div>
             <div class="cyber-switch">
@@ -652,13 +751,13 @@
             </div>
           </label>
 
-          <!-- 5. Mission Sites -->
+          <!-- 5. Mission Sites & Obstacles -->
           <label class="layer-toggle-item" for="toggle-sites">
             <div class="lt-left">
               <span class="lt-icon text-orange"><i class="fa-solid fa-location-pin"></i></span>
               <div class="lt-text">
-                <strong>Mission Sites</strong>
-                <span>Rovers, Landers &amp; Base Camps</span>
+                <strong>Routes &amp; Obstacles</strong>
+                <span>Waypoints, Detours &amp; Landers</span>
               </div>
             </div>
             <div class="cyber-switch">
@@ -714,6 +813,25 @@
             <strong class="wm-val text-cyan" id="wc-uv-val">0.24 <small>mSv/h</small></strong>
             <span class="wm-sub" id="wc-uv-sub">Within EVA threshold</span>
           </div>
+        </div>
+
+        <!-- Space Weather (Solar Flare / SPE & Radiation Shelter Status) -->
+        <div class="space-weather-strip" id="wc-space-weather-strip">
+          <div class="sws-top">
+            <span class="sws-kicker"><i class="fa-solid fa-sun-plant-wilt text-orange"></i> SPACE WEATHER (SOLAR SPE / GCR)</span>
+            <span class="sws-badge" id="wc-spe-badge">NOMINAL (C2.1)</span>
+          </div>
+          <div class="sws-metrics" id="wc-spe-metrics">
+            <span>PROTON FLUX: <strong id="wc-proton-val">14 PFU</strong></span>
+            <span>KP-MARS: <strong id="wc-kp-val">2.8</strong></span>
+          </div>
+          <div class="sws-shelter" id="wc-shelter-readout">
+            <i class="fa-solid fa-shield-halved text-cyan"></i>
+            <span>Nearest Rad Shelter: <strong id="wc-shelter-dist">0.4 km (-85% Dose)</strong></span>
+          </div>
+          <button type="button" id="btn-sim-spe" class="sws-sim-btn">
+            <i class="fa-solid fa-burst"></i> <span>SIMULATE SOLAR STORM (SPE)</span>
+          </button>
         </div>
 
         <!-- Dust Storm Alert -->
@@ -998,6 +1116,6 @@
 
   <!-- Cartographic Engine (Leaflet.js) and Main HUD Logic -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="app.js?v=23"></script>
+  <script src="app.js?v=29"></script>
 </body>
 </html>
