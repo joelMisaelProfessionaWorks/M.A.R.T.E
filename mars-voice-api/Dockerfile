@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Librerías de audio requeridas por torchaudio y soundfile en Linux
+# Librerías de sistema requeridas por torchaudio, soundfile y compilación ligera
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     libsndfile1 \
@@ -9,22 +9,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# 1. Instalar PyTorch versión CPU (reduce el tamaño de la imagen en ~4 GB)
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu
-
-# 2. Instalar el resto de dependencias
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# 3. Pre-descargar los pesos del modelo F5-TTS dentro de la imagen
-RUN python -c "from f5_tts.api import F5TTS; F5TTS()"
-
-# 4. Copiar app.py y AI_Ranni.wav
-COPY . .
-
+# Ruta fija para que el caché de HuggingFace persista dentro de la imagen
+ENV HF_HOME=/app/.cache/huggingface
 ENV OMP_NUM_THREADS=8
 ENV PYTHONUNBUFFERED=1
+ENV PORT=8080
 
-# Arranca con 1 worker para mantener el modelo cargado una sola vez en RAM
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 4 --timeout 300 app:app
+# 1. Instalar PyTorch CPU + dependencias manteniendo el índice CPU
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
+
+# 2. Pre-descargar los pesos del modelo F5-TTS y Vocos dentro de la imagen
+RUN python -c "from f5_tts.api import F5TTS; F5TTS(device='cpu')"
+
+# 3. Copiar código y audio base AI_Ranni.wav
+COPY . .
+
+# 4. Arrancar Gunicorn (1 worker en RAM, 4 hilos HTTP)
+CMD exec gunicorn --bind :${PORT:-8080} --workers 1 --threads 4 --timeout 300 app:app
