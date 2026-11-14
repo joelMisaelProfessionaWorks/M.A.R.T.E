@@ -2756,6 +2756,10 @@ function initMarsDashboard() {
     }
   ];
 
+  STREETVIEW_STATIONS.forEach((st) => {
+    st.defaultRealPano = st.realPano ? structuredClone(st.realPano) : null;
+  });
+
   const panoCanvasCache = {};
   const realPanoCanvasCache = {};
   let currentStationId = 'scene-kodiak';
@@ -3041,31 +3045,18 @@ function initMarsDashboard() {
   }
 
   // Compone un lienzo equirectangular 360° (4096x2048) a partir de fotografía real de NASA JPL-Caltech (Mastcam-Z / Mastcam / HiRISE)
-  function getOrComposeRealPanoramaCanvas(station) {
+  function getOrComposeRealPanoramaCanvas(station, previewImg = null) {
     if (!station || !station.realPano) return null;
     const fileName = (station.realPano.localUrl || '').split('/').pop();
-    const cacheKey = `${station.id}::${station.realPano.piaId || fileName || station.realPano.remoteUrl}`;
-    if (realPanoCanvasCache[cacheKey]) {
-      return realPanoCanvasCache[cacheKey];
-    }
+    const cacheKey = `${station.id}::${station.realPano.piaId || ''}::${station.realPano.localUrl || station.realPano.remoteUrl || ''}`;
+    const existing = realPanoCanvasCache[cacheKey];
 
     const isMobileDevice = window.innerWidth <= 900;
     const width = isMobileDevice ? 2048 : 4096;
     const height = isMobileDevice ? 1024 : 2048;
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
 
-    const entry = {
-      canvas,
-      loaded: false,
-      error: false,
-      sourceUsed: 'LOADING NASA OPTICAL TELEMETRY...'
-    };
-    realPanoCanvasCache[cacheKey] = entry;
-
-    const buildFromImage = (img, sourceLabel) => {
-      const ctx = canvas.getContext('2d', { alpha: false });
+    const drawImageToEntry = (entryObj, img, sourceLabel, isFinal = true) => {
+      const ctx = entryObj.canvas.getContext('2d', { alpha: false });
       const p = station.palette;
 
       // 1. Proyección equirectangular a escala angular natural (sin estiramiento vertical forzado)
@@ -3127,53 +3118,94 @@ function initMarsDashboard() {
         ctx.fillRect(0, botY - botEdgeH, width, botEdgeH + 2);
       }
 
-      entry.loaded = true;
-      entry.sourceUsed = sourceLabel;
+      entryObj.loaded = true;
+      entryObj.error = false;
+      if (isFinal || !entryObj.sourceUsed || entryObj.sourceUsed.startsWith('LOADING')) {
+        entryObj.sourceUsed = sourceLabel;
+      }
       needs360Redraw = true;
       if (station.id === currentStationId) {
-        updateRealPhotoBadge(station, entry);
+        updateRealPhotoBadge(station, entryObj);
       }
     };
 
+    if (existing && !existing.error) {
+      if (!existing.loaded && previewImg && previewImg.complete && previewImg.naturalWidth > 0) {
+        drawImageToEntry(existing, previewImg, 'INSTANT NASA PREVIEW', false);
+      }
+      return existing;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+
+    const entry = {
+      canvas,
+      loaded: false,
+      error: false,
+      sourceUsed: 'LOADING NASA OPTICAL TELEMETRY...'
+    };
+    realPanoCanvasCache[cacheKey] = entry;
+
+    if (previewImg && previewImg.complete && previewImg.naturalWidth > 0) {
+      drawImageToEntry(entry, previewImg, 'INSTANT NASA PREVIEW', false);
+    }
+
     // Lista de candidatos ordenada para que SIEMPRE cargue sin importar el entorno
     const isRemoteSource = /^https?:\/\//.test(station.realPano.localUrl || '');
-      const candidateUrls = [
+    const candidateUrls = [
       !isRemoteSource && fileName ? `panoramas/${fileName}` : null,
       !isRemoteSource && fileName ? `/panoramas/${fileName}` : null,
+      !isRemoteSource && fileName ? `public/panoramas/${fileName}` : null,
       station.realPano.localUrl,
-      station.realPano.remoteUrl
+      station.realPano.remoteUrl,
+      station.realPano.thumbUrl
     ].filter(Boolean);
     const uniqueCandidates = [...new Set(candidateUrls)];
+    const candidateSteps = [];
+    uniqueCandidates.forEach((url) => {
+      const isRemote = url.startsWith('http://') || url.startsWith('https://');
+      if (isRemote) {
+        candidateSteps.push({ url, useCors: true });
+        candidateSteps.push({ url, useCors: false });
+      } else {
+        candidateSteps.push({ url, useCors: false });
+      }
+    });
 
     let attemptIndex = 0;
     const tryNext = () => {
-      if (attemptIndex >= uniqueCandidates.length) {
-        entry.error = true;
+      if (attemptIndex >= candidateSteps.length) {
+        if (!entry.loaded) {
+          entry.error = true;
+        }
         needs360Redraw = true;
         if (station.id === currentStationId) updateRealPhotoBadge(station, entry);
         return;
       }
-      const url = uniqueCandidates[attemptIndex++];
+      const { url, useCors } = candidateSteps[attemptIndex++];
       const isRemote = url.startsWith('http://') || url.startsWith('https://');
       const img = new Image();
-      img.crossOrigin = "anonymous";
+      if (useCors) img.crossOrigin = 'anonymous';
       img.decoding = 'async';
-      if (isRemote) img.crossOrigin = 'anonymous';
 
       let timedOut = false;
       const timer = setTimeout(() => {
         timedOut = true;
         tryNext();
-      }, 5000);
+      }, 6500);
 
       img.onload = () => {
         if (timedOut) return;
         clearTimeout(timer);
         const label = isRemote ? 'REMOTE NASA IMAGES API SERVER' : 'OFFICIAL NASA JPL ARCHIVE (HIGH SPEED)';
         if (typeof img.decode === 'function') {
-          img.decode().then(() => buildFromImage(img, label)).catch(() => buildFromImage(img, label));
+          img.decode()
+            .then(() => drawImageToEntry(entry, img, label, true))
+            .catch(() => drawImageToEntry(entry, img, label, true));
         } else {
-          buildFromImage(img, label);
+          drawImageToEntry(entry, img, label, true);
         }
       };
 
@@ -3515,64 +3547,78 @@ function initMarsDashboard() {
   const LOCAL_CURATED_PANORAMAS = [
     {
       nasaId: 'PIA24264',
+      stationId: 'scene-landing',
       title: 'Perseverance 360° — Octavia E. Butler Landing (Sol 3)',
       dateStr: 'MARS 2020',
       thumbUrl: 'panoramas/PIA24264-landing.jpg',
       hiResUrl: 'panoramas/PIA24264-landing.jpg',
+      remoteUrl: 'https://images-assets.nasa.gov/image/PIA24264/PIA24264~large.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24264',
       credit: 'NASA/JPL-Caltech/ASU/MSSS — Mastcam-Z 360° Panorama at Octavia E. Butler Landing'
     },
     {
       nasaId: 'PIA24921',
+      stationId: 'scene-kodiak',
       title: 'Perseverance 360° — Jezero Delta Front & Kodiak Mesa',
       dateStr: 'SOL 466',
       thumbUrl: 'panoramas/PIA24921-kodiak-delta.jpg',
       hiResUrl: 'panoramas/PIA24921-kodiak-delta.jpg',
+      remoteUrl: 'https://images-assets.nasa.gov/image/PIA24921/PIA24921~large.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA24921',
       credit: 'NASA/JPL-Caltech/ASU/MSSS — Real 2.5-Gigapixel Mosaic of the Delta Front and Kodiak Mesa'
     },
     {
       nasaId: 'PIA26369',
+      stationId: 'scene-ice',
       title: 'Perseverance 360° — Bright Angel & Neretva Vallis Channel',
       dateStr: 'SOL 1178',
       thumbUrl: 'panoramas/PIA26369-bright-angel.jpg',
       hiResUrl: 'panoramas/PIA26369-bright-angel.jpg',
+      remoteUrl: 'https://images-assets.nasa.gov/image/PIA26369/PIA26369~large.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26369',
       credit: 'NASA/JPL-Caltech/ASU/MSSS — 360° Panorama at Bright Angel (Neretva Vallis)'
     },
     {
       nasaId: 'PIA26474',
+      stationId: 'scene-base',
       title: 'Perseverance 360° — Western Rim Summit (Rio Chiquito)',
       dateStr: 'SOL 1337',
       thumbUrl: 'panoramas/PIA26474-rio-chiquito.jpg',
       hiResUrl: 'panoramas/PIA26474-rio-chiquito.jpg',
+      remoteUrl: 'https://images-assets.nasa.gov/image/PIA26474/PIA26474~large.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26474',
       credit: 'NASA/JPL-Caltech/ASU/MSSS — 360° Panorama at Rio Chiquito Overlook (Jezero Summit)'
     },
     {
       nasaId: 'PIA22545',
+      stationId: 'scene-gale',
       title: 'Curiosity 360° — Vera Rubin Ridge & Mount Sharp (Gale Crater)',
       dateStr: 'MSL CURIOSITY',
       thumbUrl: 'panoramas/PIA22545-gale-curiosity.jpg',
       hiResUrl: 'panoramas/PIA22545-gale-curiosity.jpg',
+      remoteUrl: 'https://images-assets.nasa.gov/image/PIA22545/PIA22545~large.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA22545',
       credit: 'NASA/JPL-Caltech/MSSS — Mastcam 360° Panorama at Vera Rubin Ridge (Gale Crater)'
     },
     {
       nasaId: 'PIA26363',
+      stationId: 'scene-gale',
       title: 'Curiosity 360° — Gediz Vallis Channel & Elemental Sulfur Rocks',
       dateStr: 'SOL 4208',
       thumbUrl: 'panoramas/PIA26363-gediz-vallis.jpg',
       hiResUrl: 'panoramas/PIA26363-gediz-vallis.jpg',
+      remoteUrl: 'https://images-assets.nasa.gov/image/PIA26363/PIA26363~large.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA26363',
       credit: 'NASA/JPL-Caltech/MSSS — Mastcam 360° Panorama at Gediz Vallis Channel (Mount Sharp)'
     },
     {
       nasaId: 'PIA13077',
+      stationId: 'scene-valles',
       title: 'MRO HiRISE + Viking — Coprates Canyon (Valles Marineris)',
       dateStr: 'MRO / VIKING',
       thumbUrl: 'panoramas/PIA13077-valles-marineris.jpg',
       hiResUrl: 'panoramas/PIA13077-valles-marineris.jpg',
+      remoteUrl: 'https://images-assets.nasa.gov/image/PIA13077/PIA13077~large.jpg',
       jplUrl: 'https://photojournal.jpl.nasa.gov/catalog/PIA13077',
       credit: 'NASA/JPL-Caltech/Univ. of Arizona — Real Mosaic of Valles Marineris'
     }
@@ -3598,17 +3644,43 @@ function initMarsDashboard() {
     }
   });
 
-  function applySelectedPanoramaToViewer(panoItem) {
+  function applySelectedPanoramaToViewer(panoItem, previewImg = null) {
+    if (streetContainer && streetContainer.classList.contains('is-hidden')) {
+      setViewportMode('streetview', panoItem.stationId || currentStationId);
+    } else if (
+      panoItem.stationId &&
+      panoItem.stationId !== currentStationId &&
+      STREETVIEW_STATIONS.some((s) => s.id === panoItem.stationId)
+    ) {
+      loadStreetViewStation(panoItem.stationId, true, false);
+    }
+
     const st =
-      STREETVIEW_STATIONS.find((s) => s.id === currentStationId) || STREETVIEW_STATIONS[1];
+      STREETVIEW_STATIONS.find((s) => s.id === (panoItem.stationId || currentStationId)) ||
+      STREETVIEW_STATIONS.find((s) => s.id === currentStationId) ||
+      STREETVIEW_STATIONS[1];
+
     st.realPano = {
       piaId: panoItem.nasaId,
       sol: panoItem.dateStr || 'NASA ARCHIVE',
-      localUrl: panoItem.hiResUrl,
-      remoteUrl: panoItem.hiResUrl,
+      localUrl: panoItem.hiResUrl || panoItem.thumbUrl,
+      remoteUrl: panoItem.remoteUrl || panoItem.hiResUrl || panoItem.thumbUrl,
+      thumbUrl: panoItem.thumbUrl || panoItem.hiResUrl,
       jplUrl: panoItem.jplUrl,
       credit: panoItem.credit
     };
+
+    if (svStationTitleEl && panoItem.title) {
+      svStationTitleEl.textContent = `360° MARS // ${panoItem.title.toUpperCase()}`;
+    }
+
+    updateInspectorCard({
+      kicker: `NASA PHOTO ARCHIVE // ${panoItem.nasaId || 'JPL'}`,
+      title: panoItem.title || 'NASA Mars Photograph',
+      desc: panoItem.credit || 'Official NASA Planetary Image loaded into the 360° viewer.',
+      dist: panoItem.dateStr ? `DATE: ${panoItem.dateStr}` : 'SOURCE: NASA ARCHIVE',
+      comp: '360° Spherical Projection'
+    });
 
     // Activate REAL VIEW (LIFE) without overlay and close photo drawer immediately
     render360Mode = 'real';
@@ -3619,7 +3691,9 @@ function initMarsDashboard() {
       });
     }
 
-    const newEntry = getOrComposeRealPanoramaCanvas(st);
+    sync360ViewportSize();
+    animateCameraTo(st.initialYaw ?? 10, 0, 90);
+    const newEntry = getOrComposeRealPanoramaCanvas(st, previewImg);
     updateRealPhotoBadge(st, newEntry);
     closeNasaPhotoDrawer();
     if (typeof playHudTone === 'function') playHudTone(920, 0.08, 'sine');
@@ -3632,7 +3706,7 @@ function initMarsDashboard() {
     list.forEach((item) => {
       const card = document.createElement('div');
       card.className = 'snad-card';
-      
+
       const imgSrc = resolvePanoPath(item.thumbUrl);
       const fallbackSrc = item.thumbUrl?.startsWith('http')
         ? item.thumbUrl
@@ -3653,9 +3727,18 @@ function initMarsDashboard() {
         </div>
       `;
 
-      // Since the button is inside the card, a single click listener handles both
+      const thumbEl = card.querySelector('.snad-thumb');
+      const loadBtnEl = card.querySelector('.snad-load-btn');
+
+      if (loadBtnEl) {
+        loadBtnEl.addEventListener('click', (e) => {
+          e.stopPropagation();
+          applySelectedPanoramaToViewer(item, thumbEl);
+        });
+      }
+
       card.addEventListener('click', () => {
-        applySelectedPanoramaToViewer(item);
+        applySelectedPanoramaToViewer(item, thumbEl);
       });
 
       nasaApiResultsGrid.appendChild(card);
@@ -3707,8 +3790,9 @@ function initMarsDashboard() {
         const nasaId = meta.nasa_id || 'NASA-IMG';
         const title = meta.title || 'NASA Planetary Photograph';
         const dateStr = (meta.date_created || '').slice(0, 10);
-        // Use ~medium.jpg for ultra-fast loading without freezing the browser
+        // Use ~medium.jpg for fast loading, with ~large.jpg and thumbLink fallbacks
         const fastHiResUrl = thumbLink.replace('~thumb.jpg', '~medium.jpg');
+        const largeFallbackUrl = thumbLink.replace('~thumb.jpg', '~large.jpg');
 
         mapped.push({
           nasaId,
@@ -3716,6 +3800,7 @@ function initMarsDashboard() {
           dateStr,
           thumbUrl: thumbLink,
           hiResUrl: fastHiResUrl,
+          remoteUrl: largeFallbackUrl,
           jplUrl: `https://images.nasa.gov/details/${encodeURIComponent(nasaId)}`,
           credit: `NASA/JPL-Caltech — ${title}`
         });
@@ -3773,13 +3858,28 @@ function initMarsDashboard() {
     });
   });
 
+  if (svNasaApiDrawer) {
+    svNasaApiDrawer.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+    });
+    svNasaApiDrawer.addEventListener(
+      'wheel',
+      (e) => {
+        e.stopPropagation();
+      },
+      { passive: true }
+    );
+  }
+
   // Eventos de interacción de cámara 360° (Arrastrar para mirar, Pellizcar con 2 dedos en móvil, Rueda de ratón y Botones)
   if (pannellumMountEl) {
     let pinchStartDist = null;
     let pinchStartFov = camFov;
+    const interactiveChildSelector =
+      '.hud-360-hotspot, #sv-nasa-api-drawer, .sv-floating-controls, #sv-real-photo-badge';
 
     pannellumMountEl.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.hud-360-hotspot')) return;
+      if (e.target.closest(interactiveChildSelector)) return;
       if (pinchStartDist !== null) return;
       isDragging360 = true;
       targetYaw = null;
@@ -3812,6 +3912,7 @@ function initMarsDashboard() {
     pannellumMountEl.addEventListener(
       'touchstart',
       (e) => {
+        if (e.target.closest(interactiveChildSelector)) return;
         if (e.touches.length === 2) {
           isDragging360 = false;
           targetYaw = null;
@@ -3829,6 +3930,7 @@ function initMarsDashboard() {
     pannellumMountEl.addEventListener(
       'touchmove',
       (e) => {
+        if (e.target.closest(interactiveChildSelector)) return;
         if (e.touches.length === 2 && pinchStartDist && pinchStartDist > 10) {
           e.preventDefault();
           const currentDist = Math.hypot(
@@ -3854,6 +3956,7 @@ function initMarsDashboard() {
     pannellumMountEl.addEventListener(
       'wheel',
       (e) => {
+        if (e.target.closest(interactiveChildSelector)) return;
         e.preventDefault();
         targetYaw = null;
         camFov = Math.max(30, Math.min(125, camFov + (e.deltaY > 0 ? 5 : -5)));
@@ -3967,6 +4070,9 @@ function initMarsDashboard() {
     const station =
       STREETVIEW_STATIONS.find((s) => s.id === stationId) || STREETVIEW_STATIONS[1];
     currentStationId = station.id;
+    if (station.defaultRealPano) {
+      station.realPano = structuredClone(station.defaultRealPano);
+    }
 
     if (svStationTitleEl) {
       svStationTitleEl.textContent = `360° MARS // ${station.title}`;

@@ -3766,6 +3766,10 @@ body {
   flex-direction: column;
   gap: 0.65rem;
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.95), 0 0 24px rgba(255, 107, 43, 0.32);
+  touch-action: auto;
+  cursor: default;
+  user-select: text;
+  pointer-events: auto;
 }
 
 .sv-nasa-api-drawer.is-hidden {
@@ -3933,6 +3937,7 @@ body {
   font-size: 0.58rem;
   font-weight: 700;
   cursor: pointer;
+  pointer-events: auto;
   text-align: center;
   transition: all 0.16s ease;
 }
