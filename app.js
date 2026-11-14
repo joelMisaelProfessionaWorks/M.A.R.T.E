@@ -328,11 +328,16 @@ function initMarsDashboard() {
   // ==========================================================================
   // 2. INICIALIZACIÓN DEL MOTOR CARTOGRÁFICO LEAFLET.JS (ETAPA 2 — ALTA NITIDEZ)
   // ==========================================================================
+  const MARS_MAP_BOUNDS = L.latLngBounds([-85.05112878, -180], [85.05112878, 180]);
+
   const marsMap = L.map('mars-leaflet-map', {
     center: JEZERO_CENTER,
     zoom: DEFAULT_ZOOM,
-    minZoom: 2,
+    minZoom: 3,
     maxZoom: 10,
+    maxBounds: MARS_MAP_BOUNDS,
+    maxBoundsViscosity: 1.0,
+    worldCopyJump: false,
     zoomControl: false,
     attributionControl: true
   });
@@ -352,6 +357,8 @@ function initMarsDashboard() {
         maxNativeZoom: 6,
         keepBuffer: 6,
         updateWhenIdle: false,
+        noWrap: true,
+        bounds: MARS_MAP_BOUNDS,
         zIndex: 1,
         attribution: 'OpenPlanetaryMap / Viking MDIM 2.1'
       }
@@ -364,6 +371,8 @@ function initMarsDashboard() {
         maxNativeZoom: 6,
         keepBuffer: 6,
         updateWhenIdle: false,
+        noWrap: true,
+        bounds: MARS_MAP_BOUNDS,
         zIndex: 2,
         attribution: 'NASA MGS MOLA Altimetry Color'
       }
@@ -376,6 +385,8 @@ function initMarsDashboard() {
         maxNativeZoom: 5,
         keepBuffer: 6,
         updateWhenIdle: false,
+        noWrap: true,
+        bounds: MARS_MAP_BOUNDS,
         opacity: 0.35,
         zIndex: 2,
         attribution: 'Celestia 16K Shaded Relief'
@@ -385,6 +396,8 @@ function initMarsDashboard() {
       layers: 'MOLA_THEMIS_blend',
       format: 'image/jpeg',
       maxZoom: 10,
+      noWrap: true,
+      bounds: MARS_MAP_BOUNDS,
       zIndex: 3,
       attribution: 'USGS Astrogeology / NASA MGS MOLA + Odyssey THEMIS IR (100m)'
     }),
@@ -392,6 +405,8 @@ function initMarsDashboard() {
       layers: 'HRSC_MOLA_Blend_Hillshade',
       format: 'image/jpeg',
       maxZoom: 10,
+      noWrap: true,
+      bounds: MARS_MAP_BOUNDS,
       zIndex: 3,
       attribution: 'ESA Mars Express HRSC + NASA MGS MOLA Blended Hillshade'
     })
@@ -404,6 +419,8 @@ function initMarsDashboard() {
       tms: true,
       maxZoom: 10,
       maxNativeZoom: 6,
+      noWrap: true,
+      bounds: MARS_MAP_BOUNDS,
       opacity: 0.42,
       zIndex: 5,
       attribution: 'NASA MGS MOLA Altimetry Overlay'
@@ -417,6 +434,8 @@ function initMarsDashboard() {
       tile.width = 256;
       tile.height = 256;
       if (coords.z < 6) return tile;
+      const maxTile = 1 << coords.z;
+      if (coords.x < 0 || coords.x >= maxTile || coords.y < 0 || coords.y >= maxTile) return tile;
 
       const ctx = tile.getContext('2d');
       const seedBase = ((coords.x * 73856093) ^ (coords.y * 19349663) ^ (coords.z * 83492791)) >>> 0;
@@ -468,6 +487,8 @@ function initMarsDashboard() {
 
   const tacticalDetailGrid = new TacticalDetailGridLayer({
     maxZoom: 10,
+    noWrap: true,
+    bounds: MARS_MAP_BOUNDS,
     zIndex: 6,
     opacity: 0.85
   });
@@ -5581,13 +5602,13 @@ function initMarsDashboard() {
           .keys()
           .then((keys) => {
             keys
-              .filter((k) => k !== 'marte-hud-offline-v24')
+              .filter((k) => k !== 'marte-hud-offline-v25')
               .forEach((k) => caches.delete(k));
           })
           .catch(() => {});
       }
       navigator.serviceWorker
-        .register('./sw.js?v=24')
+        .register('./sw.js?v=25')
         .then((reg) => {
           if (reg && typeof reg.update === 'function') reg.update().catch(() => {});
         })
