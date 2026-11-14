@@ -3423,11 +3423,11 @@ body {
   color: var(--text-primary);
 }
 
-/* Mostrar barra colapsada en el extremo únicamente cuando su panel correspondiente está oculto */
-.hud-edge-tab.is-visible,
-.dashboard-shell:has(#sidebar-left.is-collapsed) .hud-edge-tab.edge-left,
-.dashboard-shell:has(#sidebar-right.is-collapsed) .hud-edge-tab.edge-right,
-.dashboard-shell:has(#hud-footer.is-collapsed) .hud-edge-tab.edge-bottom {
+/* Mostrar barra colapsada en el extremo únicamente en modo mapa 2D cuando su panel correspondiente está oculto */
+.dashboard-shell:has(#viewport-stage[data-view-mode="map"]) .hud-edge-tab.is-visible,
+.dashboard-shell:has(#viewport-stage[data-view-mode="map"]):has(#sidebar-left.is-collapsed) .hud-edge-tab.edge-left,
+.dashboard-shell:has(#viewport-stage[data-view-mode="map"]):has(#sidebar-right.is-collapsed) .hud-edge-tab.edge-right,
+.dashboard-shell:has(#viewport-stage[data-view-mode="map"]):has(#hud-footer.is-collapsed) .hud-edge-tab.edge-bottom {
   display: flex !important;
 }
 
@@ -3676,23 +3676,9 @@ body {
   filter: contrast(1.18) brightness(1.04);
 }
 
-/* Placa Oficial de Metadatos NASA JPL Photojournal en el extremo superior izquierdo del visor 360° */
+/* Placa Oficial de Metadatos NASA JPL Photojournal (Oculta para mantener la vista 3D limpia) */
 .sv-real-photo-badge {
-  position: absolute;
-  top: 0.65rem;
-  left: 0.65rem;
-  z-index: 22;
-  max-inline-size: min(350px, calc(100% - 4.2rem));
-  background: rgba(7, 11, 19, 0.9);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 107, 43, 0.55);
-  border-inline-start: 3px solid var(--mars-orange);
-  border-radius: 5px;
-  padding: 0.4rem 0.6rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75);
+  display: none !important;
 }
 
 .srpb-top {
@@ -4817,4 +4803,168 @@ body {
   .ddp-specs-grid {
     grid-template-columns: 1fr !important;
   }
+}
+
+/* ==========================================================================
+   VISTA 3D / 360° SIN BARRAS LATERALES Y POPUP LIMPIO DE FOTOGRAFÍA (<dialog>)
+   ========================================================================== */
+
+/* Ocultar todas las barras laterales, pestañas de borde y consola inferior al entrar a la vista 3D/360° */
+#dashboard-shell:has(#viewport-stage:not([data-view-mode="map"])) #sidebar-left,
+#dashboard-shell:has(#viewport-stage:not([data-view-mode="map"])) #sidebar-right,
+#dashboard-shell:has(#viewport-stage:not([data-view-mode="map"])) #hud-footer,
+#dashboard-shell:has(#viewport-stage:not([data-view-mode="map"])) #btn-edge-left,
+#dashboard-shell:has(#viewport-stage:not([data-view-mode="map"])) #btn-edge-right,
+#dashboard-shell:has(#viewport-stage:not([data-view-mode="map"])) #btn-edge-bottom,
+#dashboard-shell:has(#viewport-stage:not([data-view-mode="map"])) .hud-edge-tab,
+#dashboard-shell:has(#viewport-stage[data-view-mode="streetview"]) .header-panel-toggles,
+#dashboard-shell:has(#viewport-stage[data-view-mode="streetview"]) #stage-top-bar {
+  display: none !important;
+}
+
+#dashboard-shell:has(#viewport-stage:not([data-view-mode="map"])) {
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+#viewport-stage[data-view-mode="streetview"] {
+  inline-size: 100% !important;
+  block-size: 100% !important;
+  min-block-size: 0 !important;
+  padding: 0 !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+
+#viewport-stage[data-view-mode="streetview"] #streetview-container {
+  inline-size: 100% !important;
+  block-size: 100% !important;
+  min-block-size: 0 !important;
+}
+
+#viewport-stage[data-view-mode="streetview"] .streetview-stage-wrapper {
+  flex: 1 1 auto !important;
+  inline-size: 100% !important;
+  block-size: 100% !important;
+  min-block-size: 0 !important;
+}
+
+/* Prevención de scroll-chaining en modales nativos <dialog> (Modern Web Guidance) */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+/* Popup limpio de fotografía 3D: optimizado para tablets, móviles y escritorio sin verse aplanado */
+.sv-photo-popup-dialog {
+  margin: auto;
+  padding: 0;
+  border: 1px solid rgba(255, 107, 43, 0.5);
+  border-radius: 14px;
+  background: rgba(8, 12, 20, 0.98);
+  color: var(--text-primary);
+  inline-size: min(1060px, 94dvw);
+  block-size: min(760px, 86dvh);
+  max-block-size: 88dvh;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+}
+
+.sv-photo-popup-dialog[open] {
+  display: grid;
+}
+
+.sv-photo-popup-dialog::backdrop {
+  background: rgba(3, 5, 10, 0.88);
+  backdrop-filter: blur(8px);
+}
+
+.sv-photo-popup-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+}
+
+.sv-photo-popup-close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255, 107, 43, 0.85);
+  background: rgba(8, 12, 22, 0.9);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.sv-photo-popup-close:hover,
+.sv-photo-popup-close:focus-visible {
+  background: var(--mars-orange);
+  color: #07090e;
+  box-shadow: 0 0 18px rgba(255, 107, 43, 0.7);
+}
+
+.sv-photo-popup-media {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  min-block-size: clamp(280px, 58dvh, 600px);
+  background: radial-gradient(circle at 50% 40%, #2b150c 0%, #060911 100%);
+  overflow: hidden;
+}
+
+.sv-photo-popup-img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.sv-photo-popup-caption {
+  padding: 1rem 1.35rem 1.2rem;
+  background: linear-gradient(180deg, rgba(12, 18, 30, 0.98) 0%, rgba(7, 11, 19, 1) 100%);
+  border-top: 1px solid rgba(255, 107, 43, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+}
+
+.sv-photo-popup-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.96rem, 0.8rem + 0.9vw, 1.24rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  text-wrap: balance;
+}
+
+.sv-photo-popup-desc {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: clamp(0.86rem, 0.75rem + 0.5vw, 1.02rem);
+  line-height: 1.5;
+  color: var(--text-secondary);
+  text-wrap: pretty;
 }
