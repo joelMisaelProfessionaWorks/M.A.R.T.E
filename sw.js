@@ -1,10 +1,10 @@
-const CACHE_NAME = 'marte-hud-offline-v20';
+const CACHE_NAME = 'marte-hud-offline-v21';
 
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './styles.css?v=20',
-  './app.js?v=20',
+  './app.js?v=21',
   './panoramas/PIA24264-landing.jpg',
   './panoramas/PIA24921-kodiak-delta.jpg',
   './panoramas/PIA26369-bright-angel.jpg',

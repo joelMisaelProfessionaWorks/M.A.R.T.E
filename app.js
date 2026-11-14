@@ -5390,13 +5390,13 @@ function initMarsDashboard() {
           .keys()
           .then((keys) => {
             keys
-              .filter((k) => k !== 'marte-hud-offline-v20')
+              .filter((k) => k !== 'marte-hud-offline-v21')
               .forEach((k) => caches.delete(k));
           })
           .catch(() => {});
       }
       navigator.serviceWorker
-        .register('./sw.js?v=20')
+        .register('./sw.js?v=21')
         .then((reg) => {
           if (reg && typeof reg.update === 'function') reg.update().catch(() => {});
         })
@@ -5408,7 +5408,7 @@ function initMarsDashboard() {
 const MissionControlVoice = {
     audioPlayer: null,
     audioCache: {},
-    apiUrl: 'http://localhost:5000/api/narrate',
+    apiUrl: 'https://mars-voice-api-1072208312217.us-central1.run.app/api/narrate',
 
     narrate: async function(text) {
         if (!text) return;
@@ -5432,7 +5432,7 @@ const MissionControlVoice = {
             return;
         }
 
-        console.log("📡 Requesting narration from local F5-TTS server...");
+        console.log("📡 Requesting narration from F5-TTS voice server...");
 
         try {
             const response = await fetch(this.apiUrl, {
