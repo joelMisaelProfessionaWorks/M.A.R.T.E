@@ -1708,6 +1708,36 @@ function initMarsDashboard() {
       barTime.style.width = `${timeLoadPct}%`;
     }
 
+    // 4.5. Radiación Ionizante (GCR + SPE) calibrada con datos NASA Curiosity RAD
+    const elapsedHours = traveledKm / effectiveSpeedKmh;
+    const baseGcrRate = 0.027; // mSv/h promedio en superficie marciana
+
+    // Atenuación por blindaje: Rover Presurizado atenúa ~38%, traje EVA a pie solo ~5%
+    const shieldingMult = isFootEva ? 0.95 : 0.62;
+
+    // Modificador por ventana horaria y actividad solar (SPE)
+    const solarWindowMult =
+      evaConfig.departureWindow === 'night'
+        ? 0.85 // Sin componente solar directa nocturna (solo GCR)
+        : evaConfig.departureWindow === 'morning'
+        ? 0.95
+        : 1.15; // Mediodía / Máxima exposición solar
+
+    // Si cruza núcleo de tormenta o hay evento SPE activo, se dispara pico de partículas
+    const speSpike = env.crossesStormCore ? 0.16 : env.crossesStormOuter ? 0.06 : 0;
+
+    // Tasa efectiva absorbida por la tripulación (mSv/h) y dosis acumulada (mSv)
+    const radiationRateMsvH = Number(((baseGcrRate * solarWindowMult + speSpike) * shieldingMult).toFixed(3));
+    const accumulatedDoseMsv = Number((radiationRateMsvH * elapsedHours).toFixed(2));
+    const projectedTotalDoseMsv = Number((accumulatedDoseMsv + radiationRateMsvH * remHours).toFixed(2));
+    const isRadiationCritical = radiationRateMsvH >= 0.08 || projectedTotalDoseMsv >= 2.5;
+
+    // Actualiza la lectura del panel meteorológico derecho (donde actualmente dice 0.19 mSv/h)
+    const metricRadEl = document.getElementById('weather-uv-value') || document.querySelector('[data-metric="radiation"]');
+    if (metricRadEl) {
+      metricRadEl.textContent = `${radiationRateMsvH.toFixed(2)} mSv/h`;
+    }
+
     // 5. Directriz Dinámica inteligente según intersecciones con Capas NASA
     if (directiveBoxEl && directiveTitleEl && directiveTextEl) {
       const hazards = [];
@@ -1718,21 +1748,40 @@ function initMarsDashboard() {
         hazards.push(`Terreno de riesgo (${env.crossesHazardGeol})`);
       }
 
-      if (o2ConsumedPct >= 75 || batteryRemainingPct <= 25 || activeRouteData.maxSlopeDeg >= 25 || env.crossesStormCore) {
+      if (isRadiationCritical) {
+        hazards.push(
+          `Radiación ionizante elevada (${radiationRateMsvH.toFixed(2)} mSv/h • Dosis acum: ${accumulatedDoseMsv} mSv)`
+        );
+      }
+
+      if (o2ConsumedPct >= 75 || batteryRemainingPct <= 25 || activeRouteData.maxSlopeDeg >= 25 || env.crossesStormCore || isRadiationCritical) 
+      {
         directiveBoxEl.classList.add('alert-mode');
-        directiveTitleEl.textContent = '⚠ ALERTA TÁCTICA DE SUPERVIVENCIA:';
+        directiveTitleEl.textContent = isRadiationCritical && !env.crossesStormCore
+          ? '☢ ALERTA RADIOLÓGICA DE SUPERFICIE:'
+          : '⚠ ALERTA TÁCTICA DE SUPERVIVENCIA:';
+
         directiveTextEl.textContent =
           `${hazards.length ? hazards.join(' • ') + '. ' : ''}` +
-          `O₂ consumido: ${o2ConsumedPct}% | Batería: ${batteryRemainingPct}% | Pendiente máx: ${activeRouteData.maxSlopeDeg.toFixed(1)}°. ` +
-          `${env.reachedIsruDepot ? `Reabastecimiento ISRU activo en ${env.reachedIsruDepot}.` : 'Dirigirse a un depósito de hielo ISRU cercano.'}`;
-      } else {
+          `O₂: ${o2ConsumedPct}% | Bat: ${batteryRemainingPct}% | Dosis EVA: ${accumulatedDoseMsv} mSv. ` +
+          `${
+            isRadiationCritical
+              ? isFootEva
+                ? 'Abordar Rover Presurizado o evacuar a Refugio Subterráneo de Pared.'
+                : 'Blindaje de Rover activo (-38%). Dirigirse a Refugio Subterráneo de Pared.'
+              : env.reachedIsruDepot
+              ? `Reabastecimiento ISRU activo en ${env.reachedIsruDepot}.`
+              : 'Dirigirse a un depósito de hielo ISRU cercano.'
+          }`;
+      } 
+      else {
         directiveBoxEl.classList.remove('alert-mode');
         directiveTitleEl.textContent = env.reachedIsruDepot
           ? '✓ REABASTECIMIENTO ISRU CONECTADO:'
           : 'DIRECTRIZ DE SUPERVIVENCIA:';
         directiveTextEl.textContent = env.reachedIsruDepot
           ? `Extracción H₂O/O₂ validada en "${env.reachedIsruDepot}" (+16% reserva O₂). ${hazards.length ? 'Atención: ' + hazards.join(', ') + '.' : 'Sistemas nominales.'}`
-          : `${hazards.length ? 'Precaución en ruta: ' + hazards.join(' • ') + '. ' : ''}Reserva de O₂ al ${o2ReservePct}% para ${evaConfig.crewSize} astronautas.`;
+          : `${hazards.length ? 'Precaución en ruta: ' + hazards.join(' • ') + '. ' : ''}Reserva de O₂ al ${o2ReservePct}% para ${evaConfig.crewSize} astronautas • Dosis rad acumulada: ${accumulatedDoseMsv} mSv.`;
       }
     }
 
