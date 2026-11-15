@@ -49,6 +49,7 @@ function initMarsDashboard() {
   const elevRoverLine = document.getElementById('elev-rover-line');
   const elevRoverDot = document.getElementById('elev-rover-dot');
   const elevRoverLabel = document.getElementById('elev-rover-label');
+  const elevLiveBadge = document.getElementById('elev-live-badge');
 
   // Referencias de las 4 Tarjetas de Supervivencia
   const cardOxygen = document.getElementById('card-oxygen');
@@ -292,7 +293,7 @@ function initMarsDashboard() {
           km: 0.0,
           coords: [18.28, 77.68],
           elev: -2540,
-          narration: 'You have arrived at Octavia Butler landing site. All rover systems operational.'
+          narration: 'You have arrived at Octavia Butler landing site. All rover systems operational.',
         },
         {
           name: 'Science Stop: Kodiak',
@@ -583,11 +584,16 @@ function initMarsDashboard() {
   // ==========================================================================
   // 2. INICIALIZACIÓN DEL MOTOR CARTOGRÁFICO LEAFLET.JS (ETAPA 2 — ALTA NITIDEZ)
   // ==========================================================================
+  const MARS_MAP_BOUNDS = L.latLngBounds([-85.05112878, -180], [85.05112878, 180]);
+
   const marsMap = L.map('mars-leaflet-map', {
     center: JEZERO_CENTER,
     zoom: DEFAULT_ZOOM,
-    minZoom: 2,
+    minZoom: 3,
     maxZoom: 15,
+    maxBounds: MARS_MAP_BOUNDS,
+    maxBoundsViscosity: 1.0,
+    worldCopyJump: false,
     zoomControl: false,
     attributionControl: true
   });
@@ -607,6 +613,8 @@ function initMarsDashboard() {
         maxNativeZoom: 6,
         keepBuffer: 6,
         updateWhenIdle: false,
+        noWrap: true,
+        bounds: MARS_MAP_BOUNDS,
         zIndex: 1,
         attribution: 'OpenPlanetaryMap / Viking MDIM 2.1'
       }
@@ -619,6 +627,8 @@ function initMarsDashboard() {
         maxNativeZoom: 6,
         keepBuffer: 6,
         updateWhenIdle: false,
+        noWrap: true,
+        bounds: MARS_MAP_BOUNDS,
         zIndex: 2,
         attribution: 'NASA MGS MOLA Altimetry Color'
       }
@@ -631,6 +641,8 @@ function initMarsDashboard() {
         maxNativeZoom: 5,
         keepBuffer: 6,
         updateWhenIdle: false,
+        noWrap: true,
+        bounds: MARS_MAP_BOUNDS,
         opacity: 0.35,
         zIndex: 2,
         attribution: 'Celestia 16K Shaded Relief'
@@ -640,6 +652,8 @@ function initMarsDashboard() {
       layers: 'MOLA_THEMIS_blend',
       format: 'image/jpeg',
       maxZoom: 15,
+      noWrap: true,
+      bounds: MARS_MAP_BOUNDS,
       zIndex: 3,
       attribution: 'USGS Astrogeology / NASA MGS MOLA + Odyssey THEMIS IR (100m)'
     }),
@@ -647,6 +661,8 @@ function initMarsDashboard() {
       layers: 'HRSC_MOLA_Blend_Hillshade',
       format: 'image/jpeg',
       maxZoom: 15,
+      noWrap: true,
+      bounds: MARS_MAP_BOUNDS,
       zIndex: 3,
       attribution: 'ESA Mars Express HRSC + NASA MGS MOLA Blended Hillshade'
     })
@@ -659,6 +675,8 @@ function initMarsDashboard() {
       tms: true,
       maxZoom: 15,
       maxNativeZoom: 6,
+      noWrap: true,
+      bounds: MARS_MAP_BOUNDS,
       opacity: 0.42,
       zIndex: 5,
       attribution: 'NASA MGS MOLA Altimetry Overlay'
@@ -672,6 +690,8 @@ function initMarsDashboard() {
       tile.width = 256;
       tile.height = 256;
       if (coords.z < 6) return tile;
+      const maxTile = 1 << coords.z;
+      if (coords.x < 0 || coords.x >= maxTile || coords.y < 0 || coords.y >= maxTile) return tile;
 
       const ctx = tile.getContext('2d');
       const seedBase = ((coords.x * 73856093) ^ (coords.y * 19349663) ^ (coords.z * 83492791)) >>> 0;
@@ -733,6 +753,8 @@ function initMarsDashboard() {
 
   const tacticalDetailGrid = new TacticalDetailGridLayer({
     maxZoom: 15,
+    noWrap: true,
+    bounds: MARS_MAP_BOUNDS,
     zIndex: 6,
     opacity: 0.85
   });
@@ -1602,20 +1624,197 @@ function initMarsDashboard() {
     return MARS_RADIUS_KM * c;
   }
 
-  // Configurable EVA mission parameters and local persistence key
+  // Configurable EVA mission parameters, custom astronaut cargo & local persistence key
   const STORAGE_KEY_EVA = 'MARTE_MISSION_STATE_V1';
   const btnUndoPoint = document.getElementById('btn-undo-point');
   const evaCrewSelect = document.getElementById('eva-crew-size');
   const evaModeSelect = document.getElementById('eva-transport-mode');
   const evaWindowSelect = document.getElementById('eva-departure-window');
   const evaPayloadSelect = document.getElementById('eva-payload-kit');
+  const cargoPresetListEl = document.getElementById('cargo-preset-list');
+  const cargoSummaryBadgeEl = document.getElementById('cargo-summary-badge');
+  const cargoModalLiveStatsEl = document.getElementById('cargo-modal-live-stats');
+  const cargoDialogEl = document.getElementById('cargo-custom-dialog');
+  const btnOpenCargoModalEl = document.getElementById('btn-open-cargo-modal');
+  const cargoCustomFormEl = document.getElementById('cargo-custom-form');
+  const cargoCustomNameInput = document.getElementById('cargo-custom-name');
+  const cargoCustomKgInput = document.getElementById('cargo-custom-kg');
+  const cargoFormErrorEl = document.getElementById('cargo-form-error');
+
+  const EVA_CARGO_CATALOG = [
+    { id: 'core-drill', name: 'Rotary Core Drill', unitKg: 4.5, category: 'Science', o2BonusPct: 0, battBonusPct: 0 },
+    { id: 'raman-spec', name: 'SHERLOC / Raman Spec', unitKg: 3.2, category: 'Science', o2BonusPct: 0, battBonusPct: 0 },
+    { id: 'xrf-scanner', name: 'PIXL / Portable XRF', unitKg: 2.4, category: 'Science', o2BonusPct: 0, battBonusPct: 0 },
+    { id: 'sample-rack', name: 'Titanium Sample Rack', unitKg: 1.7, category: 'Samples', o2BonusPct: 0, battBonusPct: 0 },
+    { id: 'spare-o2', name: 'Spare PLSS O₂ Tank', unitKg: 3.8, category: 'Life Support', o2BonusPct: 12, battBonusPct: 0 },
+    { id: 'spare-batt', name: 'Spare MMRTG / Li-Ion Pack', unitKg: 4.0, category: 'Power', o2BonusPct: 0, battBonusPct: 12 },
+    { id: 'med-thermal', name: 'Trauma & Thermal Kit', unitKg: 2.2, category: 'Survival', o2BonusPct: 0, battBonusPct: 2 }
+  ];
+
+  const EVA_CARGO_PRESETS = {
+    '8': { 'core-drill': 1, 'sample-rack': 1, 'med-thermal': 1 }, // 8.4 kg
+    '14': { 'core-drill': 1, 'raman-spec': 1, 'xrf-scanner': 1, 'sample-rack': 1, 'med-thermal': 1 }, // 14.0 kg
+    '22': { 'core-drill': 1, 'raman-spec': 1, 'xrf-scanner': 1, 'sample-rack': 1, 'med-thermal': 1, 'spare-o2': 1, 'spare-batt': 1 } // 21.8 kg
+  };
 
   let evaConfig = {
     crewSize: 2,
     transportMode: 'rover', // 'rover' | 'foot'
     departureWindow: 'morning', // 'morning' | 'afternoon' | 'night'
-    payloadKitKg: 14 // 8 | 14 | 22 kg
+    payloadKitKg: 14, // numeric kit mass or computed cargo total
+    payloadPreset: '14', // '8' | '14' | '22' | 'custom'
+    cargoQuantities: { ...EVA_CARGO_PRESETS['14'] },
+    customCargoItems: [] // [{ id, name, unitKg, qty }]
   };
+
+  function computeAstronautCargoTotals() {
+    let cargoEarthKg = 0;
+    let totalItemsCount = 0;
+    let extraO2ReservePct = 0;
+    let extraBattReservePct = 0;
+    const activeItems = [];
+
+    EVA_CARGO_CATALOG.forEach((item) => {
+      const qty = Math.max(0, Math.min(12, Number(evaConfig.cargoQuantities?.[item.id]) || 0));
+      if (qty > 0) {
+        cargoEarthKg += item.unitKg * qty;
+        totalItemsCount += qty;
+        extraO2ReservePct += item.o2BonusPct * qty;
+        extraBattReservePct += item.battBonusPct * qty;
+        activeItems.push({ id: item.id, name: item.name, unitKg: item.unitKg, qty });
+      }
+    });
+
+    (Array.isArray(evaConfig.customCargoItems) ? evaConfig.customCargoItems : []).forEach((c) => {
+      const qty = Math.max(0, Math.min(20, Number(c.qty) || 0));
+      const unitKg = Math.max(0.1, Number(c.unitKg) || 0);
+      if (qty > 0 && unitKg > 0) {
+        cargoEarthKg += unitKg * qty;
+        totalItemsCount += qty;
+        activeItems.push({ id: c.id, name: c.name, unitKg, qty, custom: true });
+      }
+    });
+
+    return {
+      cargoEarthKg: Number(cargoEarthKg.toFixed(1)),
+      totalItemsCount,
+      extraO2ReservePct: Math.min(45, extraO2ReservePct),
+      extraBattReservePct: Math.min(45, extraBattReservePct),
+      activeItems
+    };
+  }
+
+  function renderCargoLoadoutList() {
+    const totals = computeAstronautCargoTotals();
+    evaConfig.payloadKitKg = totals.cargoEarthKg;
+
+    if (cargoSummaryBadgeEl) {
+      cargoSummaryBadgeEl.textContent = `${totals.totalItemsCount} ITEM${totals.totalItemsCount === 1 ? '' : 'S'} • ${totals.cargoEarthKg.toFixed(1)} KG`;
+    }
+    if (cargoModalLiveStatsEl) {
+      const marsLoad = (totals.cargoEarthKg * 0.38).toFixed(1);
+      const bonusParts = [];
+      if (totals.extraO2ReservePct > 0) bonusParts.push(`+${totals.extraO2ReservePct}% O₂`);
+      if (totals.extraBattReservePct > 0) bonusParts.push(`+${totals.extraBattReservePct}% Bat`);
+      cargoModalLiveStatsEl.textContent = `Total: ${totals.cargoEarthKg.toFixed(1)} kg Earth • ${marsLoad} kg @ 0.38g Mars${bonusParts.length ? ` • ${bonusParts.join(' / ')}` : ''}`;
+    }
+    if (evaPayloadSelect && evaConfig.payloadPreset) {
+      evaPayloadSelect.value = evaConfig.payloadPreset;
+    }
+
+    if (!cargoPresetListEl) return;
+    cargoPresetListEl.textContent = '';
+
+    const buildCargoRow = (entry, isCustom) => {
+      const qty = isCustom
+        ? Math.max(0, Number(entry.qty) || 0)
+        : Math.max(0, Number(evaConfig.cargoQuantities?.[entry.id]) || 0);
+      const row = document.createElement('div');
+      row.className = `cargo-item-row${qty > 0 ? ' is-active' : ''}`;
+
+      const meta = document.createElement('div');
+      meta.className = 'cargo-item-meta';
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'cargo-item-name';
+      nameEl.textContent = entry.name;
+
+      const subEl = document.createElement('span');
+      subEl.className = 'cargo-item-sub';
+      const totalItemKg = (entry.unitKg * Math.max(1, qty)).toFixed(1);
+      subEl.textContent = qty > 1
+        ? `${entry.unitKg.toFixed(1)} kg c/u (${totalItemKg} kg) • ${isCustom ? 'Custom' : entry.category}`
+        : `${entry.unitKg.toFixed(1)} kg • ${isCustom ? 'Custom Cargo' : entry.category}`;
+      meta.append(nameEl, subEl);
+
+      const stepper = document.createElement('div');
+      stepper.className = 'cargo-qty-stepper';
+
+      const btnDec = document.createElement('button');
+      btnDec.type = 'button';
+      btnDec.className = 'cargo-step-btn';
+      btnDec.setAttribute('aria-label', `Decrease ${entry.name} quantity`);
+      btnDec.textContent = '−';
+      btnDec.addEventListener('click', () => adjustCargoItemQty(entry.id, -1, isCustom));
+
+      const qtySpan = document.createElement('span');
+      qtySpan.className = 'cargo-qty-val';
+      qtySpan.textContent = String(qty);
+
+      const btnInc = document.createElement('button');
+      btnInc.type = 'button';
+      btnInc.className = 'cargo-step-btn';
+      btnInc.setAttribute('aria-label', `Increase ${entry.name} quantity`);
+      btnInc.textContent = '+';
+      btnInc.addEventListener('click', () => adjustCargoItemQty(entry.id, 1, isCustom));
+
+      stepper.append(btnDec, qtySpan, btnInc);
+
+      if (isCustom) {
+        const btnDel = document.createElement('button');
+        btnDel.type = 'button';
+        btnDel.className = 'cargo-del-btn';
+        btnDel.setAttribute('aria-label', `Remove ${entry.name}`);
+        btnDel.textContent = '✕';
+        btnDel.addEventListener('click', () => removeCustomCargoItem(entry.id));
+        stepper.append(btnDel);
+      }
+
+      row.append(meta, stepper);
+      return row;
+    };
+
+    (Array.isArray(evaConfig.customCargoItems) ? evaConfig.customCargoItems : []).forEach((customEntry) => {
+      cargoPresetListEl.appendChild(buildCargoRow(customEntry, true));
+    });
+    EVA_CARGO_CATALOG.forEach((catalogEntry) => {
+      cargoPresetListEl.appendChild(buildCargoRow(catalogEntry, false));
+    });
+  }
+
+  function adjustCargoItemQty(itemId, delta, isCustom) {
+    if (isCustom) {
+      evaConfig.customCargoItems = (evaConfig.customCargoItems || [])
+        .map((c) => (c.id === itemId ? { ...c, qty: Math.max(0, Math.min(20, (Number(c.qty) || 1) + delta)) } : c))
+        .filter((c) => c.qty > 0);
+    } else {
+      const next = Math.max(0, Math.min(12, (Number(evaConfig.cargoQuantities?.[itemId]) || 0) + delta));
+      evaConfig.cargoQuantities = { ...(evaConfig.cargoQuantities || {}), [itemId]: next };
+    }
+    evaConfig.payloadPreset = 'custom';
+    renderCargoLoadoutList();
+    syncEvaCompactUiBadges();
+    updateRoverProgress(roverProgress);
+    if (typeof playHudTone === 'function') playHudTone(delta > 0 ? 720 : 540, 0.04, 'sine');
+  }
+
+  function removeCustomCargoItem(itemId) {
+    evaConfig.customCargoItems = (evaConfig.customCargoItems || []).filter((c) => c.id !== itemId);
+    evaConfig.payloadPreset = 'custom';
+    renderCargoLoadoutList();
+    syncEvaCompactUiBadges();
+    updateRoverProgress(roverProgress);
+  }
 
   function saveMissionStateToStorage() {
     try {
@@ -1639,18 +1838,32 @@ function initMarsDashboard() {
       if (!saved || typeof saved !== 'object') return false;
 
       if (saved.evaConfig && typeof saved.evaConfig === 'object') {
+        const savedPreset = ['8', '14', '22', 'custom'].includes(String(saved.evaConfig.payloadPreset))
+          ? String(saved.evaConfig.payloadPreset)
+          : EVA_CARGO_PRESETS[String(saved.evaConfig.payloadKitKg)]
+          ? String(saved.evaConfig.payloadKitKg)
+          : '14';
+        const fallbackQuantities = EVA_CARGO_PRESETS[savedPreset] || EVA_CARGO_PRESETS['14'];
         evaConfig = {
           crewSize: Number(saved.evaConfig.crewSize) || 2,
           transportMode: saved.evaConfig.transportMode === 'foot' ? 'foot' : 'rover',
           departureWindow: ['morning', 'afternoon', 'night'].includes(saved.evaConfig.departureWindow)
             ? saved.evaConfig.departureWindow
             : 'morning',
-          payloadKitKg: Number(saved.evaConfig.payloadKitKg) || 14
+          payloadKitKg: Number(saved.evaConfig.payloadKitKg ?? 14),
+          payloadPreset: savedPreset,
+          cargoQuantities:
+            saved.evaConfig.cargoQuantities && typeof saved.evaConfig.cargoQuantities === 'object'
+              ? saved.evaConfig.cargoQuantities
+              : { ...fallbackQuantities },
+          customCargoItems: Array.isArray(saved.evaConfig.customCargoItems)
+            ? saved.evaConfig.customCargoItems
+            : []
         };
         if (evaCrewSelect) evaCrewSelect.value = String(evaConfig.crewSize);
         if (evaModeSelect) evaModeSelect.value = evaConfig.transportMode;
         if (evaWindowSelect) evaWindowSelect.value = evaConfig.departureWindow;
-        if (evaPayloadSelect) evaPayloadSelect.value = String(evaConfig.payloadKitKg);
+        renderCargoLoadoutList();
       }
 
       const targetProgress =
@@ -2405,9 +2618,13 @@ function initMarsDashboard() {
       elevRoverDot.setAttribute('cx', roverX);
       elevRoverDot.setAttribute('cy', roverY);
     }
+    const traveledKmVal = (roverProgress / 100) * activeRouteData.totalDistKm;
+    const unitPrefix = evaConfig.transportMode === 'foot' ? 'FOOT EVA' : 'ROVER';
+    const elevBadgeText = `${unitPrefix} • ${formatEvaDist(traveledKmVal)} • ${roverPos.elev.toLocaleString('en-US')}m`;
+    if (elevLiveBadge) {
+      elevLiveBadge.textContent = elevBadgeText;
+    }
     if (elevRoverLabel) {
-      const traveledKmVal = (roverProgress / 100) * activeRouteData.totalDistKm;
-      const unitPrefix = evaConfig.transportMode === 'foot' ? 'FOOT EVA' : 'ROVER';
       const labelX = roverX > 390 ? roverX - 185 : roverX + 8;
       elevRoverLabel.setAttribute('x', Math.max(8, labelX));
       elevRoverLabel.textContent = `${unitPrefix} (${formatEvaDist(traveledKmVal)} | ${roverPos.elev.toLocaleString('en-US')}m)`;
@@ -2431,21 +2648,23 @@ function initMarsDashboard() {
     const modeBattMult = isFootEva ? 0.65 : 1.0; // PLSS de traje vs tracción de Rover
     const speedBase = isFootEva ? 1.45 : activeRouteData.avgSpeedKmh;
 
-    // 0. Impacto del Equipo Científico y Muestras Recolectadas en Gravedad Marciana (0.38g) sobre Movilidad
+    // 0. Impacto del Equipo Científico, Carga Personalizada y Muestras Recolectadas (0.38g) sobre Movilidad
     const doneStopThresholdKm = Math.max(0.02, totalKm * 0.02);
     const completedStops = Math.max(
       1,
       activeRouteData.waypoints.filter((wp) => traveledKm >= wp.km - doneStopThresholdKm).length
     );
-    const baseKitKg = Number(evaConfig.payloadKitKg || evaPayloadSelect?.value || 14);
+    const cargoTotals = computeAstronautCargoTotals();
+    const baseKitKg = cargoTotals.cargoEarthKg;
     const samplesMassKg = Number((completedStops * 1.5).toFixed(1)); // 1.5 kg por parada científica (núcleos + tubos de titanio)
     const totalPayloadEarthKg = Number((baseKitKg + samplesMassKg).toFixed(1));
     const marsEffectiveWeightKg = Number((totalPayloadEarthKg * 0.38).toFixed(1)); // Gravedad superficial de Marte = 0.38g
+    const isFootOverload = isFootEva && totalPayloadEarthKg > 30;
 
     // Penalización de velocidad y carga metabólica/O₂ por transportar equipo + muestras en traje espacial
     const payloadSpeedMult = isFootEva
-      ? Math.max(0.76, 1 - totalPayloadEarthKg * 0.0042)
-      : Math.max(0.92, 1 - totalPayloadEarthKg * 0.0012);
+      ? Math.max(0.68, 1 - totalPayloadEarthKg * 0.0042)
+      : Math.max(0.88, 1 - totalPayloadEarthKg * 0.0012);
     const payloadO2Mult = isFootEva
       ? 1 + totalPayloadEarthKg * 0.0052
       : 1 + totalPayloadEarthKg * 0.0014;
@@ -2468,8 +2687,8 @@ function initMarsDashboard() {
       ? 1.12
       : 1.0;
     const geolTractionPenalty = env.crossesHazardGeol ? 1.15 : 1.0;
-    const isruO2BonusPct = env.reachedIsruDepot ? 16 : 0; // Recarga criogénica ISRU H₂O -> O₂
-    const isruBattBonusPct = env.reachedIsruDepot ? 8 : 0;
+    const isruO2BonusPct = (env.reachedIsruDepot ? 16 : 0) + cargoTotals.extraO2ReservePct;
+    const isruBattBonusPct = (env.reachedIsruDepot ? 8 : 0) + cargoTotals.extraBattReservePct;
 
     const effectiveSpeedKmh = Math.max(
       0.7,
@@ -2699,10 +2918,15 @@ function initMarsDashboard() {
       pwSamplesBadgeEl.textContent = `${completedStops}/${totalStopsCount} CORES (+${samplesMassKg.toFixed(1)} KG)`;
     }
     if (pwMassValEl) {
-      pwMassValEl.innerHTML = `${baseKitKg.toFixed(1)} kg Kit + ${samplesMassKg.toFixed(1)} kg Samples = ${totalPayloadEarthKg.toFixed(1)} kg &rarr; <strong>${marsEffectiveWeightKg.toFixed(1)} kg @ 0.38g</strong>`;
+      pwMassValEl.innerHTML = `${baseKitKg.toFixed(1)} kg Cargo (${cargoTotals.totalItemsCount}) + ${samplesMassKg.toFixed(1)} kg Samples = ${totalPayloadEarthKg.toFixed(1)} kg &rarr; <strong>${marsEffectiveWeightKg.toFixed(1)} kg @ 0.38g</strong>`;
     }
     if (pwMobilityImpactEl) {
-      pwMobilityImpactEl.textContent = `Mobility Impact: Speed -${speedLossPct}% (${effectiveSpeedKmh.toFixed(1)} km/h) • O₂ Load +${o2LoadExtraPct}% • ${metabolicKcalH} kcal/h`;
+      const overloadTag = isFootOverload ? ' • ⚠ HEAVY SUIT LOAD' : '';
+      const supplyTag =
+        cargoTotals.extraO2ReservePct > 0 || cargoTotals.extraBattReservePct > 0
+          ? ` • +${cargoTotals.extraO2ReservePct}% O₂/+${cargoTotals.extraBattReservePct}% Bat`
+          : '';
+      pwMobilityImpactEl.textContent = `Mobility Impact: Speed -${speedLossPct}% (${effectiveSpeedKmh.toFixed(1)} km/h) • O₂ Load +${o2LoadExtraPct}% • ${metabolicKcalH} kcal/h${supplyTag}${overloadTag}`;
     }
     if (pwWalkbackBadgeEl) {
       pwWalkbackBadgeEl.textContent = isWalkbackSafe
@@ -2937,14 +3161,29 @@ function initMarsDashboard() {
     });
   });
 
-  // Eventos de los Parámetros Configurables de Misión EVA
-  const onEvaConfigChange = () => {
+  // Eventos de los Parámetros Configurables de Misión EVA y Carga Personalizada
+  const onEvaConfigChange = (e) => {
+    const isPayloadSelectEvent = e && e.target === evaPayloadSelect;
+    const selectedPreset = evaPayloadSelect?.value || evaConfig.payloadPreset || '14';
+
+    if (isPayloadSelectEvent && EVA_CARGO_PRESETS[selectedPreset]) {
+      evaConfig.payloadPreset = selectedPreset;
+      evaConfig.cargoQuantities = { ...EVA_CARGO_PRESETS[selectedPreset] };
+    } else if (isPayloadSelectEvent && selectedPreset === 'custom') {
+      evaConfig.payloadPreset = 'custom';
+      if (cargoDialogEl && !cargoDialogEl.open) {
+        cargoDialogEl.showModal();
+      }
+    }
+
     evaConfig = {
+      ...evaConfig,
       crewSize: Number(evaCrewSelect?.value || 2),
       transportMode: evaModeSelect?.value || 'rover',
       departureWindow: evaWindowSelect?.value || 'morning',
-      payloadKitKg: Number(evaPayloadSelect?.value || 14)
+      payloadPreset: isPayloadSelectEvent ? selectedPreset : evaConfig.payloadPreset
     };
+    renderCargoLoadoutList();
     syncEvaCompactUiBadges();
     renderRouteOnMap(false);
     updateRoverProgress(roverProgress);
@@ -2954,6 +3193,89 @@ function initMarsDashboard() {
   evaModeSelect?.addEventListener('change', onEvaConfigChange);
   evaWindowSelect?.addEventListener('change', onEvaConfigChange);
   evaPayloadSelect?.addEventListener('change', onEvaConfigChange);
+
+  if (btnOpenCargoModalEl && cargoDialogEl) {
+    btnOpenCargoModalEl.addEventListener('click', () => {
+      if (!cargoDialogEl.open) {
+        cargoDialogEl.showModal();
+      }
+    });
+    if (!('closedBy' in HTMLDialogElement.prototype)) {
+      const isOutsideDialog = (ev) => {
+        const r = cargoDialogEl.getBoundingClientRect();
+        return ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom;
+      };
+      let pressedOutsideCargo = false;
+      cargoDialogEl.addEventListener('pointerdown', (ev) => {
+        pressedOutsideCargo = isOutsideDialog(ev);
+      });
+      cargoDialogEl.addEventListener('pointerup', (ev) => {
+        if (pressedOutsideCargo && isOutsideDialog(ev)) cargoDialogEl.close();
+      });
+    }
+    cargoDialogEl.addEventListener('close', () => {
+      cargoDialogEl.returnValue = '';
+    });
+  }
+
+  if (cargoCustomFormEl && cargoCustomNameInput && cargoCustomKgInput) {
+    const clearCargoFormError = () => {
+      if (cargoFormErrorEl) cargoFormErrorEl.textContent = '';
+      cargoCustomNameInput.removeAttribute('aria-invalid');
+      cargoCustomKgInput.removeAttribute('aria-invalid');
+    };
+    cargoCustomNameInput.addEventListener('input', clearCargoFormError);
+    cargoCustomKgInput.addEventListener('input', clearCargoFormError);
+
+    cargoCustomFormEl.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const rawName = cargoCustomNameInput.value.trim();
+      const rawKgNormalized = cargoCustomKgInput.value.trim().replace(',', '.');
+      const parsedKg = Number.parseFloat(rawKgNormalized);
+
+      if (!rawName) {
+        if (cargoFormErrorEl) cargoFormErrorEl.textContent = 'Enter an item name.';
+        cargoCustomNameInput.setAttribute('aria-invalid', 'true');
+        cargoCustomNameInput.focus();
+        return;
+      }
+      if (!Number.isFinite(parsedKg) || parsedKg <= 0 || parsedKg > 120) {
+        if (cargoFormErrorEl) cargoFormErrorEl.textContent = 'Enter valid mass (0.1–120 kg).';
+        cargoCustomKgInput.setAttribute('aria-invalid', 'true');
+        cargoCustomKgInput.focus();
+        return;
+      }
+
+      clearCargoFormError();
+      const existingCustom = (evaConfig.customCargoItems || []).find(
+        (c) => c.name.toLowerCase() === rawName.toLowerCase() && Math.abs(c.unitKg - parsedKg) < 0.05
+      );
+      if (existingCustom) {
+        existingCustom.qty = Math.min(20, (Number(existingCustom.qty) || 1) + 1);
+      } else {
+        evaConfig.customCargoItems = [
+          ...(evaConfig.customCargoItems || []),
+          {
+            id: `custom-${Date.now().toString(36)}`,
+            name: rawName,
+            unitKg: Number(parsedKg.toFixed(1)),
+            qty: 1
+          }
+        ];
+      }
+
+      evaConfig.payloadPreset = 'custom';
+      cargoCustomNameInput.value = '';
+      cargoCustomKgInput.value = '';
+      renderCargoLoadoutList();
+      syncEvaCompactUiBadges();
+      updateRoverProgress(roverProgress);
+      cargoCustomNameInput.focus();
+      if (typeof playHudTone === 'function') playHudTone(780, 0.05, 'triangle');
+    });
+  }
+
+  renderCargoLoadoutList();
 
   if (roverSlider) {
     roverSlider.addEventListener('input', (e) => {
@@ -3319,8 +3641,7 @@ function initMarsDashboard() {
       elev: -2540,
       initialYaw: 18,
       initialPitch: 0,
-      narration: "You have arrived at Octavia Butler landing site. All rover systems operational.",
-      realPano: {
+        narration: "Welcome to the Octavia Butler landing site, where all rover systems are fully operational. You are standing right in our initial touchdown zone on the Maaz Volcanic Unit, where blast marks from the skycrane retro-rockets are still visible in the surrounding regolith. Just over there lies a flat, compacted runway from which the first powered helicopter on another planet took off, completing seventy-two historic flights. Nearby, you can also observe vesicular basaltic rocks coated in ferric dust and perchlorate salts, offering clear evidence of ancient volcanic activity followed by aqueous alteration.",      realPano: {
         piaId: 'PIA24264',
         sol: 'SOL 3 (MARS 2020)',
         localUrl: 'panoramas/PIA24264-landing.jpg',
@@ -3391,7 +3712,7 @@ function initMarsDashboard() {
       elev: -2490,
       initialYaw: 10,
       initialPitch: 0,
-      narration: "Arrived at Kodiak Mesa science stop. Geological analysis in progress.",
+      narration: "Welcome to our historic traverse across Gale Crater toward Mount Sharp. Following the tracks of the Curiosity rover from Bradbury Landing, we will journey across the dark basaltic sands of the Bagnold Dunes and climb past Vera Rubin Ridge, exploring ancient formations rich in hematite and sulfates.",
       realPano: {
         piaId: 'PIA24921',
         sol: 'SOL 466 (MARS 2020)',
@@ -3471,8 +3792,7 @@ function initMarsDashboard() {
       elev: -2435,
       initialYaw: 0,
       initialPitch: 0,
-      narration: "Approaching subsurface ice deposit. Resource utilization systems ready.",
-      realPano: {
+        narration: "We are now approaching our subsurface ice deposit, with all resource utilization systems ready. Right ahead along the sheltered northern delta slope, radar scans reveal a crystalline water ice lens exposed just one point two meters beneath the surface, a critical reserve for potable water and rocket propellant. Looking toward the ice trench, we estimate a capacity of forty-two thousand liters after thermal sublimation and perchlorate filtration, enough to completely refill all crew life support backpacks. Nearby stands our MOXIE processing plant, a surface generator producing two point four kilograms of breathable oxygen every hour directly from the Martian carbon dioxide atmosphere.",      realPano: {
         piaId: 'PIA26369',
         sol: 'SOL 1178 (NERETVA VALLIS)',
         localUrl: 'panoramas/PIA26369-bright-angel.jpg',
@@ -3551,8 +3871,7 @@ function initMarsDashboard() {
       elev: -2380,
       initialYaw: -10,
       initialPitch: 0,
-      narration: "Welcome to Base Camp Delta Prime. Radiation levels are stable.",
-      realPano: {
+        narration: "Welcome to Base Camp Delta Prime, where interior radiation levels are completely stable. Ahead stands our pressurized shelter, reinforced with sintered regolith shielding to protect the crew against cosmic and solar radiation, with airlocks ready for rover docking. Beside it is the main habitation dome, Ares Prime, built to sustain six astronauts for five hundred sols with a hydroponic greenhouse, medical lab, and Kilopower reactor. However, look toward the southwest horizon, where weather radar is tracking an active dust storm front rising twelve kilometers high, meaning all explorers must remain safely inside the habitat until it passes.",      realPano: {
         piaId: 'PIA26474',
         sol: 'SOL 1337 (JEZERO RIM SUMMIT)',
         localUrl: 'panoramas/PIA26474-rio-chiquito.jpg',
@@ -3631,8 +3950,7 @@ function initMarsDashboard() {
       elev: -4310,
       initialYaw: 5,
       initialPitch: 1,
-      narration: "Welcome to Gale Crater. Mount Sharp is visible ahead.",
-      realPano: {
+        narration: "Welcome to Gale Crater, where the massive central peak of Mount Sharp rises directly ahead. Towering five point five kilometers above the crater floor, its sedimentary layers preserve a geological timeline of Mars transitioning from an ancient, wet clay-forming era to the arid sulfate world we see today. Looking toward Vera Rubin Ridge, you can also spot hematite-rich outcrops laced with bright gypsum veins, formed long ago by the circulation of hydrothermal fluids.",      realPano: {
         piaId: 'PIA22545',
         sol: 'SOL 2137 / 4220 (CURIOSITY MSL)',
         localUrl: 'panoramas/PIA22545-gale-curiosity.jpg',
@@ -3711,8 +4029,7 @@ function initMarsDashboard() {
       elev: -3790,
       initialYaw: 0,
       initialPitch: 1,
-      narration: "Entering Coprates Chasma. Caution, extreme depth and steep cliffs.",
-      realPano: {
+        narration: "We are now entering Coprates Chasma in Valles Marineris, so please exercise extreme caution around this immense depth and steep cliff terrain. Towering directly above us, the exposed canyon walls reveal over six kilometers of primordial Martian crust alongside massive hydrated sulfate deposits. Look carefully toward the north wall, which rises at a critical slope of twenty-seven point six degrees. Due to recurrent debris fans and dark slope lineae, there is a high risk of regolith avalanches, and rover approach is strictly prohibited within fifty meters of the talus base.",      realPano: {
         piaId: 'PIA13077',
         sol: 'MRO HiRISE + VIKING',
         localUrl: 'panoramas/PIA13077-valles-marineris.jpg',
@@ -5670,23 +5987,11 @@ function initMarsDashboard() {
     });
   }
 
-  function applyResponsivePanelDefaults(isMobile) {
-    if (isMobile) {
-      // En teléfono (estilo Google Maps / Waze): mapa 100% despejado al iniciar con barra inferior de pestañas lista
-      setPanelOpen('left', false, true);
-      setPanelOpen('right', false, true);
-      setPanelOpen('bottom', false, true);
-    } else if (window.innerWidth <= 1080) {
-      // En tablet (821px–1080px): abrir solo el panel izquierdo y el HUD inferior para no comprimir el mapa central
-      setPanelOpen('left', true, true);
-      setPanelOpen('right', false, true);
-      setPanelOpen('bottom', true, true);
-    } else {
-      // En escritorio amplio: mostrar las barras laterales y el HUD inferior en sus extremos
-      setPanelOpen('left', true, true);
-      setPanelOpen('right', true, true);
-      setPanelOpen('bottom', true, true);
-    }
+  function applyResponsivePanelDefaults(_isMobile) {
+    // Al iniciar o volver al mapa: ocultar paneles laterales (rutas y layers/weather) y dejar visible solo la parte inferior
+    setPanelOpen('left', false, true);
+    setPanelOpen('right', false, true);
+    setPanelOpen('bottom', true, true);
   }
 
   applyResponsivePanelDefaults(mobileMediaQuery.matches);
@@ -6013,8 +6318,8 @@ function initMarsDashboard() {
       coords: [18.4447, 77.4508],
       routeKey: 'jezero-alpha',
       stationId: 'scene-kodiak',
-      summary:
-        'Astrobiology laboratory powered by a 1,025 kg Multi-Mission Radioisotope Thermoelectric Generator (MMRTG). Landed on February 18, 2021 at Octavia E. Butler Landing with the mission to collect core rock samples from the ancient lake delta and validate critical technologies for human exploration.',
+      summary:'Astrobiology laboratory powered by a 1,025 kg Multi-Mission Radioisotope Thermoelectric Generator (MMRTG). Landed on February 18, 2021 at Octavia E. Butler Landing with the mission to collect core rock samples from the ancient lake delta and validate critical technologies for human exploration.',
+      narration:"Perseverance is a one thousand twenty-five kilogram astrobiology laboratory powered by a Multi-Mission Radioisotope Thermoelectric Generator. It landed on February eighteenth, twenty twenty-one, at Octavia Butler Landing, with the mission to collect core rock samples from Jezero's ancient lake delta and validate critical technologies for future human exploration.",
       specs: [
         { label: 'LANDING SITE', val: '18.4447°N, 77.4508°E' },
         { label: 'MOLA ALTITUDE', val: '-2,564 meters' },
@@ -6043,6 +6348,8 @@ function initMarsDashboard() {
       stationId: 'scene-landing',
       summary:
         'First powered aircraft to achieve controlled flight on another planet (April 19, 2021). Originally designed for only 5 test flights, it exceeded all expectations by completing 72 flights as an advance aerial scout for Perseverance in an atmosphere with barely 1% of Earth density.',
+      narration:
+        "Ingenuity was the first powered aircraft to achieve controlled flight on another planet, lifting off on April nineteenth, twenty twenty-one. Originally designed for just five test flights, it exceeded all expectations by completing seventy-two missions as an advance aerial scout for Perseverance, flying through a Martian atmosphere with barely one percent of Earth's density.",
       specs: [
         { label: 'HOME AIRFIELD', val: 'Wright Brothers Field' },
         { label: 'TOTAL FLIGHTS', val: '72 Successful Flights' },
@@ -6070,6 +6377,8 @@ function initMarsDashboard() {
       stationId: 'scene-gale',
       summary:
         'Operating on Mars since August 6, 2012. Curiosity has climbed over 800 vertical meters up the foothills of Mount Sharp (Aeolis Mons), confirming ancient habitable lakes and, in 2025, exploring the polygonal Boxwork Formations—mineralized fracture ridges cemented by warm subsurface groundwater.',
+      narration:
+        "Operating on Mars since August sixth, twenty twelve, the Curiosity rover has climbed over eight hundred vertical meters up the foothills of Mount Sharp, also known as Aeolis Mons. Its discoveries confirmed that the ancient Gale Crater lake once held pH-neutral liquid water along with all the key chemical ingredients for life, including carbon, hydrogen, nitrogen, oxygen, phosphorus, and sulfur.",
       specs: [
         { label: 'LANDING SITE', val: 'Bradbury Landing (-4.58°S)' },
         { label: 'BASE ALTITUDE', val: '-4,501 meters (MOLA)' },
@@ -6097,6 +6406,8 @@ function initMarsDashboard() {
       stationId: null,
       summary:
         'First mission dedicated to investigating Mars deep interior. Revealed Martian crustal thickness (24 to 72 km), the size of its liquid iron-nickel core (radius ~1,830 km), and current meteorite impact rates, essential data for structural engineering of permanent bases.',
+      narration:
+        "This was the first mission dedicated to investigating the deep interior of Mars. Its seismic measurements revealed a Martian crustal thickness ranging from twenty-four to seventy-two kilometers, a liquid iron-nickel core with a radius of about one thousand eight hundred thirty kilometers, and current meteorite impact rates, providing essential data for the structural engineering of permanent bases.",
       specs: [
         { label: 'COORDINATES', val: '4.5024°N, 135.6234°E' },
         { label: 'MOLA ALTITUDE', val: '-2,613 meters' },
@@ -6123,6 +6434,8 @@ function initMarsDashboard() {
       stationId: null,
       summary:
         'Landed on July 20, 1976, transmitting the first sharp panoramic photographs from the Martian surface and operating for 2,245 sols (over 6 Earth years). Its regolith analyses established the presence of perchlorates and iron oxides that guide today EVA decontamination protocols.',
+      narration:
+        "Landing on July twentieth, nineteen seventy-six, this mission transmitted the first sharp panoramic photographs from the Martian surface and operated for two thousand two hundred forty-five sols, or over six Earth years. Its regolith analyses established the presence of perchlorates and iron oxides that directly guide today's extravehicular activity decontamination protocols.",
       specs: [
         { label: 'COORDINATES', val: '22.4800°N, 47.9500°W' },
         { label: 'MOLA ALTITUDE', val: '-3,627 meters' },
@@ -6149,7 +6462,8 @@ function initMarsDashboard() {
       stationId: 'scene-valles',
       summary:
         'Topographic, geological, and water-ice datasets powering the 5 layers of this application originate from the MOLA Laser Altimeter (Mars Global Surveyor) and HiRISE (25 cm/pixel), CTX, and SHARAD radar sensors aboard the Mars Reconnaissance Orbiter (MRO), including mapping of Olympus Mons (+21,229m) and Valles Marineris.',
-      specs: [
+      narration:
+        "The topographic, geological, and water-ice datasets powering the five layers of this application originate from the MOLA Laser Altimeter aboard Mars Global Surveyor, alongside the HiRISE camera capturing at twenty-five centimeters per pixel, and the CTX and SHARAD radar sensors aboard the Mars Reconnaissance Orbiter. Together, they provide high-resolution mapping of Valles Marineris and Olympus Mons, which rises twenty-one thousand two hundred twenty-nine meters high.",      specs: [
         { label: 'HIRISE RESOLUTION', val: '0.25 meters / pixel' },
         { label: 'MOLA VERTICAL ACCURACY', val: '±1.0 meter absolute' },
         { label: 'SHARAD RADAR (ICE)', val: 'Penetration up to 1 km' },
@@ -6184,6 +6498,15 @@ function initMarsDashboard() {
 
   let currentDossierMissionId = 'perseverance-m2020';
 
+  // Detener narración del Dossier al cerrar la ventana modal
+  if (dossierDialog) {
+    dossierDialog.addEventListener('close', () => {
+      if (typeof MissionControlVoice !== 'undefined') {
+        MissionControlVoice.stop();
+      }
+    });
+  }
+
   // Fallback obligatorio (Modern Web Guidance) para navegadores sin soporte nativo de <dialog closedby="any">
   if (dossierDialog && !('closedBy' in HTMLDialogElement.prototype)) {
     dossierDialog.addEventListener('click', (event) => {
@@ -6202,11 +6525,12 @@ function initMarsDashboard() {
   // Genera el objeto JSON con toda la telemetría de supervivencia y ruta actual
   function buildCurrentEvaManifestObject() {
     const pos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
+    const cargoSummary = computeAstronautCargoTotals();
     return {
       missionProgram: 'NASA Space Apps Challenge 2026 — M.A.R.T.E',
       timestampMTC: document.getElementById('hud-header-clock')?.textContent || 'SOL 1420 MTC',
       routeKey: currentRouteKey,
-      evaConfig: { ...evaConfig },
+      evaConfig: { ...evaConfig, cargoManifest: cargoSummary },
       activeRoute: {
         code: activeRouteData.code,
         title: activeRouteData.title,
@@ -6258,14 +6582,27 @@ function initMarsDashboard() {
         }
 
         if (parsed.evaConfig) {
+          const importedPreset = ['8', '14', '22', 'custom'].includes(String(parsed.evaConfig.payloadPreset))
+            ? String(parsed.evaConfig.payloadPreset)
+            : '14';
           evaConfig = {
+            ...evaConfig,
             crewSize: Number(parsed.evaConfig.crewSize || 2),
             transportMode: parsed.evaConfig.transportMode || 'rover',
-            departureWindow: parsed.evaConfig.departureWindow || 'morning'
+            departureWindow: parsed.evaConfig.departureWindow || 'morning',
+            payloadPreset: importedPreset,
+            cargoQuantities:
+              parsed.evaConfig.cargoQuantities && typeof parsed.evaConfig.cargoQuantities === 'object'
+                ? parsed.evaConfig.cargoQuantities
+                : { ...(EVA_CARGO_PRESETS[importedPreset] || EVA_CARGO_PRESETS['14']) },
+            customCargoItems: Array.isArray(parsed.evaConfig.customCargoItems)
+              ? parsed.evaConfig.customCargoItems
+              : []
           };
           if (evaCrewSelect) evaCrewSelect.value = String(evaConfig.crewSize);
           if (evaModeSelect) evaModeSelect.value = evaConfig.transportMode;
           if (evaWindowSelect) evaWindowSelect.value = evaConfig.departureWindow;
+          renderCargoLoadoutList();
         }
 
         activeRouteData = {
@@ -6349,6 +6686,15 @@ function initMarsDashboard() {
     if (ddpNameEl) ddpNameEl.textContent = m.name;
     if (ddpStatusEl) ddpStatusEl.textContent = m.status;
     if (ddpSummaryEl) ddpSummaryEl.textContent = m.summary;
+
+    const narrationText = m.narration || m.summary;
+    if (
+      narrationText &&
+      typeof MissionControlVoice !== 'undefined' &&
+      typeof MissionControlVoice.narrate === 'function'
+    ) {
+      MissionControlVoice.narrate(narrationText);
+    }
 
     if (ddpSpecsGridEl) {
       ddpSpecsGridEl.innerHTML = m.specs
@@ -6581,13 +6927,13 @@ function initMarsDashboard() {
           .keys()
           .then((keys) => {
             keys
-              .filter((k) => k !== 'marte-hud-offline-v29')
+              .filter((k) => k !== 'marte-hud-offline-v32')
               .forEach((k) => caches.delete(k));
           })
           .catch(() => {});
       }
       navigator.serviceWorker
-        .register('./sw.js?v=29')
+        .register('./sw.js?v=32')
         .then((reg) => {
           if (reg && typeof reg.update === 'function') reg.update().catch(() => {});
         })

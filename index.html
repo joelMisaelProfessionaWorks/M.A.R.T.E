@@ -14,8 +14,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <!-- Leaflet.js Cartographic Engine (Stage 2) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <!-- Main HUD Stylesheet (v20 Mobile Google Maps / Waze Mode + Sidebars) -->
-  <link rel="stylesheet" href="styles.css?v=29">
+  <!-- Main HUD Stylesheet (v32 Default Hidden Side Panels, Bottom HUD Visible) -->
+  <link rel="stylesheet" href="styles.css?v=32">
   <!-- Offline / PWA Support -->
   <meta name="theme-color" content="#07090e">
   <link rel="manifest" href="manifest.webmanifest">
@@ -52,11 +52,11 @@
 
       <!-- Quick Collapsible Panel Controls (Left/Center Header) -->
       <div class="header-panel-toggles" role="toolbar" aria-label="Show or hide information panels">
-        <button id="btn-toggle-left-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Show/Hide Route Planner (Left)">
+        <button id="btn-toggle-left-panel" class="hud-panel-toggle" type="button" aria-expanded="false" title="Show/Hide Route Planner (Left)">
           <i class="fa-solid fa-route text-orange"></i>
           <span>ROUTES</span>
         </button>
-        <button id="btn-toggle-right-panel" class="hud-panel-toggle is-active" type="button" aria-expanded="true" title="Show/Hide NASA Layers &amp; Weather (Right)">
+        <button id="btn-toggle-right-panel" class="hud-panel-toggle" type="button" aria-expanded="false" title="Show/Hide NASA Layers &amp; Weather (Right)">
           <i class="fa-solid fa-layer-group text-cyan"></i>
           <span>LAYERS &amp; WEATHER</span>
         </button>
@@ -96,14 +96,14 @@
     </header>
 
     <!-- COLLAPSED EDGE TABS TO REOPEN PANELS AT ANY TIME -->
-    <button id="btn-edge-left" class="hud-edge-tab edge-left" type="button" title="Show Expedition Planner">
+    <button id="btn-edge-left" class="hud-edge-tab edge-left is-visible" type="button" aria-expanded="false" title="Show Expedition Planner">
       <span class="edge-tab-action"><i class="fa-solid fa-angles-right"></i></span>
       <i class="fa-solid fa-route text-orange edge-tab-icon"></i>
       <span class="edge-tab-label">EXPEDITION PLANNER</span>
       <span class="edge-tab-hint">SHOW</span>
     </button>
 
-    <button id="btn-edge-right" class="hud-edge-tab edge-right" type="button" title="Show NASA Layers &amp; Weather">
+    <button id="btn-edge-right" class="hud-edge-tab edge-right is-visible" type="button" aria-expanded="false" title="Show NASA Layers &amp; Weather">
       <span class="edge-tab-action cyan"><i class="fa-solid fa-angles-left"></i></span>
       <i class="fa-solid fa-layer-group text-cyan edge-tab-icon"></i>
       <span class="edge-tab-label">NASA LAYERS &amp; WEATHER</span>
@@ -120,7 +120,7 @@
     <!-- ====================================================================
          2. COLLAPSIBLE LEFT SIDEBAR (CONTROLS & ROUTES)
          ==================================================================== -->
-    <aside id="sidebar-left" class="hud-sidebar-left glass-panel scroller" aria-label="Exploration Controls and Routes">
+    <aside id="sidebar-left" class="hud-sidebar-left glass-panel scroller is-collapsed" aria-label="Exploration Controls and Routes">
       <div class="panel-heading">
         <div class="heading-title">
           <i class="fa-solid fa-route text-orange"></i>
@@ -232,11 +232,12 @@
                 </select>
               </label>
               <label class="eva-cfg-field">
-                <span>SCIENCE KIT</span>
+                <span>CARGO PRESET</span>
                 <select id="eva-payload-kit" class="cyber-select compact">
-                  <option value="8">Light Kit (8 kg // XRF)</option>
-                  <option value="14" selected>Standard (14 kg // Drill+Raman)</option>
-                  <option value="22">Heavy Rig (22 kg // Deep Core)</option>
+                  <option value="8">Light Kit (8.0 kg)</option>
+                  <option value="14" selected>Standard Kit (14.0 kg)</option>
+                  <option value="22">Heavy Rig (22.0 kg)</option>
+                  <option value="custom">Custom Loadout</option>
                 </select>
               </label>
             </div>
@@ -280,20 +281,30 @@
           </div>
         </details>
 
-        <!-- Suit Mobility, Science Payload (0.38g) & Walkback Safety Limit -->
+        <!-- Suit Mobility, Science Payload (0.38g), Cargo Modal Trigger & Walkback Safety Limit -->
         <div class="payload-walkback-strip" id="eva-payload-walkback-strip" aria-live="polite">
           <div class="pws-block">
             <div class="pws-header">
-              <span class="pws-title"><i class="fa-solid fa-weight-hanging text-orange"></i> SUIT PAYLOAD &amp; SAMPLES (0.38g)</span>
-              <span class="pws-chip" id="pw-samples-badge">2 CORES (+3.0 KG)</span>
+              <span class="pws-title"><i class="fa-solid fa-weight-hanging text-orange" aria-hidden="true"></i> SUIT PAYLOAD &amp; SAMPLES (0.38g)</span>
+              <span class="pws-chip" id="pw-samples-badge">2/4 CORES (+3.0 KG)</span>
             </div>
-            <div class="pws-main-val" id="pw-mass-val">14.0 kg Kit + 3.0 kg Samples = 17.0 kg &rarr; <strong>6.5 kg @ 0.38g</strong></div>
+            <div class="pws-main-val" id="pw-mass-val">14.0 kg Cargo + 3.0 kg Samples = 17.0 kg &rarr; <strong>6.5 kg @ 0.38g</strong></div>
             <div class="pws-sub-val" id="pw-mobility-impact">Mobility Impact: Speed -6% &bull; O₂ Load +8% &bull; 312 kcal/h</div>
+            <button
+              type="button"
+              id="btn-open-cargo-modal"
+              class="planner-btn full-width cargo-open-btn"
+              command="show-modal"
+              commandfor="cargo-custom-dialog"
+            >
+              <span><i class="fa-solid fa-boxes-stacked text-cyan" aria-hidden="true"></i> CUSTOM CARGO &amp; SUPPLIES</span>
+              <span class="hud-disclosure-badge" id="cargo-summary-badge">5 ITEMS &bull; 14.0 KG</span>
+            </button>
           </div>
           <div class="pws-divider"></div>
           <div class="pws-block">
             <div class="pws-header">
-              <span class="pws-title"><i class="fa-solid fa-person-walking-arrow-loop-left text-cyan"></i> WALKBACK SAFETY LIMIT</span>
+              <span class="pws-title"><i class="fa-solid fa-person-walking-arrow-loop-left text-cyan" aria-hidden="true"></i> WALKBACK SAFETY LIMIT</span>
               <span class="pws-chip is-safe" id="pw-walkback-badge">✓ SAFE RETURN</span>
             </div>
             <div class="pws-sub-val" id="pw-walkback-detail">Airlock Return: 4.8 km (Needs 18% O₂ &bull; Reserve: 78%)</div>
@@ -670,7 +681,7 @@
     <!-- ====================================================================
          3. COLLAPSIBLE RIGHT SIDEBAR (LAYER SELECTOR & WEATHER)
          ==================================================================== -->
-    <aside id="sidebar-right" class="hud-sidebar-right glass-panel scroller" aria-label="NASA Layer Selector and Weather Telemetry">
+    <aside id="sidebar-right" class="hud-sidebar-right glass-panel scroller is-collapsed" aria-label="NASA Layer Selector and Weather Telemetry">
       <!-- Interactive Layers Panel -->
       <div class="panel-heading">
         <div class="heading-title">
@@ -868,6 +879,9 @@
         </div>
 
         <div class="elev-graph-box" title="Click or drag on the profile to move the Rover">
+          <div class="elev-live-overlay" aria-hidden="true">
+            <span class="elev-live-badge" id="elev-live-badge">ROVER &bull; 4.8 km &bull; -2,490m</span>
+          </div>
           <svg id="elevation-svg" class="elevation-svg" viewBox="0 0 600 82" preserveAspectRatio="none">
             <defs>
               <linearGradient id="elevFillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -889,7 +903,7 @@
             <!-- Current Explorer Position Indicator -->
             <line id="elev-rover-line" x1="198" y1="6" x2="198" y2="78" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="2 2" />
             <circle id="elev-rover-dot" cx="198" cy="38" r="5" fill="#00e5ff" />
-            <text id="elev-rover-label" x="206" y="18" fill="#00e5ff" font-family="Share Tech Mono" font-size="11">CURRENT ROVER (KM 4.8 | -2,490m)</text>
+            <text id="elev-rover-label" class="elev-svg-hidden-label" x="206" y="18" fill="#00e5ff" font-family="Share Tech Mono" font-size="11">CURRENT ROVER (KM 4.8 | -2,490m)</text>
           </svg>
         </div>
       </div>
@@ -1114,8 +1128,60 @@
     </div>
   </dialog>
 
+  <!-- Native Modal Dialog for Astronaut Custom Cargo & Supplies -->
+  <dialog id="cargo-custom-dialog" class="cargo-modal-dialog" aria-labelledby="cargo-dialog-title" closedby="any">
+    <div class="cargo-modal-shell">
+      <div class="cargo-modal-header">
+        <div class="cargo-modal-title-group">
+          <h2 id="cargo-dialog-title"><i class="fa-solid fa-boxes-stacked text-cyan" aria-hidden="true"></i> ASTRONAUT CARGO &amp; CUSTOM LOADOUT</h2>
+          <p class="cargo-modal-live-stats" id="cargo-modal-live-stats">Total: 14.0 kg Earth &bull; 5.3 kg @ 0.38g Mars</p>
+        </div>
+        <form method="dialog">
+          <button id="btn-close-cargo-modal" class="dossier-close-btn" type="submit" value="close" aria-label="Close Cargo Manifest">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i> CLOSE
+          </button>
+        </form>
+      </div>
+
+      <div class="cargo-modal-body scroller">
+        <form class="cargo-custom-form" id="cargo-custom-form" novalidate>
+          <h3 class="cargo-section-label"><i class="fa-solid fa-plus text-orange" aria-hidden="true"></i> ADD CUSTOM EQUIPMENT / SUPPLIES</h3>
+          <div class="cargo-form-row">
+            <div class="cargo-form-field cargo-form-name">
+              <label for="cargo-custom-name">Product / Item Name</label>
+              <input type="text" id="cargo-custom-name" name="cargoName" maxlength="36" required autofocus autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="e.g. Subsurface GPR Antenna">
+            </div>
+            <div class="cargo-form-field cargo-form-kg">
+              <label for="cargo-custom-kg">Mass (kg)</label>
+              <input type="text" id="cargo-custom-kg" name="cargoKg" inputmode="decimal" required autocomplete="off" enterkeyhint="done" placeholder="2.5">
+            </div>
+          </div>
+          <div class="cargo-form-actions">
+            <span class="cargo-form-error" id="cargo-form-error" aria-live="polite"></span>
+            <button type="submit" class="planner-btn cargo-add-btn" id="btn-add-cargo-item">
+              <i class="fa-solid fa-plus" aria-hidden="true"></i> ADD CARGO ITEM
+            </button>
+          </div>
+        </form>
+
+        <div class="cargo-catalog-block">
+          <h3 class="cargo-section-label"><i class="fa-solid fa-suitcase-medical text-cyan" aria-hidden="true"></i> NASA EVA EQUIPMENT &amp; RESERVES</h3>
+          <div class="cargo-preset-list" id="cargo-preset-list" role="region" aria-label="Astronaut cargo manifest"></div>
+        </div>
+      </div>
+
+      <div class="cargo-modal-footer">
+        <form method="dialog">
+          <button type="submit" value="apply" class="hud-btn-cta">
+            <i class="fa-solid fa-check" aria-hidden="true"></i> APPLY &amp; RETURN TO MISSION
+          </button>
+        </form>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Cartographic Engine (Leaflet.js) and Main HUD Logic -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="app.js?v=29"></script>
+  <script src="app.js?v=32"></script>
 </body>
 </html>
