@@ -6874,10 +6874,16 @@ function initMarsDashboard() {
     btnHudAudio.addEventListener('click', () => {
       hudAudioEnabled = !hudAudioEnabled;
       btnHudAudio.setAttribute('aria-pressed', String(hudAudioEnabled));
+      btnHudAudio.title = hudAudioEnabled
+        ? 'Mute HUD Audio & AI Voice'
+        : 'Unmute HUD Audio & AI Voice';
       if (hudAudioIcon) {
         hudAudioIcon.className = hudAudioEnabled
           ? 'fa-solid fa-volume-high'
           : 'fa-solid fa-volume-xmark';
+      }
+      if (typeof MissionControlVoice !== 'undefined' && typeof MissionControlVoice.setMuted === 'function') {
+        MissionControlVoice.setMuted(!hudAudioEnabled);
       }
       if (hudAudioEnabled) playHudTone(780, 0.07, 'sine');
     });
@@ -6952,11 +6958,22 @@ const MissionControlVoice = {
     audioCache: {},
     abortController: null,
     requestId: 0,
+    isMuted: false,
     silentWav: 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA',
     apiUrl: 'https://mars-voice-api-1072208312217.us-central1.run.app/api/narrate',
 
+    setMuted: function(muted) {
+        this.isMuted = Boolean(muted);
+        if (this.audioPlayer) {
+            this.audioPlayer.muted = this.isMuted;
+        }
+        if (this.isMuted) {
+            this.stop();
+        }
+    },
+
     narrate: async function(text) {
-        if (!text) return;
+        if (!text || this.isMuted) return;
 
         // 1. Cancel any pending request and stop previous playback
         this.stop();
@@ -6964,8 +6981,10 @@ const MissionControlVoice = {
 
         const cachedUrl = this.audioCache[text];
         if (cachedUrl) {
+            if (this.isMuted) return;
             console.log("🎵 Replaying cached F5-TTS narration...");
             this.audioPlayer.src = cachedUrl;
+            this.audioPlayer.muted = this.isMuted;
             this.audioPlayer.volume = 1.0;
             this.audioPlayer.currentTime = 0;
             try {
@@ -7006,12 +7025,12 @@ const MissionControlVoice = {
                 signal: controller.signal
             });
 
-            if (this.requestId !== reqId) return;
+            if (this.requestId !== reqId || this.isMuted) return;
             if (!response.ok) throw new Error(`HTTP response error: ${response.status}`);
 
             // 3. Retrieve Blob and verify size
             const audioBlob = await response.blob();
-            if (this.requestId !== reqId) return;
+            if (this.requestId !== reqId || this.isMuted) return;
             console.log(`📦 Audio received. Size: ${audioBlob.size} bytes | Type: ${audioBlob.type}`);
 
             if (audioBlob.size === 0) {
@@ -7023,7 +7042,10 @@ const MissionControlVoice = {
             const audioUrl = URL.createObjectURL(audioBlob);
             this.audioCache[text] = audioUrl;
 
+            if (this.isMuted || this.requestId !== reqId) return;
+
             this.audioPlayer.src = audioUrl;
+            this.audioPlayer.muted = this.isMuted;
             this.audioPlayer.volume = 1.0;
             this.audioPlayer.currentTime = 0;
 
