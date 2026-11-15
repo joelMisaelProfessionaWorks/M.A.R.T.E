@@ -3035,7 +3035,8 @@ body {
   justify-self: end;
   display: flex;
   align-items: safe center;
-  flex-shrink: 0;
+  gap: 0.4rem;
+  flex-shrink: 1;
   min-inline-size: 0;
 }
 
@@ -4489,12 +4490,14 @@ body {
 .planner-action-row-3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.35rem;
+  gap: 0.28rem;
 }
 
 .planner-action-row-3 .planner-btn {
-  padding-inline: 0.35rem;
-  font-size: 0.62rem;
+  padding-inline: 0.24rem;
+  font-size: 0.56rem;
+  white-space: nowrap;
+  gap: 0.2rem;
 }
 
 .eva-config-panel {
@@ -5086,17 +5089,19 @@ dialog::backdrop {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.32rem;
+  gap: 0.24rem;
   min-block-size: 32px;
-  padding: 0.28rem 0.45rem;
+  padding: 0.24rem 0.3rem;
   border-radius: 4px;
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.56rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  overflow: hidden;
   cursor: pointer;
   transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
@@ -5175,11 +5180,13 @@ dialog::backdrop {
   padding: 0.12rem 0.42rem;
   border-radius: 999px;
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   font-weight: 700;
   color: var(--cyber-cyan);
   background: rgba(0, 229, 255, 0.12);
   border: 1px solid rgba(0, 229, 255, 0.32);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .hud-disclosure-body {
@@ -5902,6 +5909,419 @@ dialog::backdrop {
     min-inline-size: 44px;
   }
 }
+
+/* ==========================================================================
+   ETAPA 11: CONTROL DE OXÍGENO INICIAL (%) Y ALERTAS TÁCTICAS DE SIMULACIÓN
+   ========================================================================== */
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.eva-o2-control {
+  margin-block-start: 0.42rem;
+  padding: 0.5rem 0.55rem;
+  background: rgba(11, 16, 28, 0.85);
+  border: 1px solid rgba(255, 107, 43, 0.28);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.eva-o2-control.is-insufficient {
+  border-color: rgba(255, 82, 82, 0.72);
+  background: rgba(45, 14, 18, 0.65);
+}
+
+.eva-o2-control.is-low {
+  border-color: rgba(255, 193, 7, 0.7);
+  background: rgba(42, 32, 10, 0.55);
+}
+
+.eoc-header {
+  display: flex;
+  align-items: safe center;
+  justify-content: space-between;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.eoc-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.eoc-right-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.eoc-num-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.16rem;
+  white-space: nowrap;
+}
+
+.eoc-number-input {
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: max(1rem, 1em);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  inline-size: 3.4rem;
+  min-block-size: 26px;
+  padding: 0.06rem 0.22rem;
+  text-align: center;
+  color: var(--text-bright);
+  background: rgba(7, 10, 17, 0.92);
+  border: 1px solid rgba(255, 107, 43, 0.45);
+  border-radius: 4px;
+  -moz-appearance: textfield;
+}
+
+.eoc-number-input::-webkit-inner-spin-button,
+.eoc-number-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.eoc-number-input:focus-visible {
+  outline: 2px solid var(--telemetry-cyan);
+  outline-offset: 2px;
+}
+
+.eoc-pct-unit {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.o2-feasibility-badge {
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  font-weight: 700;
+  padding: 0.12rem 0.38rem;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.o2-feasibility-badge.is-ok {
+  background: rgba(0, 230, 118, 0.14);
+  border-color: rgba(0, 230, 118, 0.45);
+  color: var(--status-green);
+}
+
+.o2-feasibility-badge.is-warning {
+  background: rgba(255, 193, 7, 0.18);
+  border-color: rgba(255, 193, 7, 0.55);
+  color: var(--warning-amber);
+}
+
+.o2-feasibility-badge.is-critical {
+  background: rgba(255, 82, 82, 0.22);
+  border-color: rgba(255, 82, 82, 0.72);
+  color: #ff8a80;
+}
+
+.eoc-meta-row {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-secondary);
+  line-height: 1.32;
+}
+
+.eoc-compare-row {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--telemetry-cyan);
+  background: rgba(0, 229, 255, 0.07);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 4px;
+  padding: 0.22rem 0.36rem;
+  line-height: 1.35;
+}
+
+/* Indicador compacto de alertas integrado en la barra superior del visor */
+.hud-tactical-alerts {
+  position: relative;
+  z-index: 620;
+  pointer-events: none;
+}
+
+.hud-alert-summary-pill {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: safe center;
+  gap: 0.32rem;
+  min-block-size: 24px;
+  padding: 0.15rem 0.52rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 193, 7, 0.65);
+  background: rgba(18, 22, 34, 0.92);
+  color: var(--warning-amber);
+  font-family: var(--font-display);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.hud-alert-summary-pill.is-nominal {
+  border-color: rgba(0, 230, 118, 0.45);
+  color: var(--status-green);
+  background: rgba(8, 26, 20, 0.85);
+}
+
+.hud-alert-summary-pill.is-critical {
+  border-color: rgba(255, 82, 82, 0.85);
+  color: #ff8a80;
+  background: rgba(38, 12, 16, 0.94);
+}
+
+.hud-alert-summary-pill:focus-visible {
+  outline: 2px solid var(--telemetry-cyan);
+  outline-offset: 2px;
+}
+
+/* Tray con popover="manual" en esquina superior derecha sin tapar barra ni centro del mapa */
+.hud-tactical-toast-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+[popover].hud-tactical-toast-stack {
+  position: fixed;
+  inset: auto;
+  inset-block-start: 80px;
+  inset-inline-end: 3.5rem;
+  inline-size: min(335px, calc(100vw - 4.6rem));
+  max-block-size: min(56vh, 430px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition-behavior: allow-discrete;
+}
+
+[popover].hud-tactical-toast-stack:is(:popover-open, .\:popover-open) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@starting-style {
+  [popover].hud-tactical-toast-stack:is(:popover-open, .\:popover-open) {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.hud-tactical-toast {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.45rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 229, 255, 0.5);
+  background: rgba(9, 14, 24, 0.95);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+  color: var(--text-primary);
+}
+
+.hud-tactical-toast.is-radiation {
+  border-color: rgba(255, 82, 82, 0.85);
+  background: rgba(34, 11, 16, 0.96);
+}
+
+.hud-tactical-toast.is-oxygen {
+  border-color: rgba(255, 107, 43, 0.85);
+  background: rgba(34, 17, 10, 0.96);
+}
+
+.hud-tactical-toast.is-obstacle {
+  border-color: rgba(255, 193, 7, 0.8);
+  background: rgba(28, 22, 10, 0.96);
+}
+
+.hud-tactical-toast.is-storm {
+  border-color: rgba(0, 229, 255, 0.75);
+  background: rgba(10, 22, 34, 0.96);
+}
+
+.hud-tactical-toast.is-safe-hold {
+  border-color: rgba(0, 230, 118, 0.75);
+  background: rgba(9, 28, 22, 0.96);
+}
+
+.htt-icon {
+  font-size: 0.95rem;
+  margin-block-start: 0.1rem;
+}
+
+.hud-tactical-toast.is-radiation .htt-icon {
+  color: #ff6b6b;
+}
+
+.hud-tactical-toast.is-oxygen .htt-icon {
+  color: var(--mars-orange);
+}
+
+.hud-tactical-toast.is-obstacle .htt-icon {
+  color: var(--warning-amber);
+}
+
+.hud-tactical-toast.is-storm .htt-icon {
+  color: var(--telemetry-cyan);
+}
+
+.hud-tactical-toast.is-safe-hold .htt-icon {
+  color: var(--status-green);
+}
+
+.htt-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.24rem;
+  min-inline-size: 0;
+}
+
+.htt-title {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+}
+
+.htt-message {
+  margin: 0;
+  font-size: 0.68rem;
+  line-height: 1.38;
+  color: var(--text-secondary);
+}
+
+.htt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-block-start: 0.22rem;
+}
+
+.htt-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-block-size: 28px;
+  padding: 0.22rem 0.55rem;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 229, 255, 0.55);
+  background: rgba(0, 229, 255, 0.16);
+  color: var(--telemetry-cyan);
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+
+.htt-action-btn:hover {
+  background: var(--telemetry-cyan);
+  color: #060910;
+}
+
+.htt-action-btn.is-warn {
+  border-color: rgba(255, 193, 7, 0.65);
+  background: rgba(255, 193, 7, 0.16);
+  color: var(--warning-amber);
+}
+
+.htt-action-btn.is-warn:hover {
+  background: var(--warning-amber);
+  color: #060910;
+}
+
+.htt-close-btn {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 26px;
+  block-size: 26px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.htt-close-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.htt-action-btn:focus-visible,
+.htt-close-btn:focus-visible {
+  outline: 2px solid var(--telemetry-cyan);
+  outline-offset: 2px;
+}
+
+.directive-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-block-start: 0.4rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [popover].hud-tactical-toast-stack {
+    transition: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .eoc-number-input,
+  .htt-action-btn,
+  .htt-close-btn,
+  .hud-alert-summary-pill {
+    min-block-size: 40px;
+  }
+
+  .htt-close-btn {
+    min-inline-size: 40px;
+  }
+}
+
 
 
 

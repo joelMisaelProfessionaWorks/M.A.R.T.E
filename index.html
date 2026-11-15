@@ -133,14 +133,14 @@
 
       <!-- Route Selector & Tactical Planner (Stage 3) -->
       <section class="hud-card">
-        <div class="scale-mode-switcher" id="scale-mode-switcher" role="group" aria-label="Exploration Scale Switcher">
-          <button type="button" class="scale-pill-btn" data-scale-mode="marswalk" title="Hyperlocal Foot EVA Marswalk (0.9–1.2 km, Zoom 13–15)">
+        <div class="scale-mode-switcher" id="scale-mode-switcher" role="group" aria-label="Transport Mode Switcher">
+          <button type="button" class="scale-pill-btn" data-scale-mode="marswalk" title="Switch to Foot EVA Walk on the current route (updates marker icon & O₂ rate without changing map)">
             <i class="fa-solid fa-person-walking"></i>
-            <span>MARSWALK (FOOT)</span>
+            <span>FOOT WALK</span>
           </button>
-          <button type="button" class="scale-pill-btn is-active" data-scale-mode="regional" title="Regional Pressurized Rover Traverse (14–31 km, Zoom 7–10)">
+          <button type="button" class="scale-pill-btn is-active" data-scale-mode="regional" title="Switch to Pressurized Rover Vehicle on the current route (updates marker icon & O₂ rate)">
             <i class="fa-solid fa-truck-monster"></i>
-            <span>REGIONAL ROVER</span>
+            <span>ROVER VEHICLE</span>
           </button>
         </div>
 
@@ -149,17 +149,17 @@
         </label>
         <div class="select-cyber-wrapper">
           <select id="route-selector" class="cyber-select">
-            <optgroup label="🥾 HYPERLOCAL MARSWALK (FOOT EVA • 0.9–1.2 KM)">
+            <optgroup label="HYPERLOCAL MARSWALK (FOOT EVA • 0.9–1.2 KM)">
               <option value="marswalk-boxwork">MARSWALK 01: MOUNT SHARP BOXWORK (1.2 KM)</option>
               <option value="marswalk-kodiak">MARSWALK 02: KODIAK DELTA WALK (0.9 KM)</option>
             </optgroup>
-            <optgroup label="🚜 REGIONAL ROVER TRAVERSES (14–31 KM)">
+            <optgroup label="REGIONAL ROVER TRAVERSES (14–31 KM)">
               <option value="jezero-alpha" selected>ROVER 01: JEZERO-ALPHA DELTA (14.6 KM)</option>
               <option value="jezero-beta">ROVER 02: JEZERO-BETA BELVA (19.2 KM)</option>
               <option value="gale-sharp">ROVER 03: MOUNT SHARP &amp; BOXWORK (24.8 KM)</option>
               <option value="valles-marineris">ROVER 04: VALLES MARINERIS (31.5 KM)</option>
             </optgroup>
-            <optgroup label="✏️ TACTICAL FREE MODE">
+            <optgroup label="TACTICAL FREE MODE">
               <option value="custom">FREE MODE: CUSTOM ROUTE</option>
             </optgroup>
           </select>
@@ -199,6 +199,51 @@
           >
         </div>
 
+        <!-- Starting Oxygen Reserve (%) Control & Route Feasibility Readout -->
+        <div class="eva-o2-control" id="eva-o2-control-box">
+          <div class="eoc-header">
+            <label for="eva-start-o2-slider" class="eoc-label">
+              <i class="fa-solid fa-lungs text-orange" aria-hidden="true"></i>
+              <span>CREW O₂</span>
+            </label>
+            <div class="eoc-right-cluster">
+              <div class="eoc-num-wrap">
+                <label for="eva-start-o2-input" class="visually-hidden">Starting Oxygen Percentage</label>
+                <input
+                  type="number"
+                  id="eva-start-o2-input"
+                  class="eoc-number-input"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value="100"
+                  inputmode="numeric"
+                >
+                <span class="eoc-pct-unit" aria-hidden="true">%</span>
+              </div>
+              <span class="o2-feasibility-badge is-ok" id="eva-o2-feasibility-badge" aria-live="polite">
+                SUFFICIENT
+              </span>
+            </div>
+          </div>
+          <input
+            type="range"
+            id="eva-start-o2-slider"
+            class="hud-range-slider o2-range-slider"
+            min="1"
+            max="100"
+            step="1"
+            value="100"
+            aria-valuetext="100 percent starting oxygen available"
+          >
+          <div class="eoc-meta-row" id="eva-o2-route-req-text">
+            Route requires ~50% O₂ • Projected end reserve: 50%
+          </div>
+          <div class="eoc-compare-row" id="eva-o2-mode-compare">
+            Vehicle: ~50% O₂ (0.95 kg/h) • Walk: ~88% O₂ (1.89 kg/h)
+          </div>
+        </div>
+
         <!-- Collapsible EVA Parameters & Map Drawing Tools to reduce visual noise -->
         <details class="hud-disclosure">
           <summary class="hud-disclosure-summary">
@@ -210,6 +255,7 @@
               <label class="eva-cfg-field">
                 <span>CREW</span>
                 <select id="eva-crew-size" class="cyber-select compact">
+                  <option value="0">Robot Rover (0% O₂)</option>
                   <option value="2" selected>2 Astronauts</option>
                   <option value="3">3 Astronauts</option>
                   <option value="4">4 Astronauts</option>
@@ -305,7 +351,7 @@
           <div class="pws-block">
             <div class="pws-header">
               <span class="pws-title"><i class="fa-solid fa-person-walking-arrow-loop-left text-cyan" aria-hidden="true"></i> WALKBACK SAFETY LIMIT</span>
-              <span class="pws-chip is-safe" id="pw-walkback-badge">✓ SAFE RETURN</span>
+              <span class="pws-chip is-safe" id="pw-walkback-badge">SAFE RETURN</span>
             </div>
             <div class="pws-sub-val" id="pw-walkback-detail">Airlock Return: 4.8 km (Needs 18% O₂ &bull; Reserve: 78%)</div>
           </div>
@@ -408,6 +454,16 @@
         </div>
 
         <div class="vtb-right">
+          <button
+            type="button"
+            id="hud-alert-summary-pill"
+            class="hud-alert-summary-pill is-nominal"
+            title="View active hazard and oxygen advisories"
+          >
+            <i class="fa-solid fa-shield-check" id="hud-alert-summary-icon" aria-hidden="true"></i>
+            <span id="hud-alert-summary-text">NOMINAL</span>
+          </button>
+
           <!-- Orbital Base Mosaic Selector in Top Right of Map -->
           <div class="map-baselayer-Floating">
             <label for="map-baselayer-select"><i class="fa-solid fa-satellite text-orange"></i> MAP:</label>
@@ -448,6 +504,19 @@
               <i class="fa-solid fa-street-view text-orange"></i>
             </button>
           </div>
+
+          <!-- Tactical Simulation, Hazard & Oxygen Alert Region -->
+          <div
+            id="hud-tactical-alerts"
+            class="hud-tactical-alerts"
+            role="region"
+            aria-label="Mission Tactical Alerts"
+          >
+            <div id="hud-tactical-toast-stack" class="hud-tactical-toast-stack" popover="manual"></div>
+            <div id="hud-aria-announcer" class="visually-hidden" aria-live="assertive" aria-atomic="true"></div>
+          </div>
+
+          <!-- Bottom Map Legend in Lower Left -->
 
           <!-- Bottom Map Legend in Lower Left -->
           <div class="map-bottom-badge">
@@ -911,23 +980,23 @@
       <!-- Key Survival Metrics -->
       <div class="footer-telemetry-metrics">
 
-        <!-- Metric 1: Oxygen Consumed (%) -->
+        <!-- Metric 1: Oxygen Reserve (%) -->
         <div class="survival-metric-card" id="card-oxygen">
           <div class="sm-icon text-orange">
             <i class="fa-solid fa-lungs"></i>
           </div>
           <div class="sm-body">
             <div class="sm-top">
-              <span class="sm-label">OXYGEN CONSUMED</span>
-              <span class="sm-tag" id="metric-oxygen-reserve">RESERVE: 78%</span>
+              <span class="sm-label" id="metric-oxygen-label">OXYGEN RESERVE (ROVER)</span>
+              <span class="sm-tag" id="metric-oxygen-reserve">USED: 22%</span>
             </div>
             <div class="sm-value-row">
-              <strong class="sm-number" id="metric-oxygen">22</strong>
+              <strong class="sm-number" id="metric-oxygen">78</strong>
               <span class="sm-unit">%</span>
-              <span class="sm-sub" id="metric-oxygen-rate">Nominal (0.84 kg/h)</span>
+              <span class="sm-sub" id="metric-oxygen-rate">Vehicle: 0.95 kg/h (2 PAX)</span>
             </div>
             <div class="cyber-progress-bar">
-              <div class="progress-fill fill-orange" id="bar-oxygen" style="width: 22%;"></div>
+              <div class="progress-fill fill-orange" id="bar-oxygen" style="width: 78%;"></div>
             </div>
           </div>
         </div>

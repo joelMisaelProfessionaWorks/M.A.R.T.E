@@ -339,7 +339,7 @@ function initMarsDashboard() {
       slopeStatus: 'CAUTION',
       avgSpeedKmh: 2.6,
       totalDistKm: 19.2,
-      baseO2RatePerKm: 3.45,
+      baseO2RatePerKm: 2.55,
       baseBatteryPerKm: 2.15,
       center: [18.52, 77.32],
       zoom: 8,
@@ -417,7 +417,7 @@ function initMarsDashboard() {
       slopeStatus: 'DEMANDING',
       avgSpeedKmh: 2.4,
       totalDistKm: 24.8,
-      baseO2RatePerKm: 3.30,
+      baseO2RatePerKm: 2.30,
       baseBatteryPerKm: 2.35,
       center: [-4.68, 137.38],
       zoom: 8,
@@ -504,7 +504,7 @@ function initMarsDashboard() {
       slopeStatus: 'CRITICAL',
       avgSpeedKmh: 2.1,
       totalDistKm: 31.5,
-      baseO2RatePerKm: 3.65,
+      baseO2RatePerKm: 2.15,
       baseBatteryPerKm: 2.65,
       center: [-13.88, -59.18],
       zoom: 8,
@@ -1254,7 +1254,7 @@ function initMarsDashboard() {
         coords: [-13.78, -59.02],
         outerRadius: 14500,
         innerRadius: 6800,
-        tag: '⚠ CANYON KATABATIC WIND (&tau; 1.32 | 64.8 KM/H)',
+        tag: 'CANYON KATABATIC WIND (&tau; 1.32 | 64.8 KM/H)',
         title: 'Channeled Jet Stream in Coprates Chasma',
         desc: 'Severe gusts of 64.8 km/h along the canyon axis with suspended dust haze (&tau; 1.32).'
       },
@@ -1427,7 +1427,7 @@ function initMarsDashboard() {
     // 4. Actualizar Frente Meteorológico Regional + Clima Espacial (SPE) y Refugios de Radiación (Capa Weather)
     nasaLayers.weather.clearLayers();
     const w = regionData.weather;
-    const speTagSuffix = isSolarStormSpeActive ? ' • ☢ SPE M4.2 FLARE (485 PFU)' : '';
+    const speTagSuffix = isSolarStormSpeActive ? ' • SPE M4.2 FLARE (485 PFU)' : '';
     const dustStormZone = L.circle(w.coords, {
       radius: w.outerRadius,
       color: isSolarStormSpeActive ? '#ff1744' : '#ffab00',
@@ -1437,7 +1437,7 @@ function initMarsDashboard() {
       fillOpacity: isSolarStormSpeActive ? 0.3 : 0.24
     }).bindPopup(`
       <div class="hud-popup-card ${isSolarStormSpeActive ? 'danger-theme' : 'warning-theme'}">
-        <div class="hp-kicker">${isSolarStormSpeActive ? '☢ SPACE WEATHER SPE + ATMOSPHERIC ALERT' : 'ACTIVE WEATHER ALERT // SOL 1420'}</div>
+        <div class="hp-kicker">${isSolarStormSpeActive ? 'SPACE WEATHER SPE + ATMOSPHERIC ALERT' : 'ACTIVE WEATHER ALERT // SOL 1420'}</div>
         <h4 class="hp-title"><i class="fa-solid ${isSolarStormSpeActive ? 'fa-radiation' : 'fa-triangle-exclamation'}"></i> ${w.title}</h4>
         <p class="hp-desc">${w.desc}${isSolarStormSpeActive ? ' <strong>SOLAR PARTICLE EVENT (SPE) ACTIVE:</strong> Elevated proton flux (485 PFU) penetrating thin Martian atmosphere. Evacuate to nearest green Radiation Shelter radius.' : ''}</p>
       </div>
@@ -1504,7 +1504,7 @@ function initMarsDashboard() {
 
         const shelterMarker = L.marker(sh.coords, { icon: shelterIcon })
           .bindTooltip(
-            `🛡 RADIATION SHELTER RADIUS: ${sh.name} (${sh.attenuation.split('(')[0].trim()})`,
+            `RADIATION SHELTER RADIUS: ${sh.name} (${sh.attenuation.split('(')[0].trim()})`,
             { sticky: true, className: 'cyber-leaflet-tooltip' }
           )
           .bindPopup(shelterCircle.getPopup());
@@ -1631,6 +1631,20 @@ function initMarsDashboard() {
   const evaModeSelect = document.getElementById('eva-transport-mode');
   const evaWindowSelect = document.getElementById('eva-departure-window');
   const evaPayloadSelect = document.getElementById('eva-payload-kit');
+  const evaStartO2Slider = document.getElementById('eva-start-o2-slider');
+  const evaStartO2Input = document.getElementById('eva-start-o2-input');
+  const evaO2ControlBox = document.getElementById('eva-o2-control-box');
+  const evaO2FeasibilityBadge = document.getElementById('eva-o2-feasibility-badge');
+  const evaO2RouteReqText = document.getElementById('eva-o2-route-req-text');
+  const evaO2ModeCompareEl = document.getElementById('eva-o2-mode-compare');
+  const metricOxygenLabel = document.getElementById('metric-oxygen-label');
+  const tacticalToastStackEl = document.getElementById('hud-tactical-toast-stack');
+  const alertSummaryPillEl = document.getElementById('hud-alert-summary-pill');
+  const alertSummaryIconEl = document.getElementById('hud-alert-summary-icon');
+  const alertSummaryTextEl = document.getElementById('hud-alert-summary-text');
+  const ariaAnnouncerEl = document.getElementById('hud-aria-announcer');
+  const supportsPopoverApi =
+    typeof HTMLElement !== 'undefined' && Object.hasOwn(HTMLElement.prototype, 'popover');
   const cargoPresetListEl = document.getElementById('cargo-preset-list');
   const cargoSummaryBadgeEl = document.getElementById('cargo-summary-badge');
   const cargoModalLiveStatsEl = document.getElementById('cargo-modal-live-stats');
@@ -1663,9 +1677,31 @@ function initMarsDashboard() {
     departureWindow: 'morning', // 'morning' | 'afternoon' | 'night'
     payloadKitKg: 14, // numeric kit mass or computed cargo total
     payloadPreset: '14', // '8' | '14' | '22' | 'custom'
+    startingO2Pct: 100, // 10..100 starting crew O2 percentage
     cargoQuantities: { ...EVA_CARGO_PRESETS['14'] },
     customCargoItems: [] // [{ id, name, unitKg, qty }]
   };
+
+  function clampStartingO2(val) {
+    const num = Math.round(Number(val));
+    if (!Number.isFinite(num)) return 100;
+    return Math.max(1, Math.min(100, num));
+  }
+
+  function syncStartingO2Ui(pctVal) {
+    const clamped = clampStartingO2(pctVal);
+    evaConfig.startingO2Pct = clamped;
+    if (evaStartO2Slider) {
+      evaStartO2Slider.value = String(clamped);
+      evaStartO2Slider.style.setProperty('--attr-min', evaStartO2Slider.min || 1);
+      evaStartO2Slider.style.setProperty('--attr-max', evaStartO2Slider.max || 100);
+      evaStartO2Slider.style.setProperty('--control-value', String(clamped));
+      evaStartO2Slider.setAttribute('aria-valuetext', `${clamped} percent starting oxygen available`);
+    }
+    if (evaStartO2Input && document.activeElement !== evaStartO2Input) {
+      evaStartO2Input.value = String(clamped);
+    }
+  }
 
   function computeAstronautCargoTotals() {
     let cargoEarthKg = 0;
@@ -1816,6 +1852,13 @@ function initMarsDashboard() {
     updateRoverProgress(roverProgress);
   }
 
+  /** Parses crew count while preserving 0 for uncrewed Robot Rover mode. */
+  function parseCrewSize(val) {
+    if (val === null || val === undefined || val === '') return 2;
+    const n = Number(val);
+    return Number.isFinite(n) && n >= 0 ? Math.min(6, Math.round(n)) : 2;
+  }
+
   function saveMissionStateToStorage() {
     try {
       const payload = {
@@ -1845,13 +1888,14 @@ function initMarsDashboard() {
           : '14';
         const fallbackQuantities = EVA_CARGO_PRESETS[savedPreset] || EVA_CARGO_PRESETS['14'];
         evaConfig = {
-          crewSize: Number(saved.evaConfig.crewSize) || 2,
+          crewSize: parseCrewSize(saved.evaConfig.crewSize),
           transportMode: saved.evaConfig.transportMode === 'foot' ? 'foot' : 'rover',
           departureWindow: ['morning', 'afternoon', 'night'].includes(saved.evaConfig.departureWindow)
             ? saved.evaConfig.departureWindow
             : 'morning',
           payloadKitKg: Number(saved.evaConfig.payloadKitKg ?? 14),
           payloadPreset: savedPreset,
+          startingO2Pct: clampStartingO2(saved.evaConfig.startingO2Pct ?? 100),
           cargoQuantities:
             saved.evaConfig.cargoQuantities && typeof saved.evaConfig.cargoQuantities === 'object'
               ? saved.evaConfig.cargoQuantities
@@ -1863,6 +1907,7 @@ function initMarsDashboard() {
         if (evaCrewSelect) evaCrewSelect.value = String(evaConfig.crewSize);
         if (evaModeSelect) evaModeSelect.value = evaConfig.transportMode;
         if (evaWindowSelect) evaWindowSelect.value = evaConfig.departureWindow;
+        syncStartingO2Ui(evaConfig.startingO2Pct);
         renderCargoLoadoutList();
       }
 
@@ -2148,14 +2193,40 @@ function initMarsDashboard() {
     return inside;
   }
 
-  // Evalúa intersecciones reales de la ruta activa contra Tormentas, Riesgo Geológico y Depósitos de Hielo ISRU
-  function evaluateRouteEnvironmentalHazards() {
+  let dismissedTacticalAlertIds = new Set();
+  let lastAutoPopupSignature = '';
+  let lastScreenReaderMessage = '';
+  let lastSimHazardStopKey = '';
+  let forceOpenTacticalTray = false;
+  let radiationProceedOverride = false;
+
+  function getActiveRegionData(latOverride, lngOverride) {
     const center = activeRouteData?.center || JEZERO_CENTER;
     const regionKey = REGIONAL_LAYERS_DB[currentRouteKey] ? currentRouteKey : 'jezero-alpha';
-    const regionData =
-      currentRouteKey === 'custom' && !REGIONAL_LAYERS_DB[currentRouteKey]
-        ? buildProceduralSectorLayers(center[0], center[1])
-        : REGIONAL_LAYERS_DB[regionKey];
+    if (currentRouteKey === 'custom' && !REGIONAL_LAYERS_DB[currentRouteKey]) {
+      return buildProceduralSectorLayers(
+        Number.isFinite(latOverride) ? latOverride : center[0],
+        Number.isFinite(lngOverride) ? lngOverride : center[1]
+      );
+    }
+    return REGIONAL_LAYERS_DB[regionKey];
+  }
+
+  function computeCompassBearing(fromCoord, toCoord) {
+    if (!Array.isArray(fromCoord) || !Array.isArray(toCoord)) return 'N';
+    const dLat = toCoord[0] - fromCoord[0];
+    const dLng = toCoord[1] - fromCoord[1];
+    const angle = (Math.atan2(dLng, dLat) * 180) / Math.PI;
+    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const idx = Math.round(((angle + 360) % 360) / 45) % 8;
+    return dirs[idx];
+  }
+
+  // Evalúa intersecciones reales (recorrido + lookahead 0%->100%), refugios, obstáculos y tormentas en otros puntos
+  function evaluateRouteEnvironmentalHazards() {
+    const livePt = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
+    const liveCoord = [livePt.lat, livePt.lng];
+    const regionData = getActiveRegionData(livePt.lat, livePt.lng);
 
     const isWeatherOn = document.getElementById('toggle-weather')?.checked ?? true;
     const isGeolOn = document.getElementById('toggle-geol')?.checked ?? true;
@@ -2165,37 +2236,127 @@ function initMarsDashboard() {
     let crossesStormOuter = false;
     let crossesHazardGeol = null;
     let reachedIsruDepot = null;
+    let routeHasIsruDepot = null;
+    let stormAheadPct = null;
+    let geolHazardAhead = null;
+    let obstacleDirectHit = null;
+    let obstacleAhead = null;
 
-    // Muestrear puntos a lo largo del porcentaje recorrido actual (0% -> roverProgress%)
-    const steps = Math.max(4, Math.ceil(roverProgress / 5));
-    for (let s = 0; s <= steps; s++) {
-      const samplePct = (s / steps) * roverProgress;
+    // 1. Evaluar refugio activo vs. refugio más cercano respecto a la posición actual
+    let activeShelter = null;
+    let nearestShelter = null;
+    let nearestShelterDistKm = 0.24;
+    if (Array.isArray(regionData?.shelters) && regionData.shelters.length > 0) {
+      let minD = Infinity;
+      regionData.shelters.forEach((sh) => {
+        const dKm = computeMarsDistanceKm(liveCoord, sh.coords);
+        if (dKm * 1000 <= (sh.radius || 180) && !activeShelter) {
+          activeShelter = { ...sh, distKm: dKm };
+        }
+        if (dKm < minD) {
+          minD = dKm;
+          nearestShelter = sh;
+        }
+      });
+      if (Number.isFinite(minD)) nearestShelterDistKm = minD;
+    }
+
+    // 2. Distancia y rumbo hacia la tormenta activa en el sector u otro punto
+    let stormDistKm = null;
+    let stormBearing = 'NE';
+    let stormElsewhereActive = false;
+    if (isWeatherOn && regionData?.weather?.coords) {
+      stormDistKm = computeMarsDistanceKm(liveCoord, regionData.weather.coords);
+      stormBearing = computeCompassBearing(liveCoord, regionData.weather.coords);
+      stormElsewhereActive = stormDistKm * 1000 > (regionData.weather.innerRadius || 250);
+    }
+
+    // Buscar también si hay tormenta severa en otro sector regional
+    let remoteRegionalStorm = null;
+    if (isWeatherOn) {
+      for (const [secKey, secLayer] of Object.entries(REGIONAL_LAYERS_DB)) {
+        if (secKey === currentRouteKey || !secLayer?.weather?.coords) continue;
+        if (/dust|wind|storm|squall|wall|monsoon/i.test(secLayer.weather.title || '')) {
+          const dRemoteKm = computeMarsDistanceKm(liveCoord, secLayer.weather.coords);
+          if (!remoteRegionalStorm || dRemoteKm < remoteRegionalStorm.distKm) {
+            remoteRegionalStorm = {
+              sectorKey: secKey,
+              title: secLayer.weather.title,
+              tag: secLayer.weather.tag,
+              distKm: dRemoteKm,
+              bearing: computeCompassBearing(liveCoord, secLayer.weather.coords),
+              coords: secLayer.weather.coords
+            };
+          }
+        }
+      }
+    }
+
+    // 3. Muestreo completo (0% -> 100%) para detectar recorrido actual y amenazas por delante
+    const totalSamples = 40;
+    const obstaclesList = Array.isArray(activeRouteData?.obstacles) ? activeRouteData.obstacles : [];
+    for (let s = 0; s <= totalSamples; s++) {
+      const samplePct = (s / totalSamples) * 100;
+      const isTraveled = samplePct <= roverProgress + 0.5;
+      const isAhead = samplePct >= roverProgress;
       const pt = interpolateRoverPosition(activeRouteData.pathCoords, samplePct);
       const coord = [pt.lat, pt.lng];
 
-      if (isWeatherOn && regionData.weather) {
+      if (isWeatherOn && regionData?.weather) {
         const dStormMeters = computeMarsDistanceKm(coord, regionData.weather.coords) * 1000;
-        if (dStormMeters <= regionData.weather.innerRadius) crossesStormCore = true;
-        else if (dStormMeters <= regionData.weather.outerRadius) crossesStormOuter = true;
+        if (isTraveled) {
+          if (dStormMeters <= regionData.weather.innerRadius) crossesStormCore = true;
+          else if (dStormMeters <= regionData.weather.outerRadius) crossesStormOuter = true;
+        }
+        if (isAhead && stormAheadPct === null && dStormMeters <= regionData.weather.outerRadius) {
+          stormAheadPct = Math.round(samplePct);
+        }
       }
 
-      if (isGeolOn && Array.isArray(regionData.geology)) {
+      if (isGeolOn && Array.isArray(regionData?.geology)) {
         for (const unit of regionData.geology) {
           const isHighRisk =
             unit.color === '#ef5350' ||
             /caution|hazard|risk|dune|scarp|fault|landslide|precauci|riesgo|duna|escarpe|falla/i.test(unit.desc);
           if (isHighRisk && isPointInPolygon(coord, unit.coords)) {
-            crossesHazardGeol = unit.name;
+            if (isTraveled) crossesHazardGeol = unit.name;
+            if (isAhead && !geolHazardAhead) {
+              geolHazardAhead = { name: unit.name, pct: Math.round(samplePct) };
+            }
           }
         }
       }
 
-      if (isResOn && Array.isArray(regionData.resources)) {
+      if (isResOn && Array.isArray(regionData?.resources)) {
         for (const res of regionData.resources) {
           const dResMeters = computeMarsDistanceKm(coord, res.coords) * 1000;
           if (dResMeters <= res.radius) {
-            reachedIsruDepot = res.name;
+            routeHasIsruDepot = res.name;
+            if (isTraveled) reachedIsruDepot = res.name;
           }
+        }
+      }
+
+      for (const obs of obstaclesList) {
+        if (!obs?.coords) continue;
+        const obsRadiusM = Number(obs.radius || 250);
+        const dObsMeters = computeMarsDistanceKm(coord, obs.coords) * 1000;
+        if (dObsMeters <= obsRadiusM && !obstacleDirectHit) {
+          obstacleDirectHit = {
+            name: obs.name,
+            coords: obs.coords,
+            pct: Math.round(samplePct),
+            reason: obs.reason || 'Active obstacle zone intersection'
+          };
+        }
+        if (isAhead && dObsMeters <= obsRadiusM * 1.45 && !obstacleAhead) {
+          obstacleAhead = {
+            name: obs.name,
+            coords: obs.coords,
+            pct: Math.round(samplePct),
+            insideZone: dObsMeters <= obsRadiusM,
+            reason: obs.reason || 'Detour required around boulder/terrain hazard'
+          };
         }
       }
     }
@@ -2205,8 +2366,330 @@ function initMarsDashboard() {
       crossesStormCore,
       crossesStormOuter,
       crossesHazardGeol,
-      reachedIsruDepot
+      reachedIsruDepot,
+      routeHasIsruDepot,
+      activeShelter,
+      nearestShelter,
+      nearestShelterName: nearestShelter?.name || 'Pressurized Rover Airlock',
+      nearestShelterDistKm,
+      stormDistKm,
+      stormBearing,
+      stormAheadPct,
+      stormElsewhereActive,
+      remoteRegionalStorm,
+      weatherObj: regionData?.weather || null,
+      obstacleDirectHit,
+      obstacleAhead,
+      geolHazardAhead
     };
+  }
+
+  function computeModeO2Metrics(routeData, cargoTotals, hasIsruOnRoute, modeStr, geolPenalty = 1.0) {
+    if (Number(evaConfig.crewSize) === 0) {
+      return {
+        modeO2Mult: 0,
+        slopeFactor: 1.0,
+        payloadO2Mult: 1.0,
+        perKmO2Rate: 0,
+        netRouteO2RequiredPct: 0,
+        o2KgRate: '0.00',
+        canRefineIsru: false
+      };
+    }
+    if (!routeData) {
+      return {
+        modeO2Mult: 1.0,
+        slopeFactor: 1.0,
+        payloadO2Mult: 1.0,
+        perKmO2Rate: 3.15,
+        netRouteO2RequiredPct: 40,
+        o2KgRate: '0.84',
+        canRefineIsru: false
+      };
+    }
+    const isFoot = modeStr === 'foot';
+    const crewFactor = evaConfig.crewSize / 2;
+    const modeO2Mult = isFoot ? 1.85 : 1.0;
+    const payloadO2Mult = 1 + Math.max(0, cargoTotals.cargoEarthKg - 14) * (isFoot ? 0.015 : 0.006);
+    const slopeFactor = 1 + Math.max(0, routeData.maxSlopeDeg - 10) * (isFoot ? 0.042 : 0.025);
+    const perKmO2Rate =
+      routeData.baseO2RatePerKm *
+      slopeFactor *
+      crewFactor *
+      modeO2Mult *
+      payloadO2Mult *
+      geolPenalty;
+    const grossO2 = 4 + routeData.totalDistKm * perKmO2Rate;
+    const canRefineIsru = !isFoot && Boolean(hasIsruOnRoute);
+    const netO2 = grossO2 - cargoTotals.extraO2ReservePct - (canRefineIsru ? 16 : 0);
+    const netRouteO2RequiredPct = Math.max(8, Math.ceil(netO2));
+    const o2KgRate = (0.42 * evaConfig.crewSize * slopeFactor * modeO2Mult * payloadO2Mult).toFixed(2);
+    return {
+      modeO2Mult,
+      slopeFactor,
+      payloadO2Mult,
+      perKmO2Rate,
+      netRouteO2RequiredPct,
+      o2KgRate,
+      canRefineIsru
+    };
+  }
+
+  function computeFullRouteO2RequirementPct(routeData, cargoTotals, hasIsruOnRoute, modeOverride = null) {
+    const modeStr = modeOverride || evaConfig.transportMode || 'rover';
+    return computeModeO2Metrics(routeData, cargoTotals, hasIsruOnRoute, modeStr).netRouteO2RequiredPct;
+  }
+
+  function findSaferAlternateRoute(availableStartO2Pct, cargoTotals) {
+    let best = null;
+    const currentScale = activeRouteData?.scaleMode || (currentRouteKey.startsWith('marswalk-') ? 'marswalk' : 'regional');
+    const activeCenter = activeRouteData?.center || JEZERO_CENTER;
+
+    for (const [key, candidate] of Object.entries(ROUTES_CATALOG)) {
+      if (key === currentRouteKey) continue;
+      const candRegion = REGIONAL_LAYERS_DB[key];
+      const hasIsru = Array.isArray(candRegion?.resources) && candRegion.resources.length > 0;
+      const reqO2 = computeFullRouteO2RequirementPct(candidate, cargoTotals, hasIsru);
+      const fitsO2 = reqO2 <= availableStartO2Pct;
+      const sameScale = (candidate.scaleMode || 'regional') === currentScale;
+      const distFromActiveKm = candidate.center
+        ? computeMarsDistanceKm(activeCenter, candidate.center)
+        : 9999;
+      const sameRegion = distFromActiveKm <= 120;
+      const slopePenalty = Math.max(0, candidate.maxSlopeDeg - 15) * 4;
+      const score =
+        (sameRegion ? 0 : 5000) +
+        (fitsO2 ? 0 : 1000) +
+        (sameScale ? 0 : 60) +
+        slopePenalty +
+        reqO2 * 0.8 +
+        candidate.maxSlopeDeg;
+
+      if (!best || score < best.score) {
+        best = { key, route: candidate, reqO2, fitsO2, sameRegion, score };
+      }
+    }
+    return best;
+  }
+
+  function announceTacticalVoiceAndSr(message, priority = 'polite') {
+    if (!message || message === lastScreenReaderMessage) return;
+    lastScreenReaderMessage = message;
+    if (typeof document.ariaNotify === 'function') {
+      document.ariaNotify(message, { priority });
+    } else if (ariaAnnouncerEl) {
+      ariaAnnouncerEl.setAttribute('aria-live', priority === 'high' ? 'assertive' : 'polite');
+      ariaAnnouncerEl.textContent = message;
+    }
+  }
+
+  function setPopoverStackVisible(visible) {
+    if (!tacticalToastStackEl) return;
+    const anyModalOpen = Boolean(document.querySelector('dialog[open]'));
+    if (visible && anyModalOpen) visible = false;
+
+    if (supportsPopoverApi) {
+      const isOpen = tacticalToastStackEl.matches(':popover-open');
+      if (visible && !isOpen) {
+        tacticalToastStackEl.showPopover();
+      } else if (!visible && isOpen) {
+        tacticalToastStackEl.hidePopover();
+      }
+    } else {
+      tacticalToastStackEl.classList.toggle(':popover-open', visible);
+    }
+  }
+
+  /** Switches between Rover and Foot EVA on the active map without changing crater/route or camera view. */
+  function setTransportModeSameMap(targetMode) {
+    const normalized = targetMode === 'foot' ? 'foot' : 'rover';
+    evaConfig.transportMode = normalized;
+    if (evaModeSelect) evaModeSelect.value = normalized;
+    syncEvaCompactUiBadges();
+    renderRouteOnMap(false);
+    updateRoverProgress(roverProgress);
+    if (typeof playHudTone === 'function') playHudTone(660, 0.05, 'sine');
+  }
+
+  function handleTacticalAction(actionType, payloadVal) {
+    if (actionType === 'switch-route' && payloadVal && ROUTES_CATALOG[payloadVal]) {
+      if (simIntervalId) stopRoverSimulation();
+      radiationProceedOverride = false;
+      dismissedTacticalAlertIds.clear();
+      if (routeSelector) routeSelector.value = payloadVal;
+      loadRoute(payloadVal, true);
+      forceOpenTacticalTray = false;
+      setPopoverStackVisible(false);
+    } else if (actionType === 'pause-sim') {
+      stopRoverSimulation();
+    } else if (actionType === 'pause-rad-override') {
+      radiationProceedOverride = false;
+      stopRoverSimulation();
+      updateSurvivalTelemetry();
+    } else if (actionType === 'clear-spe') {
+      radiationProceedOverride = false;
+      const speBtn = document.getElementById('btn-sim-spe');
+      if (speBtn && isSolarStormSpeActive) {
+        speBtn.click();
+      }
+    } else if (actionType === 'board-rover' || actionType === 'walk-on-foot') {
+      setTransportModeSameMap(actionType === 'walk-on-foot' ? 'foot' : 'rover');
+    } else if (actionType === 'proceed-radiation-walk') {
+      radiationProceedOverride = true;
+      setTransportModeSameMap('foot');
+      startRoverSimulation(true);
+    } else if (actionType === 'proceed-radiation-continue') {
+      radiationProceedOverride = true;
+      startRoverSimulation(true);
+    } else if (actionType === 'locate-shelter') {
+      const livePt = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
+      const reg = getActiveRegionData(livePt.lat, livePt.lng);
+      let targetSh = reg?.shelters?.[0];
+      if (Array.isArray(reg?.shelters) && reg.shelters.length > 1) {
+        targetSh = reg.shelters.reduce((best, cand) =>
+          computeMarsDistanceKm([livePt.lat, livePt.lng], cand.coords) <
+          computeMarsDistanceKm([livePt.lat, livePt.lng], best.coords)
+            ? cand
+            : best
+        );
+      }
+      if (targetSh?.coords && marsMap) {
+        marsMap.flyTo(targetSh.coords, Math.max(marsMap.getZoom(), 9), { duration: 0.7 });
+      }
+    } else if (actionType === 'locate-obstacle') {
+      const obs = activeRouteData?.obstacles?.[0];
+      if (obs?.coords && marsMap) {
+        marsMap.flyTo(obs.coords, Math.max(marsMap.getZoom(), 9), { duration: 0.7 });
+      }
+    } else if (actionType === 'locate-storm') {
+      const reg = getActiveRegionData();
+      const targetCoords =
+        payloadVal === 'remote' && REGIONAL_LAYERS_DB['valles-marineris']?.weather?.coords
+          ? REGIONAL_LAYERS_DB['valles-marineris'].weather.coords
+          : reg?.weather?.coords;
+      if (targetCoords && marsMap) {
+        marsMap.flyTo(targetCoords, Math.max(marsMap.getZoom(), 7), { duration: 0.7 });
+      }
+    } else if (actionType === 'open-cargo' && cargoDialogEl && !cargoDialogEl.open) {
+      setPopoverStackVisible(false);
+      cargoDialogEl.showModal();
+    }
+  }
+
+  function renderTacticalAdvisoriesTray(advisories, shouldAutoOpen = false) {
+    const visibleAdvisories = advisories.filter((a) => !dismissedTacticalAlertIds.has(a.id));
+
+    if (alertSummaryPillEl && alertSummaryTextEl) {
+      if (advisories.length === 0) {
+        alertSummaryPillEl.classList.add('is-nominal');
+        alertSummaryPillEl.classList.remove('is-critical');
+        if (alertSummaryIconEl) alertSummaryIconEl.className = 'fa-solid fa-shield-check';
+        alertSummaryTextEl.textContent = 'SYSTEMS NOMINAL';
+      } else {
+        const hasCritical = advisories.some((a) => a.severity === 'critical');
+        alertSummaryPillEl.classList.remove('is-nominal');
+        alertSummaryPillEl.classList.toggle('is-critical', hasCritical);
+        if (alertSummaryIconEl) {
+          alertSummaryIconEl.className = hasCritical
+            ? 'fa-solid fa-radiation'
+            : 'fa-solid fa-triangle-exclamation';
+        }
+        const lead = advisories[0];
+        alertSummaryTextEl.textContent =
+          advisories.length > 1
+            ? `${advisories.length} ALERTS: ${lead.shortLabel}`
+            : lead.shortLabel;
+      }
+    }
+
+    if (!tacticalToastStackEl) return;
+
+    const sig = advisories.map((a) => `${a.id}:${a.severity}:${a.shortLabel}`).join('|');
+    if (shouldAutoOpen || (sig && sig !== lastAutoPopupSignature && forceOpenTacticalTray)) {
+      if (sig !== lastAutoPopupSignature) {
+        // Re-allow previously dismissed IDs if hazard severity escalated or route changed
+        dismissedTacticalAlertIds.clear();
+      }
+      lastAutoPopupSignature = sig;
+    }
+
+    const activeVisible = advisories.filter((a) => !dismissedTacticalAlertIds.has(a.id));
+
+    tacticalToastStackEl.innerHTML = '';
+    activeVisible.forEach((adv) => {
+      const card = document.createElement('article');
+      card.className = `hud-tactical-toast ${adv.themeClass}`;
+      card.setAttribute('aria-label', adv.title);
+
+      const iconEl = document.createElement('i');
+      iconEl.className = `htt-icon fa-solid ${adv.iconClass}`;
+      iconEl.setAttribute('aria-hidden', 'true');
+
+      const body = document.createElement('div');
+      body.className = 'htt-body';
+
+      const titleEl = document.createElement('div');
+      titleEl.className = 'htt-title';
+      titleEl.textContent = adv.title;
+
+      const msgEl = document.createElement('p');
+      msgEl.className = 'htt-message';
+      msgEl.textContent = adv.message;
+
+      body.append(titleEl, msgEl);
+
+      if (Array.isArray(adv.actions) && adv.actions.length > 0) {
+        const actionsRow = document.createElement('div');
+        actionsRow.className = 'htt-actions';
+        adv.actions.forEach((act) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `htt-action-btn ${act.warnStyle ? 'is-warn' : ''}`;
+          btn.textContent = act.label;
+          btn.addEventListener('click', () => handleTacticalAction(act.type, act.payload));
+          actionsRow.appendChild(btn);
+        });
+        body.appendChild(actionsRow);
+      }
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'htt-close-btn';
+      closeBtn.setAttribute('aria-label', `Dismiss ${adv.title}`);
+      closeBtn.textContent = '✕';
+      closeBtn.addEventListener('click', () => {
+        const wasFocused = card.contains(document.activeElement);
+        dismissedTacticalAlertIds.add(adv.id);
+        forceOpenTacticalTray = false;
+        const remainingCards = activeVisible.filter((item) => item.id !== adv.id);
+        card.remove();
+        if (remainingCards.length === 0) {
+          setPopoverStackVisible(false);
+          if (wasFocused && alertSummaryPillEl) {
+            alertSummaryPillEl.focus();
+          }
+        }
+      });
+
+      card.append(iconEl, body, closeBtn);
+      tacticalToastStackEl.appendChild(card);
+    });
+
+    if (activeVisible.length === 0) {
+      setPopoverStackVisible(false);
+      return;
+    }
+
+    if (forceOpenTacticalTray || shouldAutoOpen) {
+      setPopoverStackVisible(true);
+      const topCard = advisories[0];
+      const hasActionsSuffix =
+        Array.isArray(topCard.actions) && topCard.actions.length > 0 ? ' Actions available.' : '';
+      announceTacticalVoiceAndSr(
+        `${topCard.title}. ${topCard.message}${hasActionsSuffix}`,
+        topCard.severity === 'critical' ? 'high' : 'polite'
+      );
+    }
   }
 
   function formatEvaDist(kmVal) {
@@ -2229,14 +2712,13 @@ function initMarsDashboard() {
         : 'fa-solid fa-truck-monster text-orange';
     }
     if (summaryBadgeEl) {
-      summaryBadgeEl.textContent = `${evaConfig.crewSize} PAX • ${isFoot ? 'FOOT EVA' : 'ROVER'}`;
+      const crewLabel = Number(evaConfig.crewSize) === 0 ? 'ROBOT' : `${evaConfig.crewSize} PAX`;
+      summaryBadgeEl.textContent = `${crewLabel} • ${isFoot ? 'FOOT EVA' : 'ROVER'}`;
     }
 
-    const isMarswalkRoute =
-      activeRouteData?.scaleMode === 'marswalk' || currentRouteKey.startsWith('marswalk-');
     document.querySelectorAll('#scale-mode-switcher .scale-pill-btn').forEach((btn) => {
       const mode = btn.getAttribute('data-scale-mode');
-      const active = (mode === 'marswalk' && isMarswalkRoute) || (mode === 'regional' && !isMarswalkRoute);
+      const active = (mode === 'marswalk' && isFoot) || (mode === 'regional' && !isFoot);
       btn.classList.toggle('is-active', active);
     });
   }
@@ -2255,7 +2737,7 @@ function initMarsDashboard() {
             opacity: 0.78,
             dashArray: '4, 7'
           })
-            .bindTooltip(`⛔ BLOCKED DIRECT PATH // DETOUR AROUND: ${obs.name}`, {
+            .bindTooltip(`BLOCKED DIRECT PATH // DETOUR AROUND: ${obs.name}`, {
               sticky: true,
               className: 'cyber-leaflet-tooltip'
             })
@@ -2291,7 +2773,7 @@ function initMarsDashboard() {
 
         const dangerMarker = L.marker(obs.coords, { icon: dangerIcon })
           .bindTooltip(
-            `⚠ OBSTACLE AVOIDANCE: ${obs.name} — ${obs.reason}`,
+            `OBSTACLE AVOIDANCE: ${obs.name} — ${obs.reason}`,
             { sticky: true, className: 'cyber-leaflet-tooltip' }
           )
           .bindPopup(hazardCircle.getPopup());
@@ -2329,19 +2811,19 @@ function initMarsDashboard() {
         opacity: 0.95
       }).addTo(dynamicRouteLayerGroup);
 
-      // Anillo dinámico de Límite de Retorno Seguro (Walkback Safety Radius) centrado en el punto de partida / esclusa
-      const startCoord = activeRouteData.waypoints[0]?.coords || latLngs[0];
+      // Anillo dinámico de Alcance / Retorno de Oxígeno centrado en el rover o astronauta en movimiento
+      const roverInitPos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
       const initialRadiusM = Math.max(120, Math.round(activeRouteData.totalDistKm * 1000 * 0.85));
-      walkbackSafetyCircle = L.circle(startCoord, {
+      walkbackSafetyCircle = L.circle([roverInitPos.lat, roverInitPos.lng], {
         radius: initialRadiusM,
         color: '#00e5ff',
         weight: 1.5,
         dashArray: '8, 6',
         fillColor: '#00e5ff',
-        fillOpacity: 0.04,
+        fillOpacity: 0.05,
         interactive: true
       })
-        .bindTooltip('🛡 WALKBACK SAFETY RADIUS: Max safe return range to Airlock/Rover with current Suit O₂ reserve', {
+        .bindTooltip('LIVE O₂ SAFETY RADIUS: Remaining O₂ range around active unit during traverse', {
           sticky: true,
           className: 'cyber-leaflet-tooltip cyan'
         })
@@ -2445,7 +2927,9 @@ function initMarsDashboard() {
       <div class="hud-popup-card cyan-theme">
         <div class="hp-kicker">LIVE MOBILE UNIT TELEMETRY</div>
         <h4 class="hp-title">EVA Unit M.A.R.T.E 01 (${unitTag})</h4>
-        <p class="hp-desc">Current progress: ${roverProgress}% of route ${activeRouteData.code}. Crew: ${evaConfig.crewSize} astronauts.</p>
+        <p class="hp-desc">Current progress: ${roverProgress}% of route ${activeRouteData.code}. ${
+          Number(evaConfig.crewSize) === 0 ? 'Uncrewed Robot Rover (0% O₂)' : `Crew: ${evaConfig.crewSize} astronauts.`
+        }</p>
         <button type="button" class="hp-action-btn" data-open-360="rover-live">
           <i class="fa-solid fa-vr-cardboard"></i> OPEN 360° VISOR CAMERA
         </button>
@@ -2644,7 +3128,7 @@ function initMarsDashboard() {
     // Modificadores por Parámetros Configurables de Misión EVA
     const crewFactor = evaConfig.crewSize / 2; // Calibrado base = 2 astronautas
     const isFootEva = evaConfig.transportMode === 'foot';
-    const modeO2Mult = isFootEva ? 1.55 : 1.0;
+    const modeO2Mult = isFootEva ? 1.85 : 1.0; // Vehicle ECLSS (1.0x) vs Foot PLSS Walk (1.85x)
     const modeBattMult = isFootEva ? 0.65 : 1.0; // PLSS de traje vs tracción de Rover
     const speedBase = isFootEva ? 1.45 : activeRouteData.avgSpeedKmh;
 
@@ -2687,7 +3171,7 @@ function initMarsDashboard() {
       ? 1.12
       : 1.0;
     const geolTractionPenalty = env.crossesHazardGeol ? 1.15 : 1.0;
-    const isruO2BonusPct = (env.reachedIsruDepot ? 16 : 0) + cargoTotals.extraO2ReservePct;
+    const isruO2BonusPct = (!isFootEva && env.reachedIsruDepot ? 16 : 0) + cargoTotals.extraO2ReservePct;
     const isruBattBonusPct = (env.reachedIsruDepot ? 8 : 0) + cargoTotals.extraBattReservePct;
 
     const effectiveSpeedKmh = Math.max(
@@ -2698,36 +3182,117 @@ function initMarsDashboard() {
         (env.crossesHazardGeol ? 0.88 : 1.0)
     );
 
-    // 1. Oxígeno Consumido (%)
-    const slopeFactor = 1 + Math.max(0, activeRouteData.maxSlopeDeg - 10) * (isFootEva ? 0.042 : 0.025);
-    const rawO2Consumed =
-      4 +
-      traveledKm *
-        activeRouteData.baseO2RatePerKm *
-        slopeFactor *
-        crewFactor *
-        modeO2Mult *
-        payloadO2Mult *
-        geolTractionPenalty -
-      isruO2BonusPct;
-    const o2ConsumedPct = Math.max(2, Math.min(99, Math.round(rawO2Consumed)));
-    const o2ReservePct = Math.max(1, 100 - o2ConsumedPct);
-    const o2KgRate = (0.42 * evaConfig.crewSize * slopeFactor * modeO2Mult * payloadO2Mult).toFixed(2);
+    // 1. Oxígeno Inicial Configurable (%) & Diferenciación Vehículo vs Caminata (o Robot 0 PAX)
+    const isRobotUncrewed = Number(evaConfig.crewSize) === 0;
+    const roverMetrics = computeModeO2Metrics(
+      activeRouteData,
+      cargoTotals,
+      Boolean(env.routeHasIsruDepot),
+      'rover',
+      geolTractionPenalty
+    );
+    const footMetrics = computeModeO2Metrics(
+      activeRouteData,
+      cargoTotals,
+      Boolean(env.routeHasIsruDepot),
+      'foot',
+      geolTractionPenalty
+    );
+    const activeO2Metrics = isFootEva ? footMetrics : roverMetrics;
+    const { perKmO2Rate, netRouteO2RequiredPct: totalRouteNetO2RequiredPct, o2KgRate } = activeO2Metrics;
 
-    if (metricOxygen) metricOxygen.textContent = o2ConsumedPct;
+    const rawO2UsedNoBonus = isRobotUncrewed ? 0 : 4 + traveledKm * perKmO2Rate;
+    const startTankO2Pct = clampStartingO2(evaConfig.startingO2Pct);
+    const o2AvailableWithBonuses = isRobotUncrewed ? 100 : Math.min(100, startTankO2Pct + isruO2BonusPct);
+    const o2ReservePct = isRobotUncrewed ? 100 : Math.max(0, Math.round(o2AvailableWithBonuses - rawO2UsedNoBonus));
+    const o2ConsumedPct = isRobotUncrewed ? 0 : Math.max(2, Math.min(100, Math.round(rawO2UsedNoBonus)));
+    const projectedEndO2ReservePct = isRobotUncrewed ? 100 : startTankO2Pct - totalRouteNetO2RequiredPct;
+    const isO2InsufficientForRoute = !isRobotUncrewed && projectedEndO2ReservePct < 0;
+    const isO2DepletedNow = !isRobotUncrewed && o2ReservePct <= 0;
+    const isO2LowWarning =
+      !isRobotUncrewed &&
+      !isO2InsufficientForRoute &&
+      !isO2DepletedNow &&
+      (projectedEndO2ReservePct < 15 || o2ReservePct <= 22);
+
+    if (evaO2ControlBox) {
+      evaO2ControlBox.classList.toggle('is-insufficient', isO2InsufficientForRoute || isO2DepletedNow);
+      evaO2ControlBox.classList.toggle('is-low', isO2LowWarning);
+    }
+    if (evaO2FeasibilityBadge) {
+      evaO2FeasibilityBadge.className = `o2-feasibility-badge ${
+        isO2DepletedNow || isO2InsufficientForRoute
+          ? 'is-critical'
+          : isO2LowWarning
+          ? 'is-warning'
+          : 'is-ok'
+      }`;
+      evaO2FeasibilityBadge.textContent = isRobotUncrewed
+        ? 'ROBOTIC (0% O₂)'
+        : isO2DepletedNow
+        ? 'O₂ DEPLETED'
+        : isO2InsufficientForRoute
+        ? 'INSUFFICIENT O₂'
+        : isO2LowWarning
+        ? 'LOW O₂ MARGIN'
+        : 'SUFFICIENT';
+    }
+    if (evaO2RouteReqText) {
+      const modeName = isRobotUncrewed ? 'Robot (Uncrewed)' : isFootEva ? 'Walk (Foot PLSS)' : 'Vehicle (Rover)';
+      evaO2RouteReqText.textContent = isRobotUncrewed
+        ? 'Uncrewed robotic telemetry — no biological O₂ required (0% O₂)'
+        : isO2InsufficientForRoute
+        ? `${modeName} needs ~${totalRouteNetO2RequiredPct}% O₂ • Deficit: ${Math.abs(
+            projectedEndO2ReservePct
+          )}% short`
+        : `${modeName} needs ~${totalRouteNetO2RequiredPct}% O₂ • Projected end: ${Math.max(
+            0,
+            projectedEndO2ReservePct
+          )}%`;
+    }
+    if (evaO2ModeCompareEl) {
+      evaO2ModeCompareEl.textContent = isRobotUncrewed
+        ? 'Uncrewed Robot: 0% O₂ (Solar/MMRTG + Battery only — Curiosity / Perseverance mode)'
+        : `Vehicle: ~${roverMetrics.netRouteO2RequiredPct}% (${roverMetrics.o2KgRate} kg/h) • Walk: ~${footMetrics.netRouteO2RequiredPct}% (${footMetrics.o2KgRate} kg/h)`;
+    }
+
+    if (metricOxygenLabel) {
+      metricOxygenLabel.textContent = isRobotUncrewed
+        ? 'OXYGEN RESERVE (ROBOTIC)'
+        : isFootEva
+        ? 'OXYGEN RESERVE (FOOT WALK)'
+        : 'OXYGEN RESERVE (VEHICLE)';
+    }
+    if (metricOxygen) metricOxygen.textContent = o2ReservePct;
     if (metricOxygenReserve) {
-      metricOxygenReserve.textContent = env.reachedIsruDepot
-        ? `RESERVE: ${o2ReservePct}% (+ISRU)`
-        : `RESERVE: ${o2ReservePct}%`;
+      if (isRobotUncrewed) {
+        metricOxygenReserve.textContent = 'UNCREWED • 0% CONSUMED';
+      } else if (isO2DepletedNow) {
+        metricOxygenReserve.textContent = `DEPLETED! (NEED ${totalRouteNetO2RequiredPct}%)`;
+      } else if (isO2InsufficientForRoute) {
+        metricOxygenReserve.textContent = `USED: ${o2ConsumedPct}% • NEED ${totalRouteNetO2RequiredPct}%`;
+      } else {
+        const isruTag = !isFootEva && env.reachedIsruDepot ? ' (+ISRU)' : '';
+        metricOxygenReserve.textContent = `USED: ${o2ConsumedPct}%${isruTag} • START ${startTankO2Pct}%`;
+      }
     }
     if (metricOxygenRate) {
-      metricOxygenRate.textContent =
-        o2ConsumedPct > 72
-          ? `High Consumption! (${o2KgRate} kg/h • ${evaConfig.crewSize} PAX)`
-          : `${o2KgRate} kg/h (${evaConfig.crewSize} Astronauts)`;
+      const modeShort = isFootEva ? 'Foot PLSS (+85% burn)' : 'Rover ECLSS';
+      metricOxygenRate.textContent = isRobotUncrewed
+        ? '0.00 kg/h • Autonomous Robot'
+        : isO2DepletedNow
+        ? `CRITICAL: Empty • ${modeShort}`
+        : isO2InsufficientForRoute || o2ReservePct <= 22
+        ? `Low O₂! ${o2KgRate} kg/h • ${modeShort}`
+        : `${o2KgRate} kg/h • ${modeShort} (${evaConfig.crewSize} PAX)`;
     }
-    if (barOxygen) barOxygen.style.width = `${o2ConsumedPct}%`;
-    if (cardOxygen) cardOxygen.classList.toggle('alert-critical', o2ConsumedPct >= 75);
+    if (barOxygen) barOxygen.style.width = `${Math.min(100, o2ReservePct)}%`;
+    if (cardOxygen) {
+      cardOxygen.classList.toggle(
+        'alert-critical',
+        isO2DepletedNow || isO2InsufficientForRoute || o2ReservePct <= 22
+      );
+    }
 
     // 2. Battery (%)
     const effectiveBattRate =
@@ -2775,7 +3340,7 @@ function initMarsDashboard() {
         roverProgress >= 100
           ? 'Destination reached successfully!'
           : totalHours > 8.5 || evaConfig.departureWindow === 'night'
-          ? `⚠ ${remH}h ${remM}m left (Nocturnal thermal exposure)`
+          ? `${remH}h ${remM}m left (Nocturnal thermal exposure)`
           : `${remH}h ${remM}m left (Before sunset)`;
     }
     if (barTime) {
@@ -2818,26 +3383,8 @@ function initMarsDashboard() {
     }
 
     // 4.6. Space Weather (SPE / Proton Flux / KP-Mars) & Nearest Radiation Shelter Distance
-    const livePos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
-    const regionKey = REGIONAL_LAYERS_DB[currentRouteKey] ? currentRouteKey : 'jezero-alpha';
-    const regionData =
-      currentRouteKey === 'custom' && !REGIONAL_LAYERS_DB[currentRouteKey]
-        ? buildProceduralSectorLayers(livePos.lat, livePos.lng)
-        : REGIONAL_LAYERS_DB[regionKey];
-
-    let nearestShelterDistKm = 0.24;
-    let nearestShelterName = 'Pressurized Rover Airlock';
-    if (Array.isArray(regionData?.shelters) && regionData.shelters.length > 0) {
-      let minD = Infinity;
-      regionData.shelters.forEach((sh) => {
-        const d = computeMarsDistanceKm([livePos.lat, livePos.lng], sh.coords);
-        if (d < minD) {
-          minD = d;
-          nearestShelterName = sh.name;
-        }
-      });
-      if (Number.isFinite(minD)) nearestShelterDistKm = minD;
-    }
+    const nearestShelterDistKm = env.nearestShelterDistKm;
+    const nearestShelterName = env.nearestShelterName;
     const shelterDistFormatted =
       nearestShelterDistKm < 1.5
         ? `${Math.max(15, Math.round(nearestShelterDistKm * 1000))} m`
@@ -2851,9 +3398,9 @@ function initMarsDashboard() {
     const speStateAlert = isSolarStormSpeActive || env.crossesStormCore;
     if (wcSpeBadgeEl) {
       wcSpeBadgeEl.textContent = isSolarStormSpeActive
-        ? '☢ M4.2 SOLAR FLARE (SPE ALERT)'
+        ? 'M4.2 SOLAR FLARE (SPE ALERT)'
         : env.crossesStormCore
-        ? '⚠ ELEVATED SEP FLUX'
+        ? 'ELEVATED SEP FLUX'
         : 'NOMINAL (GCR BASELINE)';
       wcSpeBadgeEl.classList.toggle('is-alert', speStateAlert);
     }
@@ -2921,7 +3468,7 @@ function initMarsDashboard() {
       pwMassValEl.innerHTML = `${baseKitKg.toFixed(1)} kg Cargo (${cargoTotals.totalItemsCount}) + ${samplesMassKg.toFixed(1)} kg Samples = ${totalPayloadEarthKg.toFixed(1)} kg &rarr; <strong>${marsEffectiveWeightKg.toFixed(1)} kg @ 0.38g</strong>`;
     }
     if (pwMobilityImpactEl) {
-      const overloadTag = isFootOverload ? ' • ⚠ HEAVY SUIT LOAD' : '';
+      const overloadTag = isFootOverload ? ' • HEAVY SUIT LOAD' : '';
       const supplyTag =
         cargoTotals.extraO2ReservePct > 0 || cargoTotals.extraBattReservePct > 0
           ? ` • +${cargoTotals.extraO2ReservePct}% O₂/+${cargoTotals.extraBattReservePct}% Bat`
@@ -2930,8 +3477,8 @@ function initMarsDashboard() {
     }
     if (pwWalkbackBadgeEl) {
       pwWalkbackBadgeEl.textContent = isWalkbackSafe
-        ? `✓ SAFE RETURN (+${Math.max(0, o2ReservePct - o2NeededForWalkbackPct)}% O₂)`
-        : '⚠ WALKBACK LIMIT CRITICAL';
+        ? `SAFE RETURN (+${Math.max(0, o2ReservePct - o2NeededForWalkbackPct)}% O₂)`
+        : 'WALKBACK LIMIT CRITICAL';
       pwWalkbackBadgeEl.classList.toggle('is-safe', isWalkbackSafe);
       pwWalkbackBadgeEl.classList.toggle('is-warning', !isWalkbackSafe);
     }
@@ -2940,16 +3487,16 @@ function initMarsDashboard() {
     }
 
     if (walkbackSafetyCircle) {
-      const startCoord = activeRouteData.waypoints[0]?.coords;
-      if (startCoord) walkbackSafetyCircle.setLatLng(startCoord);
+      const liveUnitPos = interpolateRoverPosition(activeRouteData.pathCoords, roverProgress);
+      walkbackSafetyCircle.setLatLng([liveUnitPos.lat, liveUnitPos.lng]);
       const safeRadiusMeters = Math.max(
         80,
         Math.min(35000, Math.round(maxSafeWalkbackKm * 1000))
       );
       walkbackSafetyCircle.setRadius(safeRadiusMeters);
       walkbackSafetyCircle.setStyle({
-        color: isWalkbackSafe ? '#00e5ff' : '#ff5252',
-        fillColor: isWalkbackSafe ? '#00e5ff' : '#ff1744'
+        color: isO2DepletedNow || !isWalkbackSafe ? '#ff5252' : isO2InsufficientForRoute ? '#ffc107' : '#00e5ff',
+        fillColor: isO2DepletedNow || !isWalkbackSafe ? '#ff1744' : isO2InsufficientForRoute ? '#ffc107' : '#00e5ff'
       });
     }
 
@@ -2970,7 +3517,7 @@ function initMarsDashboard() {
     }
     if (hvSpaceWeatherTagEl) {
       hvSpaceWeatherTagEl.innerHTML = isSolarStormSpeActive
-        ? `<i class="fa-solid fa-radiation"></i> ☢ SOLAR STORM SPE ALERT: M4.2 FLARE (485 PFU) // SEEK SHELTER (${shelterDistFormatted})`
+        ? `<i class="fa-solid fa-radiation"></i> SOLAR STORM SPE ALERT: M4.2 FLARE (485 PFU) // SEEK SHELTER (${shelterDistFormatted})`
         : `<i class="fa-solid fa-satellite-dish"></i> SPACE WEATHER: GCR NOMINAL (KP 1.8 • 1.4 PFU) // SUIT SHIELDING: ACTIVE`;
       hvSpaceWeatherTagEl.classList.toggle('is-spe-alert', isSolarStormSpeActive);
     }
@@ -2987,56 +3534,276 @@ function initMarsDashboard() {
       hvTargetToolEl.textContent = `Tool: ${nextWp.scienceTool || 'Rotary Core Drill + Raman Spec'}`;
     }
 
-    // 5. Intelligent Dynamic Directive based on NASA Layer Intersections
+    // 5. Intelligent Dynamic Directive + Proactive Simulation & Oxygen Advisories
+    const altRoute = findSaferAlternateRoute(startTankO2Pct, cargoTotals);
+    const advisories = [];
+
+    if (isRadiationCritical) {
+      if (radiationProceedOverride) {
+        advisories.push({
+          id: 'radiation',
+          severity: 'warning',
+          themeClass: env.activeShelter ? 'is-safe-hold' : 'is-radiation',
+          iconClass: 'fa-person-walking',
+          shortLabel: isFootEva ? 'FOLLOWING ON FOOT (RAD)' : 'CONTINUING (RAD OVERRIDE)',
+          title: env.activeShelter
+            ? 'LEAVING SHELTER — PROCEEDING UNDER RADIATION OVERRIDE'
+            : 'CONTINUING TRAVERSE UNDER ELEVATED RADIATION',
+          message: `Radiation override active (${radiationRateMsvH.toFixed(2)} mSv/h outside) in ${
+            isFootEva ? 'Foot Walk' : 'Vehicle'
+          } mode on the current map. Head toward "${nearestShelterName}" (${shelterDistFormatted} away) or pause to hold.`,
+          actions: [
+            { label: 'PAUSE & WAIT', type: 'pause-rad-override' },
+            !env.activeShelter ? { label: `LOCATE SHELTER (${shelterDistFormatted})`, type: 'locate-shelter', warnStyle: true } : null,
+            isSolarStormSpeActive ? { label: 'CLEAR SPE', type: 'clear-spe' } : null
+          ].filter(Boolean)
+        });
+      } else if (env.activeShelter) {
+        advisories.push({
+          id: 'radiation',
+          severity: 'warning',
+          themeClass: 'is-safe-hold',
+          iconClass: 'fa-shield-halved',
+          shortLabel: 'WAIT AT SHELTER (RAD)',
+          title: 'RADIATION ACTIVE — WAIT AT CURRENT SHELTER OR LEAVE',
+          message: `You are inside safe shelter "${env.activeShelter.name}" (${env.activeShelter.attenuation}). Hold position until solar radiation / SPE clears (${radiationRateMsvH.toFixed(2)} mSv/h outside), or explicitly choose to exit the shelter and continue.`,
+          actions: [
+            { label: 'LEAVE SHELTER & WALK', type: 'proceed-radiation-walk', warnStyle: true },
+            { label: 'CONTINUE TRAVERSE', type: 'proceed-radiation-continue' },
+            simIntervalId ? { label: 'HOLD POSITION', type: 'pause-sim' } : null,
+            isSolarStormSpeActive ? { label: 'CLEAR SPE', type: 'clear-spe' } : null,
+            altRoute?.sameRegion ? { label: `ALT ROUTE: ${altRoute.route.code}`, type: 'switch-route', payload: altRoute.key } : null
+          ].filter(Boolean)
+        });
+      } else {
+        advisories.push({
+          id: 'radiation',
+          severity: 'critical',
+          themeClass: 'is-radiation',
+          iconClass: 'fa-radiation',
+          shortLabel: 'UNSAFE ZONE — SHELTER NOW',
+          title: 'NOT IN SAFE ZONE — TAKE SHELTER OR CONTINUE',
+          message: `${
+            isSolarStormSpeActive ? 'Solar Particle Event (SPE)' : 'Elevated radiation'
+          } at ${radiationRateMsvH.toFixed(2)} mSv/h outside shelter radius. ${
+            isFootEva ? 'Board Pressurized Rover or evacuate immediately' : 'Move immediately'
+          } to "${nearestShelterName}" (${shelterDistFormatted} away) to shelter in place.`,
+          actions: [
+            { label: `LOCATE SHELTER (${shelterDistFormatted})`, type: 'locate-shelter', warnStyle: true },
+            { label: 'CONTINUE ANYWAY', type: 'proceed-radiation-continue' },
+            isFootEva ? { label: 'BOARD ROVER (SAME MAP)', type: 'board-rover' } : null,
+            altRoute?.sameRegion ? { label: `SAFER ROUTE: ${altRoute.route.code}`, type: 'switch-route', payload: altRoute.key } : null
+          ].filter(Boolean)
+        });
+      }
+    }
+
+    if (isO2DepletedNow || isO2InsufficientForRoute || isO2LowWarning) {
+      const deficitPct = Math.max(1, totalRouteNetO2RequiredPct - startTankO2Pct);
+      advisories.push({
+        id: 'oxygen',
+        severity: isO2DepletedNow || isO2InsufficientForRoute ? 'critical' : 'warning',
+        themeClass: 'is-oxygen',
+        iconClass: 'fa-lungs',
+        shortLabel: isO2DepletedNow ? 'O₂ DEPLETED' : isO2InsufficientForRoute ? 'INSUFFICIENT O₂' : 'LOW O₂ WARNING',
+        title: isO2DepletedNow
+          ? 'OXYGEN DEPLETED — CANNOT CONTINUE'
+          : isO2InsufficientForRoute
+          ? 'INSUFFICIENT OXYGEN FOR THIS ROUTE'
+          : 'LOW OXYGEN RESERVE WARNING',
+        message: isO2DepletedNow
+          ? `Crew oxygen dropped to 0% along ${activeRouteData.code}. Abort traverse, switch to a shorter route, or equip Spare PLSS O₂ Tanks.`
+          : isO2InsufficientForRoute
+          ? `Starting O₂ (${startTankO2Pct}%) is ${deficitPct}% short for ${activeRouteData.code} (~${totalRouteNetO2RequiredPct}% required). Current reserve: ${o2ReservePct}%. Take a shorter route or resupply.`
+          : `Low O₂ reserve (${o2ReservePct}% remaining; projected end reserve: ${Math.max(
+              0,
+              projectedEndO2ReservePct
+            )}%). Monitor consumption or equip Spare O₂ Tank.`,
+        actions: [
+          altRoute
+            ? {
+                label: `${altRoute.fitsO2 ? 'SWITCH' : 'SHORTER'}: ${altRoute.route.code} (~${altRoute.reqO2}% O₂)`,
+                type: 'switch-route',
+                payload: altRoute.key
+              }
+            : null,
+          { label: '+SPARE O₂ CARGO', type: 'open-cargo', warnStyle: true }
+        ].filter(Boolean)
+      });
+    }
+
+    if (
+      env.obstacleDirectHit ||
+      env.obstacleAhead ||
+      env.crossesHazardGeol ||
+      env.geolHazardAhead ||
+      activeRouteData.maxSlopeDeg >= 24
+    ) {
+      const obsLabel = env.obstacleDirectHit
+        ? `Direct obstacle intersection: ${env.obstacleDirectHit.name} (~${env.obstacleDirectHit.pct}%)`
+        : env.obstacleAhead
+        ? `Obstacle corridor near path: ${env.obstacleAhead.name} (~${env.obstacleAhead.pct}%)`
+        : env.crossesHazardGeol
+        ? `High-risk geology crossed: ${env.crossesHazardGeol}`
+        : env.geolHazardAhead
+        ? `Hazard terrain ahead at ${env.geolHazardAhead.pct}% (${env.geolHazardAhead.name})`
+        : `Critical terrain slope (${activeRouteData.maxSlopeDeg.toFixed(1)}°)`;
+      advisories.push({
+        id: 'obstacle',
+        severity: env.obstacleDirectHit || activeRouteData.maxSlopeDeg >= 25 ? 'critical' : 'warning',
+        themeClass: 'is-obstacle',
+        iconClass: 'fa-route',
+        shortLabel: 'OBSTACLE / REROUTE',
+        title: env.obstacleDirectHit ? 'OBSTACLE ON ROUTE — TAKE ANOTHER ROUTE' : 'OBSTACLES / HAZARD TERRAIN AHEAD',
+        message: `${obsLabel}. ${
+          altRoute
+            ? `Recommended alternate route: ${altRoute.route.code} (${altRoute.route.difficulty}, ${altRoute.route.maxSlopeDeg.toFixed(
+                1
+              )}° slope).`
+            : 'Use map waypoints to detour safely.'
+        }`,
+        actions: [
+          !isFootEva ? { label: 'WALK ON FOOT (SAME MAP)', type: 'walk-on-foot' } : { label: 'BOARD ROVER (SAME MAP)', type: 'board-rover' },
+          altRoute?.sameRegion ? { label: `SWITCH TO ${altRoute.route.code}`, type: 'switch-route', payload: altRoute.key } : null,
+          activeRouteData.obstacles?.length ? { label: 'VIEW OBSTACLE', type: 'locate-obstacle', warnStyle: true } : null
+        ].filter(Boolean)
+      });
+    }
+
+    if ((env.stormElsewhereActive && env.weatherObj) || env.remoteRegionalStorm) {
+      const isLocalAhead = env.stormAheadPct !== null;
+      const stormTitle = env.weatherObj?.title || env.remoteRegionalStorm?.title || 'Dust Storm Front';
+      const stormDistText = env.weatherObj
+        ? `${env.stormDistKm.toFixed(1)} km ${env.stormBearing}`
+        : `${Math.round(env.remoteRegionalStorm.distKm)} km ${env.remoteRegionalStorm.bearing}`;
+      advisories.push({
+        id: 'storm',
+        severity: isLocalAhead ? 'warning' : 'info',
+        themeClass: 'is-storm',
+        iconClass: 'fa-cloud-bolt',
+        shortLabel: isLocalAhead ? `STORM AHEAD (${env.stormAheadPct}%)` : 'STORM AT ANOTHER POINT',
+        title: isLocalAhead
+          ? `DUST STORM AHEAD AT ${env.stormAheadPct}% OF ROUTE`
+          : 'DUST STORM DETECTED AT ANOTHER POINT',
+        message: env.weatherObj
+          ? `${stormTitle} active ${stormDistText} from rover.${
+              isLocalAhead
+                ? ` Path enters outer dust band at ~${env.stormAheadPct}% progress — consider waiting or rerouting.`
+                : ' Off current trajectory; monitor wind & solar attenuation.'
+            }`
+          : `Regional storm (${stormTitle}) active ${stormDistText} in adjacent Mars sector.`,
+        actions: [
+          {
+            label: 'LOCATE STORM',
+            type: 'locate-storm',
+            payload: env.weatherObj ? 'local' : 'remote',
+            warnStyle: true
+          },
+          isLocalAhead && altRoute?.sameRegion
+            ? { label: `REROUTE: ${altRoute.route.code}`, type: 'switch-route', payload: altRoute.key }
+            : null
+        ].filter(Boolean)
+      });
+    }
+
+    // Auto-pausa preventiva durante simulación activa si golpea O₂ 0%, radiación crítica nueva u obstáculo directo
+    if (simIntervalId) {
+      const simHazardKey = [
+        isO2DepletedNow ? 'o2zero' : '',
+        isRadiationCritical && !radiationProceedOverride ? (env.activeShelter ? 'radhold' : 'radevac') : '',
+        env.obstacleDirectHit && Math.abs(roverProgress - env.obstacleDirectHit.pct) <= 3 ? 'obshit' : ''
+      ]
+        .filter(Boolean)
+        .join('+');
+
+      if (simHazardKey && simHazardKey !== lastSimHazardStopKey) {
+        lastSimHazardStopKey = simHazardKey;
+        forceOpenTacticalTray = true;
+        if (isO2DepletedNow || (isRadiationCritical && !radiationProceedOverride)) {
+          stopRoverSimulation();
+        }
+      }
+    }
+
+    const hasAlertInDirective =
+      isO2DepletedNow ||
+      isO2InsufficientForRoute ||
+      isO2LowWarning ||
+      o2ConsumedPct >= 75 ||
+      batteryRemainingPct <= 25 ||
+      activeRouteData.maxSlopeDeg >= 25 ||
+      env.crossesStormCore ||
+      isRadiationCritical ||
+      Boolean(env.obstacleDirectHit);
+
     if (directiveBoxEl && directiveTitleEl && directiveTextEl) {
       const hazards = [];
+      if (isO2InsufficientForRoute || isO2DepletedNow) {
+        hazards.push(`Insufficient O₂ (${o2ReservePct}% left / need ~${totalRouteNetO2RequiredPct}%)`);
+      } else if (isO2LowWarning) {
+        hazards.push(`Low O₂ reserve (${o2ReservePct}%)`);
+      }
       if (env.crossesStormCore || env.crossesStormOuter) {
         hazards.push('Active dust storm front crossing');
+      } else if (env.stormElsewhereActive && env.weatherObj) {
+        hazards.push(`Storm ${env.stormDistKm.toFixed(1)} km ${env.stormBearing}`);
       }
-      if (env.crossesHazardGeol) {
+      if (env.obstacleDirectHit) {
+        hazards.push(`Obstacle on path (${env.obstacleDirectHit.name})`);
+      } else if (env.crossesHazardGeol) {
         hazards.push(`Hazard terrain (${env.crossesHazardGeol})`);
       }
       if (isRadiationCritical) {
         hazards.push(
-          `Elevated ionizing radiation (${radiationRateMsvH.toFixed(2)} mSv/h • Accum dose: ${accumulatedDoseMsv} mSv)`
+          env.activeShelter
+            ? `Radiation active (${radiationRateMsvH.toFixed(2)} mSv/h) — HOLD inside ${env.activeShelter.name}`
+            : `Unsafe radiation (${radiationRateMsvH.toFixed(2)} mSv/h) — seek shelter`
         );
       }
 
-      if (
-        o2ConsumedPct >= 75 ||
-        batteryRemainingPct <= 25 ||
-        activeRouteData.maxSlopeDeg >= 25 ||
-        env.crossesStormCore ||
-        isRadiationCritical
-      ) {
+      if (hasAlertInDirective) {
         directiveBoxEl.classList.add('alert-mode');
-        directiveTitleEl.textContent =
-          isRadiationCritical && !env.crossesStormCore
-            ? '☢ SURFACE RADIATION ALERT:'
-            : '⚠ TACTICAL SURVIVAL ALERT:';
+        directiveTitleEl.textContent = isO2DepletedNow || isO2InsufficientForRoute
+          ? 'LOW / INSUFFICIENT OXYGEN ALERT:'
+          : isRadiationCritical && !env.crossesStormCore
+          ? env.activeShelter
+            ? 'WAIT AT SHELTER UNTIL RADIATION PASSES:'
+            : 'NOT IN SAFE ZONE — EVACUATE TO SHELTER:'
+          : 'TACTICAL SURVIVAL ALERT:';
 
         directiveTextEl.textContent =
           `${hazards.length ? hazards.join(' • ') + '. ' : ''}` +
-          `O₂: ${o2ConsumedPct}% | Bat: ${batteryRemainingPct}% | EVA Dose: ${accumulatedDoseMsv} mSv. ` +
+          `O₂ Left: ${o2ReservePct}% | Bat: ${batteryRemainingPct}% | EVA Dose: ${accumulatedDoseMsv} mSv. ` +
           `${
-            isRadiationCritical
-              ? isFootEva
-                ? 'Board Pressurized Rover or evacuate to Subsurface Cliffside Shelter.'
-                : 'Rover shielding active (-38%). Proceed to Subsurface Cliffside Shelter.'
+            isO2InsufficientForRoute || isO2DepletedNow
+              ? altRoute
+                ? `Switch to shorter route (${altRoute.route.code}, ~${altRoute.reqO2}% O₂) or add Spare O₂ Tanks.`
+                : 'Abort or resupply at ISRU ice deposit.'
+              : isRadiationCritical
+              ? env.activeShelter
+                ? `Stay inside ${env.activeShelter.name} until SPE passes.`
+                : isFootEva
+                ? `Board Pressurized Rover or evacuate to ${nearestShelterName} (${shelterDistFormatted}).`
+                : `Not in safe shelter radius — evacuate to ${nearestShelterName} (${shelterDistFormatted}).`
+              : env.obstacleDirectHit && altRoute
+              ? `Take alternate route ${altRoute.route.code} to avoid obstacle.`
               : env.reachedIsruDepot
               ? `ISRU resupply active at ${env.reachedIsruDepot}.`
-              : 'Head to a nearby ISRU ice deposit.'
+              : 'Monitor telemetry & nearest ISRU / shelter.'
           }`;
       } else {
         directiveBoxEl.classList.remove('alert-mode');
         directiveTitleEl.textContent = env.reachedIsruDepot
-          ? '✓ ISRU RESUPPLY CONNECTED:'
+          ? 'ISRU RESUPPLY CONNECTED:'
           : 'SURVIVAL DIRECTIVE:';
         directiveTextEl.textContent = env.reachedIsruDepot
-          ? `H₂O/O₂ extraction validated at "${env.reachedIsruDepot}" (+16% O₂ reserve). ${hazards.length ? 'Attention: ' + hazards.join(', ') + '.' : 'Systems nominal.'}`
-          : `${hazards.length ? 'Route caution: ' + hazards.join(' • ') + '. ' : ''}O₂ reserve at ${o2ReservePct}% for ${evaConfig.crewSize} astronauts • Accum rad dose: ${accumulatedDoseMsv} mSv.`;
+          ? `H₂O/O₂ extraction validated at "${env.reachedIsruDepot}" (+16% O₂ reserve). ${hazards.length ? 'Notice: ' + hazards.join(' • ') + '.' : 'Systems nominal.'}`
+          : `${hazards.length ? 'Advisory: ' + hazards.join(' • ') + '. ' : ''}O₂ reserve at ${o2ReservePct}% (start ${startTankO2Pct}%) for ${evaConfig.crewSize} astronauts • Accum rad dose: ${accumulatedDoseMsv} mSv.`;
       }
     }
+
+    renderTacticalAdvisoriesTray(advisories, forceOpenTacticalTray);
+    forceOpenTacticalTray = false;
 
     if (typeof refreshEvaManifestPreview === 'function' && document.getElementById('mission-dossier-dialog')?.open) {
       refreshEvaManifestPreview();
@@ -3100,6 +3867,9 @@ function initMarsDashboard() {
   function loadRoute(routeKey, flyTo = true) {
     stopRoverSimulation();
     currentRouteKey = routeKey;
+    lastSimHazardStopKey = '';
+    radiationProceedOverride = false;
+    dismissedTacticalAlertIds.clear();
 
     if (routeKey === 'custom') {
       if (!isCustomDrawing) {
@@ -3151,13 +3921,11 @@ function initMarsDashboard() {
     });
   }
 
-  // Conmutador rápido de escala: MARSWALK (FOOT) vs. REGIONAL ROVER
+  // Conmutador rápido de modo de transporte: FOOT WALK vs ROVER VEHICLE en el mismo mapa y ruta
   document.querySelectorAll('#scale-mode-switcher .scale-pill-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       const mode = btn.getAttribute('data-scale-mode');
-      const targetRoute = mode === 'marswalk' ? 'marswalk-boxwork' : 'jezero-alpha';
-      if (routeSelector) routeSelector.value = targetRoute;
-      loadRoute(targetRoute, true);
+      setTransportModeSameMap(mode === 'marswalk' ? 'foot' : 'rover');
     });
   });
 
@@ -3178,7 +3946,7 @@ function initMarsDashboard() {
 
     evaConfig = {
       ...evaConfig,
-      crewSize: Number(evaCrewSelect?.value || 2),
+      crewSize: parseCrewSize(evaCrewSelect?.value),
       transportMode: evaModeSelect?.value || 'rover',
       departureWindow: evaWindowSelect?.value || 'morning',
       payloadPreset: isPayloadSelectEvent ? selectedPreset : evaConfig.payloadPreset
@@ -3193,6 +3961,52 @@ function initMarsDashboard() {
   evaModeSelect?.addEventListener('change', onEvaConfigChange);
   evaWindowSelect?.addEventListener('change', onEvaConfigChange);
   evaPayloadSelect?.addEventListener('change', onEvaConfigChange);
+
+  const onStartingO2Change = (rawVal, openTrayIfRisk = true) => {
+    const clamped = clampStartingO2(rawVal);
+    syncStartingO2Ui(clamped);
+    dismissedTacticalAlertIds.delete('oxygen');
+    if (openTrayIfRisk) {
+      const cargoTotals = computeAstronautCargoTotals();
+      const envNow = evaluateRouteEnvironmentalHazards();
+      const reqPct = computeFullRouteO2RequirementPct(
+        activeRouteData,
+        cargoTotals,
+        Boolean(envNow.routeHasIsruDepot)
+      );
+      if (clamped < reqPct || clamped <= 30) {
+        forceOpenTacticalTray = true;
+      }
+    }
+    updateRoverProgress(roverProgress);
+  };
+
+  evaStartO2Slider?.addEventListener('input', (e) => {
+    onStartingO2Change(e.target.value, true);
+  });
+
+  evaStartO2Input?.addEventListener('input', (e) => {
+    const valStr = String(e.target.value).trim();
+    if (!valStr) return;
+    const parsed = Number(valStr);
+    if (Number.isFinite(parsed) && parsed >= 1 && parsed <= 100) {
+      onStartingO2Change(parsed, true);
+    }
+  });
+
+  evaStartO2Input?.addEventListener('blur', (e) => {
+    const clamped = clampStartingO2(e.target.value);
+    e.target.value = String(clamped);
+    onStartingO2Change(clamped, true);
+  });
+
+  if (alertSummaryPillEl) {
+    alertSummaryPillEl.addEventListener('click', () => {
+      dismissedTacticalAlertIds.clear();
+      forceOpenTacticalTray = true;
+      updateSurvivalTelemetry();
+    });
+  }
 
   if (btnOpenCargoModalEl && cargoDialogEl) {
     btnOpenCargoModalEl.addEventListener('click', () => {
@@ -3317,23 +4131,38 @@ function initMarsDashboard() {
     }
   }
 
+  function startRoverSimulation(allowRadOverride = false) {
+    if (simIntervalId) return;
+    if (allowRadOverride || lastSimHazardStopKey.includes('rad')) {
+      radiationProceedOverride = true;
+    }
+    if (roverProgress >= 100) updateRoverProgress(0);
+    lastSimHazardStopKey = '';
+    dismissedTacticalAlertIds.clear();
+    forceOpenTacticalTray = true;
+    updateSurvivalTelemetry();
+
+    if (btnPlaySim) {
+      btnPlaySim.classList.add('is-playing');
+      btnPlaySim.innerHTML = '<i class="fa-solid fa-pause"></i> <span>PAUSE</span>';
+    }
+
+    simIntervalId = setInterval(() => {
+      if (roverProgress >= 100) {
+        stopRoverSimulation();
+        return;
+      }
+      updateRoverProgress(roverProgress + 1);
+    }, 95);
+  }
+
   if (btnPlaySim) {
     btnPlaySim.addEventListener('click', () => {
       if (simIntervalId) {
         stopRoverSimulation();
         return;
       }
-      if (roverProgress >= 100) updateRoverProgress(0);
-      btnPlaySim.classList.add('is-playing');
-      btnPlaySim.innerHTML = '<i class="fa-solid fa-pause"></i> <span>PAUSE</span>';
-
-      simIntervalId = setInterval(() => {
-        if (roverProgress >= 100) {
-          stopRoverSimulation();
-          return;
-        }
-        updateRoverProgress(roverProgress + 1);
-      }, 95);
+      startRoverSimulation(false);
     });
   }
 
@@ -6231,7 +7060,7 @@ function initMarsDashboard() {
       pressSub: 'High density in abyss',
       tau: '&tau; 1.32',
       uv: '0.19 <small>mSv/h</small>',
-      alertTitle: '⚠ SEVERE ALERT: CANYON KATABATIC WIND',
+      alertTitle: 'SEVERE ALERT: CANYON KATABATIC WIND',
       alertDesc:
         'Channeled 64.8 km/h gusts along Coprates Chasma floor. Morning H₂O fog and dense suspended dust.'
     }
@@ -6587,10 +7416,11 @@ function initMarsDashboard() {
             : '14';
           evaConfig = {
             ...evaConfig,
-            crewSize: Number(parsed.evaConfig.crewSize || 2),
+            crewSize: parseCrewSize(parsed.evaConfig.crewSize),
             transportMode: parsed.evaConfig.transportMode || 'rover',
             departureWindow: parsed.evaConfig.departureWindow || 'morning',
             payloadPreset: importedPreset,
+            startingO2Pct: clampStartingO2(parsed.evaConfig.startingO2Pct ?? 100),
             cargoQuantities:
               parsed.evaConfig.cargoQuantities && typeof parsed.evaConfig.cargoQuantities === 'object'
                 ? parsed.evaConfig.cargoQuantities
@@ -6602,6 +7432,7 @@ function initMarsDashboard() {
           if (evaCrewSelect) evaCrewSelect.value = String(evaConfig.crewSize);
           if (evaModeSelect) evaModeSelect.value = evaConfig.transportMode;
           if (evaWindowSelect) evaWindowSelect.value = evaConfig.departureWindow;
+          syncStartingO2Ui(evaConfig.startingO2Pct);
           renderCargoLoadoutList();
         }
 
@@ -6899,6 +7730,12 @@ function initMarsDashboard() {
       btnSimSpe.innerHTML = isSolarStormSpeActive
         ? '<i class="fa-solid fa-radiation"></i> CLEAR SOLAR STORM (SPE ACTIVE)'
         : '<i class="fa-solid fa-radiation"></i> SIMULATE SOLAR STORM (SPE)';
+      dismissedTacticalAlertIds.delete('radiation');
+      lastSimHazardStopKey = '';
+      radiationProceedOverride = false;
+      if (isSolarStormSpeActive) {
+        forceOpenTacticalTray = true;
+      }
       rebuildRegionalNasaLayers(currentRouteKey);
       updateSurvivalTelemetry();
       playHudTone(isSolarStormSpeActive ? 410 : 720, 0.09, isSolarStormSpeActive ? 'sawtooth' : 'sine');
@@ -6920,6 +7757,7 @@ function initMarsDashboard() {
   }
 
   // Initialize restored or default route (JEZERO-ALPHA), vision cone, and Street View on startup
+  syncStartingO2Ui(evaConfig.startingO2Pct);
   loadStreetViewStation('scene-kodiak', true, false);
   if (!restoreMissionStateFromStorage()) {
     loadRoute('jezero-alpha', false);
